@@ -1,13 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ml">
 <head>
   <meta charset="UTF-8">
   <title>KSEB Prosumer Bill Calculator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Malayalam font -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam&display=swap" rel="stylesheet">
+  <!-- PDF download support -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  
 
-  <!-- ===== CSS for Compact Layout (includes TOD) ===== -->
-  <style>
-/* ===== Global Font Settings ===== */
+<style>
+/* ======================================================
+   KSEB Prosumer Bill Calculator - Consolidated CSS
+   ====================================================== */
+
+   /* ===== Global Font Settings ===== */
 body, input, select, button, label, h1, h2, h3, h4, h5, h6, div, span {
   font-family: Arial, Helvetica, "Noto Sans Malayalam", "Kartika", sans-serif;
   font-size: 14px;
@@ -148,15 +156,19 @@ input, select, button {
       text-align: center;
       color: blue;
     }
-    @media (max-width: 600px) {
-      .form-grid {
-        grid-template-columns: 2fr;
-      }
-    }
+    
 
 
    
-    h1  { color: #1e88e5; font-size: 1.5rem;
+  
+/* ===== 1. Base Layout & Typography ==================== */
+body {
+  font-family: 'Noto Sans Malayalam', Arial, sans-serif;
+  margin: 1rem;
+  background: #f7f7f7;
+}
+
+ h1  { color: #5508f0; font-size: 1.5rem;
      text-align: center;
     font-family: 'Noto Sans Malayalam', 'Noto Sans', 'Arial', sans-serif;
     font-size: 20px; /* change size as you like */
@@ -165,8 +177,176 @@ input, select, button {
 h3  { margin: 0.1rem 0; }
 hr  { margin: 0.1rem 0; }
 
-  </style>
+@media (max-width: 600px) {
+      .form-grid {
+        grid-template-columns: 2fr;
+      }
+    }
+
+/* ===== 2. Form Elements =============================== */
+select,
+input[type="number"],
+button {
+  font-size: 16px;
+  padding: 8px;
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+
+input,
+select,
+textarea {
+  line-height: 1.4;
+  padding: 8px; /* Prevents mobile zoom on focus */
+}
+
+button { cursor: pointer; }
+
+@media (min-width: 768px) {
+  select,
+  input[type="number"],
+  button {
+    max-width: 500px;
+  }
+}
+
+@media (max-width: 767px) {
+  select,
+  input[type="number"],
+  button {
+    font-size: 20px;  /* Larger for touch devices */
+  }
+}
+
+/* Hide buttons and controls when printing */
+@media print {
+  .no-print { display: none !important; }
+}
+
+input,
+select,
+button,
+label {
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* ===== 3. Results Output Box =========================== */
+.result {
+  background: #e3f2fd;
+  padding: 1rem;
+  margin-top: 1rem;
+  border-left: 5px solid #1e88e5;
+  word-wrap: break-word;
+}
+
+.result h3 {
+  margin: 1rem 0;
+}
+
+/* ===== 4. Timestamp & Update Info ===================== */
+.timestamp {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+/* ===== 5. Debug Panel Style =========================== */
+.debug {
+  background: #fff8dc;
+  color: #333;
+  font-family: monospace;
+  white-space: pre-wrap;
+  border: 1px dashed #aaa;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.hidden { display: none; }
+
+/* ===== 6. PDF Download Button Style =================== */
+#downloadFullPDF {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  font-size: 1rem;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+/* ===== 7. PDF & Print Adjustments ===================== */
+#pdfContent {
+  transform: scale(0.94);
+  transform-origin: top left;
+  width: 100%;
+}
+
+.result,
+.input-section {
+  zoom: 0.85;
+  transform-origin: top left;
+}
+
+/* -- Force page break in PDF -- */
+.pdf-page-break {
+  page-break-before: always !important;
+  break-before: page !important;
+  display: block !important;
+  margin: 0;
+  padding: 0;
+  border: none;
+  height: 50px;
+  background: none;
+}
+
+/* -- Avoid page break inside these -- */
+.avoid-page-break {
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+  -webkit-column-break-inside: avoid !important;
+  -moz-column-break-inside: avoid !important;
+  display: block !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 1 !important;
+  overflow: visible !important;
+}
+
+/* -- Print-only layout overrides -- */
+@media print {
+  body,
+  html,
+  #pdfContent {
+    width: 90% !important;
+  }
+
+  #billForm,
+  #downloadFullPDF,
+  .timestamp,
+  #debugPanel {
+    display: none;
+  }
+
+  .result { display: block !important; }
+}
+
+/* ===== 8. Global Width & Overflow Fix ================= */
+html,
+body,
+#pdfContent {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+</style>
 </head>
+
 <body>
 
 
@@ -176,12 +356,15 @@ hr  { margin: 0.1rem 0; }
 <!-- ===== Main PDF Content ====================================================== -->
 
 <!-- Title -->
-<h1 style="text-align:center;"> 
-  KSEB Prosumer Bill Calculator /  കെ.എസ്.ഇ.ബി. പ്രോസ്യൂമർ ബിൽ കാൽക്കുലേറ്റർ
-</h1>
+ <br><br> <br>
+<div class="form-group full-row" style="white-space:nowrap;">
+    <h1 style="text-align:center; line-height:2; margin:0 auto; white-space:nowrap;">
+    KSEB Prosumer Bill Calculator / <br>കെ.എസ്.ഇ.ബി. പ്രോസ്യൂമർ ബിൽ കാൽക്കുലേറ്റർ
+  </h1>      
+</div>
 
 <!-- Top Info Bar: Timestamp & Last Update -->
-<div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #555; margin-bottom: 1rem;">
+<div style="display: flex; justify-content: space-around; width:90%; font-size: 0.9rem; color: #555; margin-bottom: 1rem;">
   <div id="timestamp"></div>
   <div id="lastUpdatedDisplay"></div>
 </div>
@@ -193,16 +376,16 @@ hr  { margin: 0.1rem 0; }
 
     <!-- Example normal inputs -->
     <div class="form-group full-row">
-       <div id="connectionType" style="display:flex; align-items:center; gap:30px;">
+       <div style="display:flex; align-items:center; gap:30px;">
       <label for="connectionType"><b>Connection Type / കണക്ഷൻ തരം</b></label>
-      <select id="connectionType" style="width:170px";>
+      <select id="connectionType" style="width:170px;">
       <option>LT-1 Domestic</option></select>
     </div>
     </div>
 
     <!-- Previous Bank Balance -->
   <div class="form-group full-row">
-    <div id="Bank" style="display:flex; align-items:center; gap:30px;">
+    <div style="display:flex; align-items:center; gap:30px;">
   <label for="Bank"><b>Previous Bank Balance / മുൻ ബാങ്ക് ബാലൻസ്</b></label>
   <input type="number" id="Bank" value="0" 
        style="height:30px; width:100px; padding:5px; font-size:18px;color:blue">
@@ -211,9 +394,9 @@ hr  { margin: 0.1rem 0; }
 
  <!-- Phase Type Selection -->
  <div class="form-group full-row">
-  <div id="phaseType" style="display:flex; align-items:center; gap:30px;">
+  <div style="display:flex; align-items:center; gap:30px;">
       <label for="phaseType"> <b>Phase Type / ഫേസ് തരം</b> </label>
-      <select id="phaseType" style="width:300px";>
+      <select id="phaseType" style="width:300px;">
       <option value="single">Single Phase / സിംഗിൾ ഫേസ്</option>
       <option value="three">Three Phase / ത്രിഫേസ്</option>
       </select>
@@ -222,9 +405,9 @@ hr  { margin: 0.1rem 0; }
     
    <!-- Meter Owner Selection -->
 <div class="form-group full-row">
-  <div id="meterowner" style="display:flex; align-items:center; gap:30px;">
+  <div style="display:flex; align-items:center; gap:30px;">
 <label for="meterOwner"><b>Meter Owner / മീറ്റർ ഉടമ</b></label>
-<select id="meterOwner" style="width:250px";>
+<select id="meterOwner" style="width:250px;">
   <option value="kseb">KSEB / കെഎസ്ഇബി</option>
   <option value="prosumer">Prosumer / പ്രോസ്യൂമർ</option>
 </select>
@@ -245,7 +428,7 @@ hr  { margin: 0.1rem 0; }
 
   <!-- TOD Availability -->
    <div class="form-group full-row">
-    <div id="TODAvailability" style="display:flex; align-items:center; gap:30px;">
+    <div style="display:flex; align-items:center; gap:30px;">
   <label for="TODAvailability"><b>Is TOD Bill Available? / ടിഒഡി ബിൽ ലഭ്യമാണോ?</b></label>
   <select id="TODAvailability" >
     <option value="No">No / ഇല്ല</option>
@@ -276,7 +459,7 @@ hr  { margin: 0.1rem 0; }
  
   <!-- TOD block for Import/export -->
 <div class="form-group full-row" style="display:flex; justify-content:center; margin-top:15px;">
-  <table id="todFields" 
+  <table id="todFields" class="hidden" 
          style="border-collapse:collapse; background:#fafafa; padding:10px; border-radius:6px;">
      <thead>
       <tr>
@@ -289,52 +472,73 @@ hr  { margin: 0.1rem 0; }
       <tr>
         <td style="padding:6px 15px;">NL / നോർമൽ</td>
         <td style="text-align:center; padding:6px 15px;">
-          <input type="number" min="0" step="1" id="todNL_import" style="width:70px; height:32px;color: #2403f7;font-size:14px;">
+          <input type="number" min="0" step="1" id="todDay" style="width:70px; height:32px;color: #2403f7;font-size:14px;">
         </td>
         <td style="text-align:center; padding:6px 15px;">
-          <input type="number" min="0" step="1" id="todNL_export" style="width:70px; height:32px;color:#2403f7;font-size:14px;">
+          <input type="number" min="0" step="1" id="EtodDay" style="width:70px; height:32px;color:#2403f7;font-size:14px;">
         </td>
       </tr>
       <tr>
         <td style="padding:6px 15px;">OP / ഓഫ്-പീക്ക്</td>
         <td style="text-align:center; padding:6px 15px;">
-          <input type="number" min="0" step="1" id="todOP_import" style="width:70px; height:32px;color:#2403f7;font-size:14px;">
+          <input type="number" min="0" step="1" id="todOffpeak" style="width:70px; height:32px;color:#2403f7;font-size:14px;">
         </td>
         <td style="text-align:center; padding:6px 15px;">
-          <input type="number" min="0" step="1" id="todOP_export" style="width:70px; height:32px;color:#2403f7;font-size:14px;">
+          <input type="number" min="0" step="1" id="EtodOffpeak" style="width:70px; height:32px;color:#2403f7;font-size:14px;">
         </td>
       </tr>
       <tr>
         <td style="padding:6px 15px;">PK / പീക്ക് ടൈം</td>
         <td style="text-align:center; padding:6px 15px;">
-          <input type="number" min="0" step="1" id="todPK_import" style="width:70px; height:32px;color:#2403f7;font-size:14px;">
+          <input type="number" min="0" step="1" id="todPeak" style="width:70px; height:32px;color:#2403f7;font-size:14px;">
         </td>
         <td style="text-align:center; padding:6px 15px;">
-          <input type="number" min="0" step="1" id="todPK_export" style="width:70px; height:32px;color:#2403f7;font-size:14px;">
+          <input type="number" min="0" step="1" id="EtodPeak" style="width:70px; height:32px;color:#2403f7;font-size:14px;">
         </td>
       </tr>
     </tbody>
     </table>
 </div>
 
+  <!-- TOD Consumer Row -->
+<div class="form-group full-row" style="display:flex; justify-content:center; margin-top:10px;">
+  <div id="ConsumertodFields" class="hidden" >
+  <div style="display:grid; grid-template-columns: 300px 150px 150px 150px; align-items:left; gap:2px; background:#fafafa; padding:10px; border-radius:6px;">
+    
+    <!-- Table Heading -->
+    <strong><b>Consumer TOD /കൺസ്യൂമർ ടിഒഡി</b></strong>
+    <span style="font-weight:bold; text-align:left;">NL / നോർമൽ</span>
+    <span style="font-weight:bold; text-align:left;">PK / പീക്ക് ടൈം</span>
+    <span style="font-weight:bold; text-align:left;">OP / ഓഫ്-പീക്ക്</span>
+
+    <!-- Inputs Row -->
+    <span></span> <!-- empty to align under heading -->
+    <input type="number" min="0" step="1" id="consumer_TodNL" class="tod-consumer" style="width:70px; height:32px; text-align:center;">
+    <input type="number" min="0" step="1" id="consumer_TodPK" class="tod-consumer" style="width:70px; height:32px; text-align:center;">
+    <input type="number" min="0" step="1" id="consumer_TodOP" class="tod-consumer" style="width:70px; height:32px; text-align:center;">
+  
+  </div>
+</div>
+</div>
+  
+
 <div></div>
 
    <!-- Are you wheeling? -->
- <div class="form-group full-row"> 
-  <div id="isWheeling" style="display:flex; align-items:center; gap:10px;">
-<label for="isWheeling" style="line-height:1.5; font-size:14px;">
+   <div class="form-group full-row"> 
+   <div style="display:flex; align-items:center; gap:10px;">
+    <label for="isWheeling" style="line-height:1.5; font-size:14px;">
     <b>Are you wheeling / നിങ്ങൾ വീലിംഗ് ചെയ്യുന്നുണ്ടോ ?</b></label>
-<select id="isWheeling" name="isWheeling" style="width:150px" >
+    <select id="isWheeling" name="isWheeling" style="width:150px" >
     <option value="No" selected>No / ഇല്ല</option>
     <option value="Yes">Yes / ഉണ്ട്</option>
 </select>
 </div>
 </div>
-  
-
+ 
      <!-- Wheeled location category -->
    <div class="form-group full-row">
-    <div id="wheelingFields" style="display:flex; align-items:center; gap:10px;">
+    <div style="display:flex; align-items:center; gap:10px;">
   <label for="wheelingCategory" style="line-height:1.5; font-size:14px;">
   <b>Wheeled Location Connection Type /വീലിംഗ് ചെയ്ത ലൊക്കേഷനിലെ കണക്ഷൻ തരം</b></label>
   <select id="wheelingCategory" name="wheelingCategory" style="width:100px" >
@@ -344,11 +548,10 @@ hr  { margin: 0.1rem 0; }
   </select>
   </div>
   </div>
-
-     
-  <!-- TOD Availability -->
+       
+  <!-- Wheeling TOD Availability -->
    <div class="form-group full-row">
-  <div id="wheelingFields" style="display:flex; align-items:center; gap:10px;">
+   <div style="display:flex; align-items:center; gap:10px;">
     <label for="TODAvailabilityWheel" style="line-height:1.5; font-size:14px;">
     <b>TOD Bill Availability for Wheeled Location? വീലിംഗ് ലൊക്കേഷനിലെ ടിഒഡി ബിൽ ലഭ്യമാണോ?</b></label>
   <select id="TODAvailabilityWheel" style="width:110px; height:40px;">
@@ -357,7 +560,7 @@ hr  { margin: 0.1rem 0; }
   </select>
   </div>
   </div>
-  
+
   <!-- Total units consumed at wheeled location -->
    <div class="form-group full-row">
     <div id="row-wheeling-total" style="display:flex; align-items:center; gap:10px;">
@@ -367,30 +570,31 @@ hr  { margin: 0.1rem 0; }
   </div>
   </div>
 
-  <!-- Wheeling TOD Row -->   
-
+<!-- Wheeling TOD Row -->
 <div class="form-group full-row" style="display:flex; justify-content:center; margin-top:10px;">
-  <div id="row-wheeling-tod" style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
+  <div id="row-wheeling-tod" 
+       style="display:grid; grid-template-columns: 300px 150px 150px 150px; align-items:left; gap:2px; background:#fafafa; padding:10px; border-radius:6px;">
     
-    <strong style="margin-right:30px;">
-      <b>Wheeled Site TOD /<br> വീലിംഗ് ടിഒഡി</b>
-    </strong>
-    
-    <label for="wheel_TodNL" style="margin-right:5px;">NL / നോർമൽ:</label>
-    <input type="number" min="0" step="1" id="wheel_TodNL" class="tod wheel" style="width:60px; height:30px; margin-right:15px;">
+    <!-- Table Heading -->
+    <strong><b>Wheeled Site TOD /വീലിംഗ് ടിഒഡി</b></strong>
+    <span style="font-weight:bold; text-align:left;">NL / നോർമൽ</span>
+    <span style="font-weight:bold; text-align:left;">PK / പീക്ക് ടൈം</span>
+    <span style="font-weight:bold; text-align:left;">OP / ഓഫ്-പീക്ക്</span>
 
-    <label for="wheel_TodPK" style="margin-right:5px; margin-left:40px;">PK / പീക്ക് ടൈം:</label>
-    <input type="number" min="0" step="1" id="wheel_TodPK" class="tod wheel" style="width:60px; height:30px; margin-right:80px;">
-
-    <label for="wheel_TodOP" style="margin-right:5px;">OP / ഓഫ്-പീക്ക്:</label>
-    <input type="number" min="0" step="1" id="wheel_TodOP" class="tod wheel" style="width:60px; height:30px; margin-right:100px;">
+    <!-- Inputs Row -->
+    <span></span> <!-- empty to align under heading -->
+    <input type="number" min="0" step="1" id="wheel_TodNL" class="tod wheel" style="width:70px; height:32px; text-align:center;">
+    <input type="number" min="0" step="1" id="wheel_TodPK" class="tod wheel" style="width:70px; height:32px; text-align:center;">
+    <input type="number" min="0" step="1" id="wheel_TodOP" class="tod wheel" style="width:70px; height:32px; text-align:center;">
   
   </div>
 </div>
+
+
   
    <!-- Submit Button -->
 <div class="form-group left-col" style="width: 100%; display: flex; justify-content: center;">
-    <div id="buttons" style="display: flex; gap: 10px;">
+    <div id="CalculateButton" style="display: flex; gap: 10px;">
         <button type="submit" class="no-print"
             style="
                 background-color: #2403f7; 
@@ -401,7 +605,7 @@ hr  { margin: 0.1rem 0; }
                 font-size: 16px;
                 cursor: pointer;
             ">
-           Calculate / കാൽക്കുലേറ്റ് ചെയ്യുക
+           Calculate / കാൽക്കുലേറ്റ് 
         </button>
     </div>
     </div>
@@ -409,7 +613,7 @@ hr  { margin: 0.1rem 0; }
 
 <!-- Reset button -->
 <div class="form-group right-col" style="width: 100%; display: flex; justify-content: center;">
-    <div id="buttons" style="display: flex; gap: 10px;">
+    <div id="ResetButton" style="display: flex; gap: 10px;">
         <button type="reset" class="no-print"
             style="
                 background-color: #a36874; 
@@ -420,7 +624,7 @@ hr  { margin: 0.1rem 0; }
                 font-size: 16px;
                 cursor: pointer;
             ">
-            Reset / റീസെറ്റ് ചെയ്യുക
+            Reset / റീസെറ്റ് 
         </button>
     </div>
 </div>
@@ -436,8 +640,8 @@ hr  { margin: 0.1rem 0; }
 
 <!-- PDF Download Button -->
 <div class="form-group right-col" style="width: 100%; display: flex; justify-content: center;">
-    <div id="downloadFullPDF" style="display: flex; gap: 10px;">
-        <button type="downloadFullPDF" class="no-print"
+    <div style="display: flex; gap: 10px;">
+        <button type="button" id="downloadFullPDF" class="no-print"
             style="
                 background-color: #06412c; 
                 color: white; 
@@ -467,9 +671,1375 @@ hr  { margin: 0.1rem 0; }
   <!-- Debug Panel (hidden by default) -->
 <div id="debugPanel" class="debug hidden"></div>
 
-</div>
 
-</form>
+<!-- ===== Custom Alert Box ===== -->
+<div id="customAlert"
+     style="display:none; position:fixed; top:30%; left:50%; transform:translate(-50%,-50%);
+            background:#fff; border:2px solid red; padding:20px; z-index:1000; box-shadow:0 0 10px #000; color:red;">
+  <h3 style="margin-top:0;">Alert!</h3>
+  <div id="customAlertMessage"></div>
+  <button onclick="document.getElementById('customAlert').style.display='none'">Close</button>
+</div>
+<!-- ===== End of Main PDF Content ===== -->
+
+  
+
+<script>
+
+/* ================Initial values assumed before functions ====================================== */
+  const updatedDate    = "20 Aug 2025"; // Last Software update Date
+  let NonTelStartUnit  = 250; // Units above 250 are taiken for non-Telescopic Billing
+  let ConTODStartUnit  = 500; // Units above 500 then TOD rates apply for consumer
+  let ProsTODStartUnit = 250; // Net Units above 250, then TOD rates apply for prosumer
+  let DistLoss         = 4.99; // Distribution loss for wheeling is 4.99%
+  let wheelingRate     = 0.64; // Wheeling charge is Rs0.64/unit
+  let LT7A_tariff      = "tariff_LT-7A.csv"
+  let LT7B_tariff      = "tariff_LT-7B.csv"
+  let LT1_tariff       = "tariff_domestic_nontelescopic.csv"
+ 
+  let slabs = [], chargesTable = [], todRates = {};
+  let fixedChargeTable = [], meterChargeTable = [];
+  let userChoice = "";
+  let cachedTodBaseTable = null;  // // will hold the entire parsed table
+  let cachedTodBaseRate  = null;  // will hold the final rate when calculated later
+  let debugLog = [];
+
+
+/* ======================================================
+   KSEB Prosumer Bill Calculator - JavaScript
+   Consolidated and Fully Annotated
+   ====================================================== */
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    /* ------------------------------------------------------
+     1. Initialisation (timestamp and last-updated display)
+     ------------------------------------------------------ */
+  const now = new Date();
+  document.getElementById('timestamp').textContent =
+    `Date: ${now.toLocaleDateString()} | Time: ${now.toLocaleTimeString()}`;
+
+  document.getElementById('lastUpdated').value = updatedDate;
+  
+    const lastUpdatedValue = document.getElementById('lastUpdated').value;
+  document.getElementById('lastUpdatedDisplay').textContent =
+    `Software Last Updated: ${lastUpdatedValue}`;
+
+/* ------------------------------------------------------
+     2. Wheeling Toggle
+     ------------------------------------------------------ */
+// Main wheeling toggle for dropdown
+  document.getElementById("isWheeling").addEventListener("change", function () {
+  document.getElementById("wheelingFields").style.display =
+    (this.value === "Yes") ? "block" : "none";
+});
+
+// TOD toggle inside wheelingFields
+document.getElementById("TODAvailabilityWheel").addEventListener("change", function () {
+  if (this.value === "Yes") {
+    document.getElementById("row-wheeling-tod").style.display = "block";
+    document.getElementById("row-wheeling-total").style.display = "none";
+  } else {
+    document.getElementById("row-wheeling-tod").style.display = "none";
+    document.getElementById("row-wheeling-total").style.display = "block";
+  }
+});
+
+  /* ------------------------------------------------------
+     3. TOD Availability Toggle (controls which fields show)
+     ------------------------------------------------------ */
+  const todDropdown      = document.getElementById('TODAvailability');
+  const todSection       = document.getElementById('todFields');
+  const importField      = document.getElementById('importField');
+  const importUnitsInput = document.getElementById('importUnits');
+  const exportField      = document.getElementById('exportField')
+  const exportUnitsInput = document.getElementById('exportUnits');
+
+  // Show/hide TOD / Import fields based on dropdown value
+  function handleTODToggle() {
+    if (todDropdown.value === 'Yes') {
+      todSection.classList.remove('hidden');
+      importField.classList.add('hidden');
+      exportField.classList.add('hidden');
+      importUnitsInput.removeAttribute('required')
+      exportUnitsInput.removeAttribute('required');
+    } else {
+      todSection.classList.add('hidden');
+      importField.classList.remove('hidden');
+      exportField.classList.remove('hidden');
+      importUnitsInput.setAttribute('required', '')
+      exportUnitsInput.setAttribute('required', '');
+    }
+  }
+  todDropdown.addEventListener('change', handleTODToggle);
+  handleTODToggle();  // run on page load
+
+  /* ------------------------------------------------------
+     4. Custom Alert Utility (for messages that don't need Yes/No)
+     ------------------------------------------------------ */
+  function showCustomAlert(message) {
+    document.getElementById("customAlertMessage").innerHTML = message;
+    document.getElementById("customAlert").style.display = "block";
+  }
+
+  /* ------------------------------------------------------
+     5. Custom Yes/No Prompt Utility (returns a Promise<boolean>)
+     ------------------------------------------------------ */
+  function showYesNoPrompt(message) {
+    return new Promise((resolve) => {
+      const modal = document.createElement("div");
+      modal.id = "customPrompt";
+      Object.assign(modal.style, {
+        position: "fixed",
+        top: "0", left: "0", width: "100%", height: "100%",
+        backgroundColor: "rgba(0,0,0,0.5)", display: "flex",
+        justifyContent: "center", alignItems: "center", zIndex: "9999"
+      });
+
+      modal.innerHTML = `
+        <div style="background:#fff; padding:20px; border-radius:8px; max-width:500px; text-align:center">
+          <div style="margin-bottom:10px;">${message}</div>
+          <button id="yesBtn" style="margin-right:20px; padding:6px 14px;">Yes</button>
+          <button id="noBtn"  style="padding:6px 14px;">No</button>
+        </div>
+      `;
+
+      document.body.appendChild(modal);
+      document.getElementById("yesBtn").onclick = () => { modal.remove(); resolve(true);  };
+      document.getElementById("noBtn").onclick  = () => { modal.remove(); resolve(false); };
+    });
+  }
+
+  /* ------------------------------------------------------
+     6. PDF Download Handler
+     ------------------------------------------------------ */
+  document.getElementById('downloadFullPDF').addEventListener('click', () => {
+    // Hide all .no-print elements
+    document.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
+
+    const element = document.getElementById('pdfContent');
+    const opt = {
+      margin: 0.3,
+      filename: `KSEB_Bill_${new Date().toISOString().split('T')[0]}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: {
+        scale: 3,
+        scrollY: 0,
+        useCORS: true,
+        windowWidth:  element.scrollWidth,
+        windowHeight: element.scrollHeight
+      },
+      jsPDF:  { unit: 'in', format: 'a4', orientation: 'portrait' },
+      pagebreak: {
+        mode: ['css', 'legacy'],
+        before: '.pdf-page-break',   // Force new page before this element
+        avoid:  '.avoid-page-break'  // Prevent page break inside these elements
+      }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+      // Restore no-print elements after PDF is generated
+      document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
+    });
+  });
+
+  /* ------------------------------------------------------
+     7. CSV Loading and Parsing Helper Functions
+     ------------------------------------------------------ */
+
+   // Generic CSV loader
+  function loadCSV(file, parser) {
+    return fetch(file)
+      .then(res  => res.ok ? res.text() : Promise.reject(`Failed to load ${file}`))
+      .then(text => { parser(text); debugLog.push(`[LOADED] ${file}`); })
+      .catch(err  => { console.error(`[CSV ERROR] ${file}:`, err);
+                       debugLog.push(`[ERROR] ${err}`); });
+  }
+
+ //  CSV loader with promise
+  function loadCSVAsync(file) {
+  return fetch(file).then(response => response.text());
+  }
+
+  // Domestic Slabs (0–250, 250–500 etc.)
+  function parseSlabs(text) {
+    const lines = text.trim().split('\n').slice(1);
+    slabs = lines.map(line => {
+      const [range, rate] = line.split(',');
+      const upper = parseInt(range.split('-')[1] || (range.match(/\d+/g) || [0])[0]);
+      return { limit: upper, rate: parseFloat(rate) };
+    });
+  }
+
+  // TOD Rates (NL, OP, PK)
+  function parseTODRates(text) {
+    const lines = text.trim().split('\n').slice(1);
+    todRates = {};
+    lines.forEach(line => {
+      const [label, rate] = line.split(',');
+      todRates[label.trim().toLowerCase()] = parseFloat(rate);
+    });
+  }
+
+  // TOD Base Tariff (0–300, 0–350, Above 500)
+  function parseTODTariff(text) {
+    const lines = text.trim().split('\n').slice(1);
+    return lines.map(line => {
+      const [range, base] = line.split(',').map(v => v.trim());
+      if (/above/i.test(range)) {
+        return { upper: Infinity, base: parseFloat(base) };
+      }
+      const nums  = range.match(/\d+/g);
+      const upper = nums ? parseInt(nums[1]) : 0;
+      return { upper, base: parseFloat(base) };
+    });
+  }
+
+  // Other Charges (Duty, Surcharge)
+  function parseCharges(text) {
+    const lines = text.trim().split('\n').slice(1);
+    chargesTable = lines.map(line => {
+      const [label, duty, surcharge] = line.split(',');
+      return { label: label.trim(), duty: parseFloat(duty), surcharge: parseFloat(surcharge) };
+    });
+  }
+
+  // Fixed Charges
+  function parseFixedCharges(text) {
+    const lines = text.trim().split('\n').slice(1);
+    fixedChargeTable = lines.map(line => {
+      const [slab, single, three] = line.split(',');
+      let min = 0, max = Infinity;
+      if (slab.includes('-'))        { [min, max] = slab.split('-').map(Number); }
+      else if (/above/i.test(slab))  { min = parseInt(slab.match(/\d+/)?.[0]);   }
+      return { min, max, label: slab.trim(), single: parseFloat(single), three: parseFloat(three) };
+    });
+  }
+
+  // Meter Charges
+  function parseMeterCharges(text) {
+    const lines = text.trim().split('\n').slice(1);
+    meterChargeTable = lines.map(line => {
+      const [type, single, three] = line.split(',');
+      return { label: type.trim(), single: parseFloat(single), three: parseFloat(three) };
+    });
+  }
+
+  /* ------------------------------------------------------
+     8. Utility Functions (Fixed Charge / Meter / Other)
+     ------------------------------------------------------ */
+  function getFixedCharge(phaseType, totalUnits) {
+    for (let row of fixedChargeTable) {
+      if (totalUnits >= row.min && totalUnits <= row.max) {
+        return { value: phaseType === "three" ? row.three : row.single, label: row.label };
+      }
+    }
+    return { value: 0, label: "Not found" };
+  }
+
+ function getFixedChargeString(importUnits, ownSolarDay) {
+    const total = importUnits + ownSolarDay;
+    return `I:${importUnits} + OC:${ownSolarDay} = ${total}`;
+    }
+
+
+function getMeterRent(connectionType, phaseType, customer, meterOwner) {
+  // If meter owner is Prosumer → rent = 0
+  if (meterOwner.toLowerCase() === "prosumer") {
+    return { value: 0, label: "owned by prosumer" };
+  }
+
+  // Normalize customer string (case-insensitive, ignore spaces/underscores)
+  const normalizedCustomer = customer.replace(/\s+/g, "_").toLowerCase();
+
+  // Look up in table by matching customer type (LT1_Prosumer or Consumer)
+  for (let row of meterChargeTable) {
+    const rowLabel = row.label.replace(/\s+/g, "_").toLowerCase();
+    if (rowLabel === normalizedCustomer) {
+      return {
+        value: phaseType.toLowerCase() === "three" ? row.three : row.single,
+        label: `${row.label}-${phaseType}`
+      };
+    }
+  }
+
+  // Fallback if not found
+  return { value: 0, label: "Not found" };
+}
+
+
+
+  function getOtherCharges(connectionType) {
+    for (let row of chargesTable) {
+      if (row.label === connectionType) {
+        return { duty: row.duty, surcharge: row.surcharge };
+      }
+    }
+    return { duty: 0, surcharge: 0 };
+  }
+
+  /* ------------------------------------------------------
+     9. Billing Type (Prosumer / Consumer Mode)
+     ------------------------------------------------------ */
+  function getBillingTypeProsumer(importUnits, exportUnits, Solar, Bank) {
+    const netUnits = importUnits - exportUnits - Bank;
+    return { billtype: (netUnits <= NonTelStartUnit ? "telescopic" : "non-telescopic") };
+  }
+
+  function getBillingTypeConsumer(importUnits, exportUnits, Solar) {
+    const totalUnits = importUnits + (Solar - exportUnits);
+    return { billtype: (totalUnits > NonTelStartUnit ? "non-telescopic" : "telescopic") };
+  }
+
+
+/* ------------------------------------------------------
+   10. Domestic Energy Charge (Telescopic Slab Calculation)
+   ------------------------------------------------------ */
+function calculateDomesticCharge(units) {
+  /*
+    Goes through the domestic slab table and applies slab-wise
+    rate up to the upper limit of each slab.
+  */
+  let total = 0;
+  let prevLimit = 0;
+
+  for (let slab of slabs) {
+    if (units <= 0) break;
+    const slabUnits = Math.min(units, slab.limit - prevLimit);
+    total += slabUnits * slab.rate;
+    units -= slabUnits;
+    prevLimit = slab.limit;
+  }
+
+  return total;
+}
+
+// Same as above but returns the breakdown as a string.
+function calculateDomesticChargeString(units) {
+  let prevLimit = 0;
+  let parts = [];
+
+  for (let slab of slabs) {
+    if (units <= 0) break;
+    const slabUnits = Math.min(units, slab.limit - prevLimit);
+    const charge   = slabUnits * slab.rate;
+    parts.push(`${slabUnits} units * ₹${slab.rate.toFixed(2)} = ₹${charge.toFixed(2)}`);
+    units -= slabUnits;
+    prevLimit = slab.limit;
+  }
+
+  return parts.length
+    ? parts.join('<br> + ')
+    : '0 units billed';
+}
+
+/* ------------------------------------------------------
+   11. TOD Tariff Lookup (returns { upper, base })
+   ------------------------------------------------------ */
+function getTodBaseRate(totalImport,cachedTodBaseTable) {
+  /*
+    Loops through cachedTodBaseTable and returns the first
+    matching slab object for which totalImport <= upper.
+    (Example: totalImport = 325 → upper = 350, base = 7.6)
+  */
+  if (!cachedTodBaseTable) return null;
+
+  for (let row of cachedTodBaseTable) {
+    if (totalImport <= row.upper) {
+      return { base: row.base, upper: row.upper };
+    }
+  }
+  return null; // no match found
+}
+
+/* ------------------------------------------------------
+   12. TOD Energy Charge (Prosumer Mode & Consumer Mode)
+   ------------------------------------------------------ */
+function calculateTODCharge(day, peak, offpeak, NET, isConsumer) {
+
+ const threshold = isConsumer ? ConTODStartUnit : ProsTODStartUnit;
+
+if (NET <= threshold) {
+    ['nl', 'pk', 'op'].forEach(key => { if (todRates.hasOwnProperty(key)) todRates[key] = 1; });
+  }
+    /*
+    NET = (day + offpeak + peak) after export adjustments.
+    Base rate depends on NET (from getTodBaseRate).
+    Multipliers = todRates.nl / todRates.pk / todRates.op
+  */
+  const todBaseRate = getTodBaseRate(NET,cachedTodBaseTable).base;
+
+  return todBaseRate * (
+      (day     * todRates.nl) +
+      (peak    * todRates.pk) +
+      (offpeak * todRates.op)
+  );
+}
+
+
+/* ------------------------------------------------------
+   13. Detailed breakdown string for Consumer mode
+   ------------------------------------------------------ */
+
+function getTODCalculationString(day, peak, offpeak, NET, isConsumer) {
+
+  const threshold = isConsumer ? ConTODStartUnit : ProsTODStartUnit;
+
+  if (NET <= threshold) {
+    ['nl', 'pk', 'op'].forEach(key => { if (todRates.hasOwnProperty(key)) todRates[key] = 1; });
+  }
+
+  const todBaseRate = getTodBaseRate(NET,cachedTodBaseTable).base;
+  let parts = [];
+
+  if (day)     parts.push(`NL: ${day} × ₹${todBaseRate} × ${todRates.nl} = ₹${(day * todBaseRate * todRates.nl).toFixed(2)}`);
+  if (offpeak) parts.push(`OP: ${offpeak} × ₹${todBaseRate} × ${todRates.op} = ₹${(offpeak * todBaseRate * todRates.op).toFixed(2)}`);
+  if (peak)    parts.push(`PK: ${peak} × ₹${todBaseRate} × ${todRates.pk} = ₹${(peak * todBaseRate * todRates.pk).toFixed(2)}`);
+
+    // Add "+" symbol between parts
+  if (parts.length > 1) {
+    for (let i = 0; i < parts.length - 1; i++) parts[i] += ' +';
+  }
+
+  return parts.join('<br>') || '0 units billed';
+}
+
+/* ------------------------------------------------------
+   14. Net Units import calculation for Prosumer
+   ------------------------------------------------------ */
+/**
+ * Calculates Actual Import, Net Import, Adjusted Import (after using bank),
+ * and Current Bank balance.
+ *
+ * - importTOD / exportTOD are objects with {day, offpeak, peak}
+ * - bank is the previous banked balance (number)
+ *
+ * Returns: { actualImport, netImport, adjImport, currentBank }
+ */
+function getNetImportTOD(importTOD, exportTOD, bank) {
+
+  // STEP 1: Find actual import AND per-zone export surplus
+  const actualImport = [];
+  const extraExportPerZone = [];
+
+  // NL
+  actualImport[0] = Math.max(0, importTOD.day - exportTOD.day);
+  extraExportPerZone[0] = Math.max(0, exportTOD.day - importTOD.day);
+
+  // OP
+  actualImport[1] = Math.max(0, importTOD.offpeak - exportTOD.offpeak);
+  extraExportPerZone[1] = Math.max(0, exportTOD.offpeak - importTOD.offpeak);
+
+  // PK
+  actualImport[2] = Math.max(0, importTOD.peak - exportTOD.peak);
+  extraExportPerZone[2] = Math.max(0, exportTOD.peak - importTOD.peak);
+
+  console.log("▶ ActualImport =", actualImport);
+  console.log("▶ ExtraExportPerZone =", extraExportPerZone);
+
+  // STEP 2: Total remaining export (add all per-zone extras)
+  let remainingExport = extraExportPerZone.reduce((s,v)=>s+v, 0);
+
+  // STEP 3: Subtract remaining export from actualImport (NL→OP→PK)
+  let netImport = [...actualImport];
+  for (let i = 0; i < netImport.length && remainingExport > 0; i++) {
+    const used = Math.min(netImport[i], remainingExport);
+    netImport[i] -= used;
+    remainingExport -= used;
+  }
+
+  // STEP 4: Apply Bank (NL→OP→PK)
+  let adjImport = [...netImport];
+  let currentBank = bank;
+  for (let i = 0; i < adjImport.length && currentBank > 0; i++) {
+    const used = Math.min(adjImport[i], currentBank);
+    adjImport[i] -= used;
+    currentBank -= used;
+  }
+
+  // STEP 5: Any still remaining export goes to bank
+  if (remainingExport > 0) {
+    currentBank += remainingExport;
+  }
+
+  console.log("▶ netImport =", netImport);
+  console.log("▶ adjImport =", adjImport);
+  console.log("▶ updatedBank =", currentBank);
+
+  return { actualImport, netImport, adjImport, currentBank };
+}
+
+
+/* ------------------------------------------------------
+   15. Net Energy Adjustments (Export / Bank Set-off)
+   ------------------------------------------------------ */
+function getEnergy(importTOD, exportTOD, Bank) {
+  /*
+     importTOD  = {day, offpeak, peak}
+     exportTOD  = {day, offpeak, peak}
+     bank       = previous bank balance
+
+     1. getNetImportTOD() handles export and bank adjustment
+     2. use adjusted import values to calculate final TOD charge
+  */
+
+  const { adjImport, currentBank } = getNetImportTOD(importTOD, exportTOD, Bank);
+
+  // Zone-wise adjusted import values
+  const adjDay     = adjImport[0];
+  const adjOffpeak = adjImport[1];
+  const adjPeak    = adjImport[2];
+
+  // Total net import (after export + bank adjustment)
+  const NET = adjDay + adjOffpeak + adjPeak;
+
+  // Prosumer TOD energy charge
+  const energyCharge  = calculateTODCharge(adjDay, adjPeak, adjOffpeak, NET);
+  const EChargeString = getTODCalculationString(adjDay, adjPeak, adjOffpeak, NET);
+
+  return {
+    energyCharge,
+    EChargeString,
+    adjDay,
+    adjOffpeak,
+    adjPeak,
+    currentBank
+  };
+}
+
+/* ------------------------------------------------------
+   16. Slab Label for upper limit to change from infinity to above 500
+   ------------------------------------------------------ */
+
+function getSlabLabel(totalUnits,cachedTodBaseTable) {
+  const slab = getTodBaseRate(totalUnits,cachedTodBaseTable);
+  const label = (slab.upper === Infinity) ? "Above 500" : slab.upper;
+  return { slabObj: slab, label: label };
+}
+
+/* ------------------------------------------------------
+   17. Round 2 two decimal points
+   ------------------------------------------------------ */
+
+function round2(num) {
+  return Math.round(num * 100) / 100;
+}
+
+/* ------------------------------------------------------
+   18. Wheeled Energy Cost calculation
+   ------------------------------------------------------ */
+
+// 1. Cache the correct CSV file only once
+async function cacheWheelingTariff(wheelingCategory) {
+  
+  // Explicit mapping with if/switch
+  switch (wheelingCategory) {
+    case "LT7A":
+      file = LT7A_tariff;
+      break;
+    case "LT7B":
+      file = LT7B_tariff;
+      break;
+    case "LT1":
+      file = LT1_tariff;
+      break;
+    default:
+      console.warn(`⚠ No CSV file defined for category: ${wheelingCategory}`);
+      return;
+  }
+
+  // For LT-VIIA, LT-VIIB, etc. load CSV dynamically
+  if (file) {
+    const text = await loadCSVAsync(file);
+    cachedWheeledRateTable = parseTODTariff(text);
+    console.log(`Cached Wheeled ${wheelingCategory} RateTable:`, cachedWheeledRateTable);
+  }
+  
+}
+
+
+// 2. Use cached table to calculate energy charge
+function WheelingEnergyCharge(wheelingCategory, wheeledConsumedUnits, todNL=0, todPK=0, todOP=0) {
+  let WheelEnergy = 0;
+  let WheelEString = "";
+  let billmethWheel = "";
+  let slabupperlabel;
+  let slabRange = "";
+
+  if (wheelingCategory === "LT1") {
+    isConsumer = true;
+    billmethWheel = getBillingTypeConsumer(wheeledConsumedUnits, 0, 0, 0).billtype;
+    console.log("▶ billmethWheel =", billmethWheel);
+
+    if (billmethWheel === "telescopic") {
+      WheelEnergy  = calculateDomesticCharge(wheeledConsumedUnits);
+      WheelEString = calculateDomesticChargeString(wheeledConsumedUnits);
+
+    } else if (billmethWheel === "non-telescopic") {
+      WheelEnergy  = calculateTODCharge(todNL, todPK, todOP, wheeledConsumedUnits, isConsumer);
+      WheelEString = getTODCalculationString(todNL, todPK, todOP, wheeledConsumedUnits, isConsumer);
+      slabupperlabel = getSlabLabel(wheeledConsumedUnits,cachedWheeledRateTable).label;
+      slabRange = "0 - " + slabupperlabel;
+    }
+  } else {
+    if (!cachedWheeledRateTable) {
+      console.warn("⚠ cachedWheeledRateTable is empty! Did you forget to call cacheWheelingTariff()?");
+      return { WheelEnergy: "NA", WheelEString: "No cached tariff table", billmethWheel: "" };
+    }
+
+    const wheelBaseRate = getTodBaseRate(wheeledConsumedUnits, cachedWheeledRateTable).base;
+    WheelEnergy = wheeledConsumedUnits * wheelBaseRate;
+    WheelEString = `${wheeledConsumedUnits} units × ₹${wheelBaseRate.toFixed(2)} = ₹${WheelEnergy.toFixed(2)}`;
+    slabupperlabel = getSlabLabel(wheeledConsumedUnits,cachedWheeledRateTable).label;
+    slabRange = "0 - " + slabupperlabel;
+  }
+
+  return { WheelEnergy, WheelEString, billmethWheel, slabRange };
+}
+
+
+
+/* ======================================================
+   Render Blocks (Prosumer and Consumer billing sections)
+   ====================================================== */
+
+// -- Render Prosumer Billing Block -----------------------------------------
+function renderProsumerBillingBlock(billmethPros, netUnits, ProsESlab, slabEPros, todRates) {
+  if (billmethPros !== "non-telescopic") return `
+  <span style="font-size: smaller; color: green;">
+      Billing: ${billmethPros} for ${netUnits} units <br> </span>`;
+
+  const slabText =
+    (ProsESlab.upper === Infinity)
+      ? `Slab: ${slabEPros}, Rate: ${ProsESlab.base}`
+      : `Slab: 0 - ${ProsESlab.upper}, Rate: ${ProsESlab.base}`;
+
+  return `
+    <span style="font-size: smaller; color: green;">
+      Billing: ${billmethPros} for ${netUnits} units <br>
+      ${slabText} <br>
+      TOD Rates: NL: ${todRates.nl}, OP: ${todRates.op}, PK: ${todRates.pk} <br>
+    </span>
+  `;
+}
+
+// -- Render Consumer Billing Block -----------------------------------------
+const CTodRStart = 500; // threshold after which TOD multipliers differ
+
+function renderConsumerBillingBlock(billmethCons, consumerImport, ConsESlab, slabECons, todRates) {
+  if (billmethCons !== "non-telescopic") return "";
+
+  const slabText =
+    (ConsESlab.upper === Infinity)
+      ? `Slab: ${slabECons}, Rate: ${ConsESlab.base}`
+      : `Slab: 0 - ${ConsESlab.upper}, Rate: ${ConsESlab.base}`;
+
+  // NOTE: Only show the "Different TOD rate" note for slabs <= 500
+  const diffTodNote =
+    (ConsESlab.upper <= CTodRStart)
+      ? `<br>Different TOD rates only above ${CTodRStart} units`
+      : "";
+
+  return `
+    <span style="font-size: smaller; color: green;">
+      Billing: ${billmethCons} for ${consumerImport} units <br>
+      ${slabText} <br>
+      TOD Rates: NL: ${todRates.nl}, OP: ${todRates.op}, PK: ${todRates.pk}
+      ${diffTodNote}
+    </span>
+  `;
+}
+
+// -- Render TOD import breakdowwn Block -----------------------------------------
+/**
+ * Renders the TOD import breakdown for Prosumer mode.
+ * Shows Actual, Net and Adjusted values (NL/OP/PK)
+ * Only when: (billing is non-telescopic) AND (netUnits > 0)
+ */
+function renderProsumerTODBreakdown(billmethPros, netUnits, actualImport, netImport, adjImport) {
+  // ✅ render only when BOTH conditions are satisfied
+  if (billmethPros === "non-telescopic" && netUnits > 0) {
+    return `
+    <br>
+      Actual Import:    NL: <span style="font-size: smaller; color: green;">${actualImport[0]}</span>,
+                        OP: <span style="font-size: smaller; color: green;">${actualImport[1]}</span>,
+                        PK: <span style="font-size: smaller; color: green;">${actualImport[2]}</span><br>
+      Net TOD:          NL: <span style="font-size: smaller; color: green;">${netImport[0]}</span>,
+                        OP: <span style="font-size: smaller; color: green;">${netImport[1]}</span>,
+                        PK: <span style="font-size: smaller; color: green;">${netImport[2]}</span><br>
+      Bank Adj: <strong>NL: <span style="font-size: smaller; color: green;">${adjImport[0]}</span></strong>,
+                <strong>OP: <span style="font-size: smaller; color: green;">${adjImport[1]}</span></strong>,
+                <strong>PK: <span style="font-size: smaller; color: green;">${adjImport[2]}</span></strong><br>
+    `;
+  }
+
+  // Otherwise, return empty (no output)
+  return "";
+}
+
+
+// --------------------------------------------------------------
+// Setup billing: loads all required CSV tables and shows/hides
+// TOD fields depending on import units
+// --------------------------------------------------------------
+async function setupBilling(importUnits) {
+
+  // Load all CSV files (runs in parallel using Promise.all)
+  await Promise.all([
+    loadCSV('fixed_charge.csv', parseFixedCharges),
+    loadCSV('meter_charges.csv',  parseMeterCharges),
+    loadCSV('other_charges.csv',  parseCharges),
+    loadCSV('tariff_tod.csv',     parseTODRates),
+    loadCSV('tariff_domestic_telescopic.csv', parseSlabs),
+
+    // Load and cache the TOD base table
+    loadCSV('tariff_tod_base.csv', function(text) {
+      cachedTodBaseTable = parseTODTariff(text);
+      console.log("TOD Base Table Cached:", cachedTodBaseTable);
+    })
+  ]);
+
+
+  // ----------------------------------------------
+  // Show or hide TOD input fields
+  // ----------------------------------------------
+  if (importUnits > 250) {
+    // TOD applicable → show the fields
+    document.getElementById('todFields').classList.remove('hidden');
+  } else {
+    // Non-TOD → hide the fields
+    document.getElementById('todFields').classList.add('hidden');
+  }
+}
+
+
+  // ============================================
+// Form Submit Event: Main Calculation Handler
+// ============================================
+document.getElementById('billForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  // ---------------------------
+  // 1. Retrieve and Parse Inputs
+  // ---------------------------
+  const connectionType   = document.getElementById('connectionType').value;
+  const phaseType        = document.getElementById('phaseType').value;
+  const meterOwner       = document.getElementById("meterOwner").value;
+ 
+  const exportUnitsInput = parseFloat(document.getElementById('exportUnits').value) || 0;
+  const importUnitsInput = parseFloat(document.getElementById('importUnits').value) || 0;
+  const Solar            = parseFloat(document.getElementById('Solar').value) || 0;
+  const Bank             = parseFloat(document.getElementById('Bank').value) || 0;
+  const TODAvailability  = document.getElementById('TODAvailability').value.trim().toLowerCase();
+
+  // TOD-specific import inputs
+  const todDay     = parseFloat(document.getElementById('todDay').value) || 0;
+  const todOffpeak = parseFloat(document.getElementById('todOffpeak').value) || 0;
+  const todPeak    = parseFloat(document.getElementById('todPeak').value) || 0;
+
+ // TOD-specific export inputs
+  const EtodDay     = Number(document.getElementById('EtodDay').value || 0);
+  const EtodOffpeak = Number(document.getElementById('EtodOffpeak').value || 0);
+  const EtodPeak    = Number(document.getElementById('EtodPeak').value || 0);
+
+
+  // ---------------------------
+  // Wheeling related inputs
+  // ---------------------------
+    const isWheeling        = document.getElementById("isWheeling")?.value || "No"; // Check TOD availability for wheeled location    
+    const TODAvailableWheel = document.getElementById("TODAvailabilityWheel")?.value || "No"; // Check TOD availability for wheeled location
+
+    const wheelingCategory = isWheeling === "Yes" 
+    ? document.getElementById("wheelingCategory")?.value || ""
+    : "";
+    
+    // Values depending on selection
+   let wheeledConsumedUnits = 0;
+   let wheelTodNL = 0;  
+   let wheelTodPK = 0;  
+   let wheelTodOP = 0;
+
+if (isWheeling === "Yes") {
+  if (TODAvailableWheel === "Yes") {
+    // Assign values to existing variables, not redeclare them
+    wheelTodNL = Number(document.getElementById("wheel_TodNL")?.value || 0);
+    wheelTodPK = Number(document.getElementById("wheel_TodPK")?.value || 0);
+    wheelTodOP = Number(document.getElementById("wheel_TodOP")?.value || 0);
+
+    // Optional: calculate total units
+    wheeledConsumedUnits = wheelTodNL + wheelTodPK + wheelTodOP;
+  } else {
+    wheeledConsumedUnits = Number(document.getElementById("wheeledConsumedUnits")?.value || 0);
+  }
+}
+
+console.log("wheelTodNL:", wheelTodNL);
+console.log("wheelTodPK:", wheelTodPK);
+console.log("wheelTodOP:", wheelTodOP);
+
+   
+  // ---------------------------
+  // 2. Determine Import Units
+  // ---------------------------
+  let importUnits = 0;  let exportUnits = 0;   let netUnits = 0;   let newBank = 0; //  declare the variables
+  let netImpUnits = 0; 
+
+  let importTOD = { day:0, offpeak:0, peak:0 };   let exportTOD = { day:0, offpeak:0, peak:0 };
+  let ProsNetImportData;   
+
+
+  if (TODAvailability === "yes") {
+
+    importUnits = todDay + todOffpeak + todPeak;
+    exportUnits = EtodDay + EtodOffpeak + EtodPeak;
+
+        
+        //  Core Prosumer Calculations for TOD reading        
+  
+         exportTOD = {day:EtodDay, offpeak: EtodOffpeak, peak: EtodPeak};
+         importTOD = {day: todDay, offpeak:  todOffpeak, peak:  todPeak};
+         ProsNetImportData = getNetImportTOD (importTOD, exportTOD, Bank);
+    
+        //------Import Unit calculations----
+
+          actualImport = ProsNetImportData.actualImport; // zone wise import - export 
+          netImport    = ProsNetImportData.netImport; // actual import - extra export in any zone 
+          adjImport    = ProsNetImportData.adjImport; // net import - bank in any zone 
+          netImpUnits  = netImport[0] + netImport[1] + netImport[2];     // N = I - E
+          netUnits     = adjImport[0] + adjImport[1] + adjImport[2]; // N - B
+          newBank      = ProsNetImportData.currentBank;   // UB       
+
+
+  } else {
+
+    //  Core Prosumer Calculations for non-TOD reading
+
+    importUnits = importUnitsInput;
+    exportUnits = exportUnitsInput;
+    console.log("▶ exportUnitsInput =", exportUnitsInput);
+    console.log("▶ exportUnits =", exportUnits);
+    netImpUnits = Math.max(0, importUnits - exportUnits);
+
+    netUnits  = Math.max(0, importUnits - (Bank + exportUnits)); // N - B
+    newBank = Math.max(0, Bank + exportUnits - importUnits); 
+
+    console.log("▶ netUnits =", netUnits);
+    console.log("▶ exportUnits =", exportUnits);
+
+  }
+
+  if (isNaN(importUnits)) {
+    alert("Please enter a valid import unit value.");
+    return;
+  }
+
+ 
+  await setupBilling(importUnits);
+  
+           
+    const ownSolarDay  = Solar - exportUnits;                        // Self-used solar
+    const totalUnits   = importUnits + ownSolarDay;                  // I + OC
+    const consumerImport = totalUnits;                               // Consumer total usage
+  
+
+  // Billing type for prosumer
+  const billmethPros = getBillingTypeProsumer(importUnits, exportUnits, Solar, Bank).billtype;
+
+  // Fixed & Meter charges
+  const meterInfo      = getMeterRent(connectionType, phaseType, "LT1_Prosumer", meterOwner);
+  const fixedInfo      = getFixedCharge(phaseType, totalUnits);
+  const fixedChargeStr = getFixedChargeString(importUnits, ownSolarDay);
+  const { value: meterCharge } = meterInfo;
+  const { value: fixedCharge, label: fixedLabel } = fixedInfo;
+
+  
+  // Other charges (duty, surcharge)
+  const { duty, surcharge } = getOtherCharges(connectionType);
+
+  // ---------------------------
+  // 5. Energy Charge Calculation (Prosumer)
+  // ---------------------------
+  let energyCharge = 0, EChargeString = "";
+  let adjDay = 0, adjOffpeak = 0, adjPeak = 0;
+  let dayTotal = 0;
+  isConsumer = false;
+  
+  
+  if (netUnits > NonTelStartUnit) {
+    // Non-telescopic (TOD) billing
+    const energyResult = getEnergy(importTOD, exportTOD, Bank);
+    energyCharge = energyResult.energyCharge;
+    EChargeString = energyResult.EChargeString;
+    adjDay = energyResult.adjDay;
+    adjOffpeak = energyResult.adjOffpeak;
+    adjPeak = energyResult.adjPeak;
+
+    console.log("▶ energyCharge non tel =", energyCharge);
+
+  } else {
+    // Telescopic billing
+    energyCharge = calculateDomesticCharge(netUnits);
+    EChargeString = calculateDomesticChargeString(netUnits);
+
+     console.log("▶ energyCharge tel =", energyCharge);
+  }
+
+  // Duty & Surcharge
+  const dutyAmount      = energyCharge * duty / 100;
+  const surchargeAmount = surcharge * netUnits;
+
+// ---------------------------
+  // 6. Wheeling
+// ---------------------------
+
+    let WheelingCharge = 0; let Avail_4_Wheel = 0; let Avail_4_Wheel_String = ``;
+    let Avail_After_Wheel = 0;  let Avail_After_Wheel_String = ``;
+    let Bank_after_Wheeling = 0; let Bank_after_Wheeling_String = ``; let wheelingUnitsNew;
+    let Int_Avail_4_Wheel; let ConsumptionAfterWheeling =0;
+    
+
+
+    if (isWheeling === "Yes") {
+
+    // wheeling Units calculations
+      Avail_4_Wheel               = round2(newBank * (1 - DistLoss/100));
+      Int_Avail_4_Wheel           = Avail_4_Wheel;
+
+       if (Int_Avail_4_Wheel >= wheeledConsumedUnits) {
+       wheelingUnitsNew = wheeledConsumedUnits;
+      } else {
+       wheelingUnitsNew = Int_Avail_4_Wheel;
+        }
+
+
+    // wheeling calculations        
+        Avail_4_Wheel_String        =  `UB:${newBank} × [1 - ${DistLoss/100}] = ${Avail_4_Wheel}, Dist loss ${DistLoss}%`;
+        Avail_After_Wheel           = round2(Avail_4_Wheel - wheelingUnitsNew);
+        Avail_After_Wheel_String    = `BW:${Avail_4_Wheel} - W:${wheelingUnitsNew} = ${Avail_After_Wheel}`;
+        Bank_after_Wheeling         = round2(Avail_After_Wheel / (1 - DistLoss/100));
+        Bank_after_Wheeling_String  =  `AW:${Avail_After_Wheel} ÷ [1 - ${DistLoss/100}] = ${Bank_after_Wheeling}, Dist loss ${DistLoss}%`;  
+        WheelingCharge              = round2(wheelingUnitsNew * wheelingRate);
+        ConsumptionAfterWheeling    = wheeledConsumedUnits -  wheelingUnitsNew;    
+    }
+
+
+   // wheeling Energy calculations (before wheeling) 
+   
+   console.log("▶ ConsumptionAfterWheeling =", ConsumptionAfterWheeling);
+
+   await cacheWheelingTariff(wheelingCategory);
+
+  const { 
+    WheelEnergy, 
+    WheelEString, 
+    billmethWheel,
+    slabRange 
+    } = WheelingEnergyCharge(wheelingCategory, wheeledConsumedUnits, wheelTodNL, wheelTodPK, wheelTodOP);
+  
+  console.log("▶ WheelEnergy =", WheelEnergy);
+  console.log("▶ WheelEString =",WheelEString);
+  console.log("▶ billmethWheel =",billmethWheel);
+    console.log("▶ slabRange =",slabRange);
+
+
+  const {
+  WheelEnergy: WheelEnergy_After,
+  WheelEString: WheelEString_After,
+  billmethWheel: billmethWheel_After,
+  slabRange:slabRange_After
+  } = WheelingEnergyCharge(wheelingCategory, ConsumptionAfterWheeling, wheelTodNL, wheelTodPK, wheelTodOP);
+
+
+  console.log("▶ WheelEnergy_After =",WheelEnergy_After);
+  console.log("▶ WheelEString_After =",WheelEString_After);
+  console.log("▶ billmethWheel_After =",billmethWheel_After);
+  console.log("▶ slabRange =",slabRange);
+   
+  //let NETConsWheel = wheelTodNL + wheelTodPK + wheelTodOP;     // total TOD consumption at the wheeled site
+  const consInfoWheel = getSlabLabel(wheeledConsumedUnits,cachedWheeledRateTable);
+  const ConsESlabWheel = consInfoWheel.slabObj;
+  const slabEConsWheel = consInfoWheel.label;
+  console.log("▶ ConsESlabWheel =",ConsESlabWheel);
+  console.log("▶ slabRange_After =",slabRange_After);
+     
+    // // // // // // // // // // // // // 
+    
+  // Total Prosumer Bill
+  const total = energyCharge + fixedCharge + meterCharge + dutyAmount + surchargeAmount + WheelingCharge;
+
+  // ---------------------------
+  // 6. Load Tariff Data (Consumer Mode)
+  // ---------------------------
+  await setupBilling(consumerImport);
+
+// -------------------------------------------------------------
+// 7. Consumer Mode Pre-checks (get meter/fixed charges and prompt user)
+// -------------------------------------------------------------
+
+let consumerEnergy = 0,
+    consumerFixed  = 0,
+    consumerMeter  = 0,
+    consumerEString = "";
+
+// Get meter and fixed charge information
+const consumerMeterInfo = getMeterRent(connectionType, phaseType, "Consumer", "KSEB");;
+const consumerFixedInfo = getFixedCharge(phaseType, consumerImport);
+
+consumerMeter = consumerMeterInfo.value;
+consumerFixed = consumerFixedInfo.value;
+
+// Auto-set daytime value if TOD available and user has not chosen yet
+if (userChoice === "" && TODAvailability === "yes" && consumerImport >= 250) {
+  dayTotal = todDay + ownSolarDay;
+}
+
+// Prompt only when TOD is not available and import >=250
+if (TODAvailability === "no" && consumerImport >= 250 && userChoice === "") {
+  const message = `📌 Do you want to skip estimating bill as a Consumer?<br>
+  നിങ്ങൾ ഉപഭോക്തൃ ബിൽ കണക്കാക്കുന്നത് ഒഴിവാക്കണോ?`;
+  const proceed = await showYesNoPrompt(message);
+  userChoice = proceed ? "skipped" : "need";
+}
+
+// -------------------------------------------------------------
+// 8. Consumer Mode Adjustments (when user wants the consumer calculation)
+// -------------------------------------------------------------
+if (userChoice === "need" && TODAvailability === "no" && consumerImport >= 250) {
+
+  // No TOD values entered
+  if (todDay === 0 && todPeak === 0 && todOffpeak === 0) {
+    showCustomAlert(`
+      <br>ഉപഭോക്താവായി കണക്കാക്കുന്നതിനായി മൊത്തം യൂണിറ്റുകൾ (I + OC) [${consumerImport} യൂണിറ്റുകൾ]
+      ΤΟD രീതി അനുസരിച്ചു നൽകണം. സ്വയം ഉപയോഗിച്ച സോളാർ: <b>${ownSolarDay} യൂണിറ്റുകൾ</b>.
+    `);
+    return;
+  }
+
+  const sumImport = todDay + todPeak + todOffpeak;
+
+  // Validate: Daytime TOD units must be ≥ own solar usage
+  if (todDay < ownSolarDay) {
+    alert(`As a Consumer, Daytime TOD units (NL) must be ≥ Own Solar Use (GM - E) = ${ownSolarDay} units.`);
+    return;
+  }
+
+  // Validate: Total TOD units should match total import units
+  if (sumImport !== totalUnits) {
+    alert(`Mismatch: Total TOD units (${sumImport}) ≠ Total import units (${totalUnits}).`);
+    return;
+  }
+
+  // Set consumer daytime units to user-entered TOD Day value
+  dayTotal = todDay;
+
+} else if (userChoice === "need" && TODAvailability === "yes" && consumerImport >= 250) {
+  // If TOD bill is available, daytime = TOD Day + ownSolarDay
+  dayTotal = todDay + ownSolarDay;
+}
+
+  // ---------------------------
+  // 9. Consumer Energy Calculation
+  // ---------------------------
+  isConsumer = true;
+  
+  const billmethCons = getBillingTypeConsumer(importUnits, exportUnits, Solar, Bank).billtype;
+
+  if (billmethCons === "telescopic") {
+    consumerEnergy  = calculateDomesticCharge(consumerImport);
+    consumerEString = calculateDomesticChargeString(consumerImport);
+  }
+
+  if (billmethCons === "non-telescopic") {
+    let NET = dayTotal+ todPeak+ todOffpeak;
+    consumerEnergy  = calculateTODCharge(dayTotal, todPeak, todOffpeak, NET, isConsumer);
+    consumerEString = getTODCalculationString(dayTotal, todPeak, todOffpeak, NET, isConsumer);     
+     }
+     
+    
+// -------------------------------------------
+// 10. Determine Prosumer slab (based on netUnits)
+// -------------------------------------------
+
+const prosInfo = getSlabLabel(netUnits,cachedTodBaseTable);
+const ProsESlab = prosInfo.slabObj;
+const slabEPros = prosInfo.label;  // returns a matching slab object {upper, base}
+
+// -------------------------------------------
+// 11. Determine Consumer slab (based on NETCons)
+// -------------------------------------------
+let NETCons = dayTotal + todPeak + todOffpeak;     // total TOD consumption as consumer
+const consInfo = getSlabLabel(NETCons,cachedTodBaseTable);
+const ConsESlab = consInfo.slabObj;
+const slabECons = consInfo.label;
+
+// -------------------------------------------
+// 12. Duty, Surcharge, and Total Consumer Bill
+// -------------------------------------------
+const consumerdutyAmount      = (consumerEnergy * duty) / 100;
+const consumersurchargeAmount = surcharge * consumerImport;
+
+const consumerTotal = consumerEnergy
+                     + consumerFixed
+                     + consumerMeter
+                     + consumerdutyAmount
+                     + consumersurchargeAmount;
+
+
+  // =============================
+// 13. Render Calculation Result
+// =============================
+const resultDiv = document.getElementById('result');
+resultDiv.style.display = 'block';
+
+
+// Build HTML output
+resultDiv.innerHTML = `
+<div id="pdfContent">
+
+  <!-- ===== Title ===== -->
+  <h3 style="color: blue;">KSEB Prosumer Bill Calculator</h3>
+
+  <!-- Timestamp and Revision Note -->
+  <span style="font-size: smaller; color: purple;">
+    Date: ${now.toLocaleDateString()} | Time: ${now.toLocaleTimeString()} <br>
+    Software Last Updated: ${lastUpdatedValue}
+  </span>
+  <br><br>
+
+  <!-- ===== Input Summary ===== -->
+  <h3>Input Values</h3>
+  Connection Type: <strong>${connectionType}</strong>,
+  Phase Type: <strong>${phaseType}</strong><br><br>
+
+  Is TOD bill available? <strong>${TODAvailability.charAt(0).toUpperCase() + TODAvailability.slice(1)}</strong><br><br>
+
+  <!-- ===== Show TOD Table if TOD available or Import >=250 ===== -->
+  ${
+    (TODAvailability === "yes" || consumerImport >= 250)
+      ? `
+        ${
+          TODAvailability === "yes"
+            ? `TOD bill reading`
+            : `User-entered TOD values for estimating consumer bill`
+        }
+        <br><br>
+
+        ${
+          /* Prosumer telescopic (TOD not available) => show comparison table */
+          billmethPros === "telescopic" && TODAvailability === "no"
+            ? `
+              <!-- Table: Prosumer NA vs Consumer TOD values -->
+              <table style="border-collapse: collapse; margin-bottom: 10px; width: auto; font-family: monospace; font-size: 16px;">
+                <thead>
+                  <tr><th>Time Slot</th><th style="padding-right: 6ch;">As Prosumer</th><th>As Consumer</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Normal/Day Time Units</td><td>NA</td><td>${userChoice === "skipped" ? 'NA' : `${todDay} (NL + OC)`}</td></tr>
+                  <tr><td>Off Peak Units (OP)</td><td>NA</td><td>${userChoice === "skipped" ? 'NA' : `${todOffpeak}`}</td></tr>
+                  <tr><td>Peak Units (PK)</td><td>NA</td><td>${userChoice === "skipped" ? 'NA' : `${todPeak}`}</td></tr>
+                </tbody>
+              </table>              
+            `
+            : `
+              <!-- Table: TOD Import and Export values -->
+<table style="border-collapse: collapse; margin-bottom: 10px; width: auto; font-family: monospace; font-size: 16px;">
+  <thead>
+    <tr>
+      <th style="text-align:left; padding-right:12ch;">Time Slot</th>
+      <th style="text-align:left; padding-right:6ch;">Import</th>
+      <th style="text-align:left;">Export</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Normal/Day (NL)</td>
+      <td>${todDay}</td>
+      <td>${EtodDay}</td>
+    </tr>
+    <tr>
+      <td>Off Peak (OP)</td>
+      <td>${todOffpeak}</td>
+      <td>${EtodOffpeak}</td>
+    </tr>
+    <tr>
+      <td>Peak (PK)</td>
+      <td>${todPeak}</td>
+      <td>${EtodPeak}</td>
+    </tr>
+  </tbody>
+</table>
+
+            `
+        }
+      `
+      : ``
+  }
+
+  <!-- ===== Summary of I/E/OC/B ===== -->
+  <br>
+  Units Imported (I): <strong>${importUnits}</strong><span style="font-size: smaller; color: green;"> (As a Prosumer) </span><br>
+  Units Exported (E): <strong>${exportUnits}</strong><span style="font-size: smaller; color: green;"> (As a Prosumer) </span><br><br>
+  Total Solar Energy Generated (GM): <strong>${isNaN(Solar) ? "NA" : Solar} units</strong><br>
+  Own solar consumption during Day [OC]: <strong>${ownSolarDay} units</strong><br><br>
+  Net units Imported [N] (N = I - E): <strong>${netImpUnits} units</strong><br>
+  Previous banked balance [B]: <strong>${Bank} units</strong><br>
+
+  ${isWheeling.toLowerCase() === "yes" 
+  ? `<br>
+      Wheeled Units [W]: <strong>${wheelingUnitsNew}</strong> <br>`
+  : ``}
+  
+  <!-- ===== Prosumer Section ===== -->
+  <div class="pdf-page-break"></div>
+  <h3 style="color: blue;">Prosumer Bill</h3><br>
+  Billing Type: <strong>${connectionType}, ${importUnits >= 250 ? 'TOD' : 'Non-TOD'}</strong><br><br>
+
+  Own solar consumption during Day [OC]: <strong>${ownSolarDay} units</strong><br>  
+  Previous banked balance [B]: <strong>${Bank} units</strong><br>
+  Updated banked balance [UB]: <strong>${newBank} units</strong> <br> 
+
+  <br>
+  Units Billed [N-B]: <strong>${netUnits}</strong> 
+  <span style="font-size: smaller; color: red;">(${netImpUnits} - ${Bank} => ${netUnits})</span><br>
+  
+  
+<!-- Adjusted TOD units (Prosumer, TOD avaliable and non-telescopic only) -->
+${ TODAvailability === "yes"
+    ? renderProsumerTODBreakdown(billmethPros, netUnits, actualImport, netImport, adjImport)
+    : ""
+}
+<br>
+
+
+
+  <!-- Energy Charge (Prosumer) -->
+  Energy Charge:
+  <strong>₹ ${energyCharge.toFixed(2)}</strong><br>
+  <span style="font-size: smaller; color: red;">${EChargeString}</span><br>
+  ${ renderProsumerBillingBlock(billmethPros, netUnits, ProsESlab, slabEPros, todRates) }
+  <br>
+
+  <!-- Fixed, Duty, Fuel and Meter Charges -->
+  <div class="avoid-page-break">
+    Fixed Charge: <strong>₹ ${fixedCharge.toFixed(2)}</strong>
+    <span style="font-size: smaller; color: green;">(${fixedChargeStr}: ${fixedLabel} slab, ${phaseType} phase)</span><br>
+
+    Duty (${duty}% of Energy): <strong>₹ ${dutyAmount.toFixed(2)}</strong>
+    <span style="font-size: smaller; color: red;">(${energyCharge.toFixed(2)} × ${duty}% = ${dutyAmount.toFixed(2)})</span><br>
+
+    Fuel Surcharge (${surcharge}/unit):
+    <strong>₹ ${surchargeAmount.toFixed(2)}</strong>
+    <span style="font-size: smaller; color: red;">(${netUnits} × ${surcharge} = ${surchargeAmount.toFixed(2)})</span><br><br>
+  
+
+  ${(isWheeling.toLowerCase() === "yes" && Avail_After_Wheel >= 0) 
+  ? `Wheeling Charges (${wheelingRate}/unit): <strong>₹ ${WheelingCharge}</strong>
+     <span style="font-size: smaller; color: red;">(W: ${wheelingUnitsNew} × ${wheelingRate} = ${WheelingCharge})</span><br><br>` 
+  : ""}
+  
+   ${meterOwner.toLowerCase() === "prosumer" 
+  ? `` 
+  : `Meter Rent: <strong>₹ ${meterCharge.toFixed(2)}</strong> 
+      <span style="font-size: smaller; color: green;">(${phaseType} phase, net meter rent)</span><br><br>`}
+  </div>
+
+  <b>Total Bill (prosumer): ₹ ${total.toFixed(2)}</b><br>
+
+  <!-- ===== Wheeling Section ===== -->
+  
+  ${isWheeling.toLowerCase() === "yes" 
+  ? `
+    <div class="pdf-page-break"></div>
+    <h3 style="color: blue;">Wheeling & Bank </h3><br>
+
+    <span style="color:brown;"> 
+     Bank Opening [UB]: ${newBank} units <br>
+     Units available for wheeling [BW]: <strong>${Avail_4_Wheel}</strong> </span><br>
+     <span style="font-size: smaller; color: red;">${Avail_4_Wheel_String} </span><br><br>
+
+     <span style="color:brown;"> 
+     Wheeled site consumption: ${wheeledConsumedUnits} <br>
+     Wheeled Units [W]: <strong>${wheelingUnitsNew}</strong> <br>
+     Balance after wheeling [AW]:<strong> ${Avail_After_Wheel}</strong></span>
+     <span style="font-size: smaller; color: red;">(${Avail_After_Wheel_String})</span><br><br>
+
+     <span style="color:brown;"> 
+     <strong>Updated Bank Closing</strong>: <strong>${Bank_after_Wheeling}</strong><br>
+     <span style="font-size: smaller; color: red;">${Bank_after_Wheeling_String} </span><br>`
+
+
+
+
+  :``}
+
+
+  <!-- ===== Consumer Section ===== -->
+  <div class="pdf-page-break"></div>
+  <div class="avoid-page-break">
+    <h3 style="color: blue;">Predicted Bill: If You Were a Consumer </h3><br>
+    Billing Type: <strong>${connectionType}, ${consumerImport >= 250 ? 'TOD' : 'Non-TOD'}</strong><br><br>
+
+    Billed Units [I + OC]: ${importUnits} + ${ownSolarDay} = <strong>${consumerImport}</strong><br>
+
+    <!-- Adjusted TOD units (Consumer, non-telescopic) -->
+    ${billmethCons === "non-telescopic"
+      ? `
+         Adj_NL Reading [NL + OC]: ${dayTotal}<br>
+         Adjusted TOD Units: Adj_NL: <strong>${dayTotal}</strong>,
+         OP: <strong>${todOffpeak}</strong>,
+         PK: <strong>${todPeak}</strong><br>
+       `
+      : ``}
+    <br>
+
+    <!-- Energy Charge (Consumer) -->
+    Energy Charge:
+    <strong>${userChoice === "skipped" ? 'NA' : consumerEnergy.toFixed(2)}</strong><br>
+    <span style="font-size: smaller; color: red;">
+      ${userChoice === "skipped" ? 'TOD readings to be provided' : consumerEString}
+    </span><br>
+
+    <span style=color: green;">
+     ${ renderConsumerBillingBlock(billmethCons, consumerImport, ConsESlab, slabECons, todRates) }     
+    </span>
+    <br><br>
+
+    <!-- Fixed, Duty, Fuel and Meter Charges (Consumer) -->
+    Fixed Charge: <strong>₹ ${consumerFixed.toFixed(2)}</strong>
+    <span style="font-size: smaller; color: green;">(${fixedChargeStr}: ${fixedLabel} slab, ${phaseType} phase)</span><br>
+
+    Duty (${duty}% of Energy): <strong>₹ ${consumerdutyAmount.toFixed(2)}</strong>
+    <span style="font-size: smaller; color: red;">(${consumerEnergy.toFixed(2)} × ${duty}% = ${consumerdutyAmount.toFixed(2)})</span><br>
+
+    Fuel Surcharge (${surcharge}/unit): <strong>₹ ${consumersurchargeAmount.toFixed(2)}</strong>
+    <span style="font-size: smaller; color: red;">(${consumerImport} × ${surcharge} = ${consumersurchargeAmount.toFixed(2)})</span><br><br>
+
+    Meter Rent: <strong>₹ ${consumerMeter.toFixed(2)}</strong>
+    <span style="font-size: smaller; color: green;">(${phaseType} phase meter rent)</span>
+  <br><br>
+    <b>Total Bill (consumer): ₹ ${userChoice === "skipped" ? 'NA' : consumerTotal.toFixed(2)}</b>
+  </div>
+
+</div>
+`
+  resultDiv.scrollIntoView({behavior: 'smooth'}); 
+    // Optional: Enable debug panel if needed
+    // showDebugPanel();
+});
+
+});
+ 
+
+</script>
 
 </body>
+
 </html>
+
+
+  
+
+
+
+
+
