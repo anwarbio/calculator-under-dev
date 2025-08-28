@@ -189,128 +189,154 @@ hr  { margin: 0.1rem 0; }
 
 <!-- ===== Bill Input Form ===== -->
 <form id="billForm">
-  <div class="form-grid">
+  <div class="form-grid full-row">
 
     <!-- Example normal inputs -->
-    <div class="form-group">
-      <label for="connectionType"><b>Connection Type / <br>കണക്ഷൻ തരം</b></label>
-      <select id="connectionType" style="width:250px";>
+    <div class="form-group full-row">
+       <div id="connectionType" style="display:flex; align-items:center; gap:30px;">
+      <label for="connectionType"><b>Connection Type / കണക്ഷൻ തരം</b></label>
+      <select id="connectionType" style="width:170px";>
       <option>LT-1 Domestic</option></select>
+    </div>
     </div>
 
     <!-- Previous Bank Balance -->
-  <div class="form-group">
-  <label for="Bank"><b>Previous Bank Balance / <br>മുൻ ബാങ്ക് ബാലൻസ്</b></label>
-  <input type="number" id="Bank" value="0" placeholder="e.g. 10" 
-       style="height:30px; width:150px; padding:5px; font-size:18px;color:blue">
+  <div class="form-group full-row">
+    <div id="Bank" style="display:flex; align-items:center; gap:30px;">
+  <label for="Bank"><b>Previous Bank Balance / മുൻ ബാങ്ക് ബാലൻസ്</b></label>
+  <input type="number" id="Bank" value="0" 
+       style="height:30px; width:100px; padding:5px; font-size:18px;color:blue">
+ </div>
  </div>
 
  <!-- Phase Type Selection -->
- <div class="form-group">
-      <label for="phaseType"><b>Phase Type / <br>ഫേസ് തരം</b></label>
+ <div class="form-group full-row">
+  <div id="phaseType" style="display:flex; align-items:center; gap:30px;">
+      <label for="phaseType"> <b>Phase Type / ഫേസ് തരം</b> </label>
       <select id="phaseType" style="width:300px";>
       <option value="single">Single Phase / സിംഗിൾ ഫേസ്</option>
       <option value="three">Three Phase / ത്രിഫേസ്</option>
       </select>
-    </div>      
-
-    <!-- Solar Generation -->
-<div class="form-group">
-  <div id="solargeneration" style="display:flex; align-items:center; gap:30px;">
-    <label style="line-height:1.5; font-size:14px;">
-      <b>Total Solar Energy Generated [GM] /<br> മൊത്തം സോളാർ ഊർജ ഉൽപാദനം</b>
-    </label>
-    <input type="number" id="Solar" value="0" style="height:40px; width:80px; padding:5px; font-size:18px; color:blue;">
-  </div>
-</div>
-
-<!-- Meter Owner Selection -->
-<div class="form-group">
-<label for="meterOwner"><b>Meter Owner / <br>മീറ്റർ ഉടമ</b></label>
+    </div>  
+    </div>   
+    
+   <!-- Meter Owner Selection -->
+<div class="form-group full-row">
+  <div id="meterowner" style="display:flex; align-items:center; gap:30px;">
+<label for="meterOwner"><b>Meter Owner / മീറ്റർ ഉടമ</b></label>
 <select id="meterOwner" style="width:250px";>
   <option value="kseb">KSEB / കെഎസ്ഇബി</option>
   <option value="prosumer">Prosumer / പ്രോസ്യൂമർ</option>
 </select>
 </div>
+</div> 
+
+
+    <!-- Solar Generation -->
+<div class="form-group full-row">
+  <div id="solargeneration" style="display:flex; align-items:center; gap:30px;">
+    <label style="line-height:1.5; font-size:14px;">
+      <b>Total Solar Energy Generated [GM] / മൊത്തം സോളാർ ഊർജ ഉൽപാദനം</b>
+    </label>
+    <input type="number" id="Solar" value="0" style="height:30px; width:80px; padding:5px; font-size:18px; color:blue;">
+  </div>
+</div>
 
 
   <!-- TOD Availability -->
-   <div class="form-group left-col">
-  <label for="TODAvailability"><b>Is TOD Bill Available? / <br>ടിഒഡി ബിൽ ലഭ്യമാണോ?</b></label>
-  <select id="TODAvailability" style="width:200px">
+   <div class="form-group full-row">
+    <div id="TODAvailability" style="display:flex; align-items:center; gap:30px;">
+  <label for="TODAvailability"><b>Is TOD Bill Available? / ടിഒഡി ബിൽ ലഭ്യമാണോ?</b></label>
+  <select id="TODAvailability" >
     <option value="No">No / ഇല്ല</option>
     <option value="Yes">Yes / ഉണ്ട്</option>
   </select>
   </div>
-
+  </div>
 
 
   <!-- Import Units (hidden when TOD is enabled) -->
     <div class="form-group">
-  <div id="importField" style="display:flex; align-items:center; gap:80px;">
+  <div id="importField" style="display:flex; align-items:center; gap:20px;">
     <label style="line-height:1.5; font-size:14px;">
         <b>Units Imported from Grid [I] / <br>ഗ്രിഡിൽ നിന്നുള്ള ഇംപോർട്ട്</b></label>
-    <input type="number" id="importUnits"  style="height:40px; width:80px; padding:5px; font-size:18px; color:blue;">
+    <input type="number" id="importUnits"  style="height:30px; width:60px; padding:5px; font-size:18px; color:blue;">
   </div>
   </div>
-
-  <!-- TOD block for Import/export -->
-    <div id="todFields" class="tod-mini left-col">
-      <div class="tod-heading">
-        <div>TOD Readings</div>        
-      </div>
-
-      <div class="tod-head">
-        <div></div>
-        <div> Import /<br>ഇംപോർട്ട് </br></div>
-        <div> Export /<br>എക്സ്പോർട്ട്</br></div>
-      </div>
-
-      <div class="tod-row">
-        <div class="slot-name">NL / ദിന സമയ</div>
-        <div><input type="number" placeholder="0"></div>
-        <div><input type="number" placeholder="0"></div>
-      </div>
-      <div class="tod-row">
-        <div class="slot-name">OP / ഓഫ്-പീക്ക്</div>
-        <div><input type="number" placeholder="0"></div>
-        <div><input type="number" placeholder="0"></div>
-      </div>
-      <div class="tod-row">
-        <div class="slot-name">PK / പീക്ക് ടൈം</div>
-        <div><input type="number" placeholder="0"></div>
-        <div><input type="number" placeholder="0"></div>
-      </div>
-    </div>
-
-
 
   <!-- Export Units (hidden when TOD is enabled) -->
    <div class="form-group right-col">
-    <div id="exportField" style="display:flex; align-items:center; gap:50px;">
+    <div id="exportField" style="display:flex; align-items:center; gap:20px;">
    <label style="line-height:1.5; font-size:14px;">
   <b>Units Exported to Grid [E] /<br>ഗ്രിഡിലേക്ക് അയച്ച യൂണിറ്റുകൾ</b></label>
-  <input type="number" id="exportUnits" style="height:40px; width:80px; padding:5px; font-size:18px; color:blue;">
+  <input type="number" id="exportUnits" style="height:30px; width:60px; padding:5px; font-size:18px; color:blue;">
    </div>
    </div>
 
-  <div></div>
-  <div></div>
+ 
+  <!-- TOD block for Import/export -->
+<div class="form-group full-row" style="display:flex; justify-content:center; margin-top:15px;">
+  <table id="todFields" 
+         style="border-collapse:collapse; background:#fafafa; padding:10px; border-radius:6px;">
+     <thead>
+      <tr>
+        <th style="text-align:left; padding:6px 15px;"><b>TOD Readings</b></th>
+        <th style="text-align:center; padding:6px 15px;">Import / ഇമ്പോർട്ട്</th>
+        <th style="text-align:center; padding:6px 15px;">Export / എക്സ്പോർട്ട്</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding:6px 15px;">NL / നോർമൽ</td>
+        <td style="text-align:center; padding:6px 15px;">
+          <input type="number" min="0" step="1" id="todNL_import" style="width:70px; height:32px;color: #2403f7;font-size:14px;">
+        </td>
+        <td style="text-align:center; padding:6px 15px;">
+          <input type="number" min="0" step="1" id="todNL_export" style="width:70px; height:32px;color:#2403f7;font-size:14px;">
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:6px 15px;">OP / ഓഫ്-പീക്ക്</td>
+        <td style="text-align:center; padding:6px 15px;">
+          <input type="number" min="0" step="1" id="todOP_import" style="width:70px; height:32px;color:#2403f7;font-size:14px;">
+        </td>
+        <td style="text-align:center; padding:6px 15px;">
+          <input type="number" min="0" step="1" id="todOP_export" style="width:70px; height:32px;color:#2403f7;font-size:14px;">
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:6px 15px;">PK / പീക്ക് ടൈം</td>
+        <td style="text-align:center; padding:6px 15px;">
+          <input type="number" min="0" step="1" id="todPK_import" style="width:70px; height:32px;color:#2403f7;font-size:14px;">
+        </td>
+        <td style="text-align:center; padding:6px 15px;">
+          <input type="number" min="0" step="1" id="todPK_export" style="width:70px; height:32px;color:#2403f7;font-size:14px;">
+        </td>
+      </tr>
+    </tbody>
+    </table>
+</div>
+
+<div></div>
+
    <!-- Are you wheeling? -->
- <div class="form-group"> 
+ <div class="form-group full-row"> 
+  <div id="isWheeling" style="display:flex; align-items:center; gap:10px;">
 <label for="isWheeling" style="line-height:1.5; font-size:14px;">
-    <b>Are you wheeling /<br>നിങ്ങൾ വീലിംഗ് ചെയ്യുന്നുണ്ടോ ?</b></label>
+    <b>Are you wheeling / നിങ്ങൾ വീലിംഗ് ചെയ്യുന്നുണ്ടോ ?</b></label>
 <select id="isWheeling" name="isWheeling" style="width:150px" >
     <option value="No" selected>No / ഇല്ല</option>
     <option value="Yes">Yes / ഉണ്ട്</option>
 </select>
 </div>
+</div>
+  
 
      <!-- Wheeled location category -->
-   <div id="wheelingFields">
-   <div class="form-group right-col">
+   <div class="form-group full-row">
+    <div id="wheelingFields" style="display:flex; align-items:center; gap:10px;">
   <label for="wheelingCategory" style="line-height:1.5; font-size:14px;">
-  <b>Wheeled Location Connection Type /<br>വീലിംഗ് ചെയ്ത ലൊക്കേഷനിലെ കണക്ഷൻ തരം</b></label>
+  <b>Wheeled Location Connection Type /വീലിംഗ് ചെയ്ത ലൊക്കേഷനിലെ കണക്ഷൻ തരം</b></label>
   <select id="wheelingCategory" name="wheelingCategory" style="width:100px" >
     <option value="LT1" selected>LT1</option>
     <option value="LT7A">LT7A</option>
@@ -319,67 +345,116 @@ hr  { margin: 0.1rem 0; }
   </div>
   </div>
 
-  
-    
+     
   <!-- TOD Availability -->
-   <div id="wheelingFields">
-    <div class="form-group">
-   <label for="TODAvailabilityWheel" style="line-height:1.5; font-size:14px;">
-    <b>TOD Bill Availability for Wheeled Location?<br>വീലിംഗ് ലൊക്കേഷനിലെ ടിഒഡി ബിൽ ലഭ്യമാണോ?</b></label>
+   <div class="form-group full-row">
+  <div id="wheelingFields" style="display:flex; align-items:center; gap:10px;">
+    <label for="TODAvailabilityWheel" style="line-height:1.5; font-size:14px;">
+    <b>TOD Bill Availability for Wheeled Location? വീലിംഗ് ലൊക്കേഷനിലെ ടിഒഡി ബിൽ ലഭ്യമാണോ?</b></label>
   <select id="TODAvailabilityWheel" style="width:110px; height:40px;">
     <option value="No">No / ഇല്ല</option>
     <option value="Yes">Yes / ഉണ്ട്</option>
   </select>
   </div>
+  </div>
   
   <!-- Total units consumed at wheeled location -->
-   <div class="form-group">
-    <div id="row-wheeling-total" style="display:flex; align-items:center; gap:5px;">
+   <div class="form-group full-row">
+    <div id="row-wheeling-total" style="display:flex; align-items:center; gap:10px;">
     <label for="wheeledConsumedUnits" style="line-height:1.5; font-size:14px;">
-      <b>Actual Usage at Wheeled Location<br>വീലിംഗ് ചെയ്ത ലൊക്കേഷനിലെ ഉപയോഗം</b></label>
+      <b>Actual Usage at Wheeled Location / വീലിംഗ് ചെയ്ത ലൊക്കേഷനിലെ ഉപയോഗം</b></label>
     <input type="number" id="wheeledConsumedUnits" name="wheeledConsumedUnits" min="0" step="1" style="height:20px; width:60px; padding:5px; font-size:18px; color:blue;">
   </div>
   </div>
 
-  <!-- TOD Row -->   
-    <div class="form-group">
-    <div id="row-wheeling-tod" style="display:flex; align-items:center;">
-    <strong>Wheeled Site TOD / വീലിംഗ് ടിഒഡി </strong><br>
-    <label for="wheel_TodNL">NL:</label>
-    <input type="number" min="0" step="1" id="wheel_TodNL" class="tod wheel" style="width:50px;">
-    &nbsp;&nbsp;
-    <label for="wheel_TodPK">PK:</label>
-    <input type="number" min="0" step="1" id="wheel_TodPK" class="tod wheel" style="width:50px;">
-    &nbsp;&nbsp;
-    <label for="wheel_TodOP">OP:</label>
-    <input type="number" min="0" step="1" id="wheel_TodOP" class="tod wheel" style="width:50px;">
-  </div>
-  </div>
-  </div>
+  <!-- Wheeling TOD Row -->   
 
+<div class="form-group full-row" style="display:flex; justify-content:center; margin-top:10px;">
+  <div id="row-wheeling-tod" style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
+    
+    <strong style="margin-right:30px;">
+      <b>Wheeled Site TOD /<br> വീലിംഗ് ടിഒഡി</b>
+    </strong>
+    
+    <label for="wheel_TodNL" style="margin-right:5px;">NL / നോർമൽ:</label>
+    <input type="number" min="0" step="1" id="wheel_TodNL" class="tod wheel" style="width:60px; height:30px; margin-right:15px;">
+
+    <label for="wheel_TodPK" style="margin-right:5px; margin-left:40px;">PK / പീക്ക് ടൈം:</label>
+    <input type="number" min="0" step="1" id="wheel_TodPK" class="tod wheel" style="width:60px; height:30px; margin-right:80px;">
+
+    <label for="wheel_TodOP" style="margin-right:5px;">OP / ഓഫ്-പീക്ക്:</label>
+    <input type="number" min="0" step="1" id="wheel_TodOP" class="tod wheel" style="width:60px; height:30px; margin-right:100px;">
+  
+  </div>
+</div>
+  
    <!-- Submit Button -->
-   <div class="form-group">
-  <div style="display:flex; align-items:center;">
-    <button type="submit" class="no-print"
-      style="background-color:#007BFF; color:white; border:none; padding:8px 16px; border-radius:4px;">
-      Calculate / കാൽക്കുലേറ്റ് ചെയ്യുക
-    </button>
-  </div>
-  </div>
+<div class="form-group left-col" style="width: 100%; display: flex; justify-content: center;">
+    <div id="buttons" style="display: flex; gap: 10px;">
+        <button type="submit" class="no-print"
+            style="
+                background-color: #2403f7; 
+                color: white; 
+                border: none; 
+                padding: 15px 30px;  /* taller button */
+                border-radius: 4px; 
+                font-size: 16px;
+                cursor: pointer;
+            ">
+           Calculate / കാൽക്കുലേറ്റ് ചെയ്യുക
+        </button>
+    </div>
+    </div>
 
-</form>
-<!-- ===== End of Bill Input Form ===== -->
+
+<!-- Reset button -->
+<div class="form-group right-col" style="width: 100%; display: flex; justify-content: center;">
+    <div id="buttons" style="display: flex; gap: 10px;">
+        <button type="reset" class="no-print"
+            style="
+                background-color: #a36874; 
+                color: white; 
+                border: none; 
+                padding: 15px 30px;  /* taller button */
+                border-radius: 4px; 
+                font-size: 16px;
+                cursor: pointer;
+            ">
+            Reset / റീസെറ്റ് ചെയ്യുക
+        </button>
+    </div>
+</div>
+  </div>
+  </form>
+
 
 <!-- Calculation Result -->
-<div class="result" id="result" style="display:none;"></div>
-
-<!-- Debug Panel (hidden by default) -->
-<div id="debugPanel" class="debug hidden"></div>
+ <div class="form-group full-row">
+<div class="result" id="result" style="display:none;">
+ </div>
+ </div>
 
 <!-- PDF Download Button -->
-<button id="downloadFullPDF" class="no-print">Download Calculations as PDF</button>
+<div class="form-group right-col" style="width: 100%; display: flex; justify-content: center;">
+    <div id="downloadFullPDF" style="display: flex; gap: 10px;">
+        <button type="downloadFullPDF" class="no-print"
+            style="
+                background-color: #06412c; 
+                color: white; 
+                border: none; 
+                padding: 15px 30px;  /* taller button */
+                border-radius: 4px; 
+                font-size: 16px;
+                cursor: pointer;
+            ">
+            Download as PDF / ഡൌൺലോഡ് PDF
+        </button>
+    </div>
+</div>
+
 
 <!-- Latest Tariff Circular -->
+ <div class="form-group right-col"style="width: 100%; display: flex; justify-content: center;">
 <div class="pdf-container" style="margin-top: 10px; margin-bottom: 15px;">
   <span style="font-size:0.9em; color:blue;">
     Latest KSEB Tariff Circular Used for Calculations:
@@ -387,9 +462,12 @@ hr  { margin: 0.1rem 0; }
   <a href="Tariff Revision Circular 2025-2027-17429697391004759589.pdf" target="_blank">
     📄 View Circular
   </a>
+  </div>
+  </div>
+  <!-- Debug Panel (hidden by default) -->
+<div id="debugPanel" class="debug hidden"></div>
+
 </div>
-
-
 
 </form>
 
