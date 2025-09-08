@@ -335,7 +335,7 @@
     <!-- ===== Main PDF Content ========================================== -->
 
     <!-- Title -->
-    <h1>KSEB Prosumer Bill Calculator / കെ.എസ്.ഇ.ബി. പ്രോസ്യൂമർ ബിൽ കാൽക്കുലേറ്റർ</h1>
+    <h1>KSEB Prosumer Bill Calculator / പ്രോസ്യൂമർ ബിൽ കാൽക്കുലേറ്റർ</h1>
 
     <!-- Top Info Bar: Timestamp & Last Update -->
     <div style="display:flex; justify-content:space-between; font-size:0.9rem; color:#555; margin-bottom:1rem;">
@@ -598,6 +598,7 @@
 </div>
 
 <!-- ================= Solar Generation Groups ================= -->
+
 
 <!-- Solar Generation nonTOD Unit -->
 <div id="Generation_nonTOD_unit" style="display:none; margin:20px 0;">
@@ -2766,7 +2767,7 @@ resultDiv.innerHTML = `
     Date / തീയതി: ${now.toLocaleDateString()} |&nbsp;&nbsp; Time / സമയം: ${now.toLocaleTimeString()} <br>
     Software Last Updated / സോഫ്റ്റ്‌വെയർ അവസാനം പുതുക്കിയത്: ${lastUpdatedValue}
   </span>
-  <br><br>
+  <br>
 
 <!-- ===== Savings Section ===== -->
   <br>
@@ -2823,8 +2824,12 @@ ${isWheeling.toLowerCase() === "yes"
   : "" 
 }
   
+ <br>
+ ${isWheeling.toLowerCase() === "yes" 
+ ? ` <div class="pdf-page-break"></div>` : ""
+}
 
- <br><br>
+
   <!-- ===== Input Summary ===== -->
   <h2>INPUT VALUES / നൽകിയ വിവരങ്ങൾ</h2> <br>
   Connection Type / കണക്ഷൻ തരം: <strong>${connectionType}</strong> <br>
@@ -3121,7 +3126,6 @@ document.getElementById("downloadFullPDF").style.display = "inline-block";
 </script>
 </body>
 </html>
-
 
 
 
