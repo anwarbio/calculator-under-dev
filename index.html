@@ -4,695 +4,827 @@
   <meta charset="UTF-8">
   <title>KSEB Prosumer Bill Calculator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <!-- Malayalam font -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam&display=swap" rel="stylesheet">
+
   <!-- PDF download support -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  
-
-<style>
-/* ======================================================
-   KSEB Prosumer Bill Calculator - Consolidated CSS
-   ====================================================== */
-
-   /* ===== Global Font Settings ===== */
-body, input, select, button, label, h1, h2, h3, h4, h5, h6, div, span {
-  font-family: Arial, Helvetica, "Noto Sans Malayalam", "Kartika", sans-serif;
-  font-size: 14px;
-  color: #222;
-}
-
-/* ===== Grid Placement Helpers ===== */
-
-/* Make a field span the entire row (both columns) */
-.full-row {
-  grid-column: span 2;
-}
-
-/* Force a field into the left column only */
-.left-col {
-  grid-column: 1;
-}
-
-/* Force a field into the right column only */
-.right-col {
-  grid-column: 2;
-}
-
-/* Input & select fields slightly smaller */
-input, select, button {
-  font-size: 13px;
-}
-
-    /* helper */
-    .hidden { display: none !important; }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr); /* fixed 2 columns */
-      gap: 12px;
-      max-width: 900px;
-      margin: auto;
-    }
-    .form-group {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #f9f9f9;
-      padding: 6px 10px;
-      border-radius: 8px;
-    }
-    .form-group label {
-      flex: 1;
-      font-weight: 600;
-      font-size: 14px;
-      margin-right: 8px;
-    }
-    
-
-.form-group select {
-  padding: 10px 12px;
-  font-size: 16px;
-  color: #3705ec;                
-  background-color: #fdfdfd;  
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  box-sizing: border-box;
-  appearance: none;           
-  -webkit-appearance: none;   
-  -moz-appearance: none;      
-  background-image: url("data:image/svg+xml;utf8,<svg fill='%23333' height='16' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M4 6l4 4 4-4z'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 12px;
-}
-
-.form-group select option {
-  padding: 8px;
-  font-size: 15px;
-  background-color: #fff;  
-  color: #333;             
-}
-
-.form-group select option:hover {
-  background-color: #e3f2fd; 
-  color: #000;
-}
 
 
-/* Options inside the dropdown */
-.form-group select option {
-  padding: 8px;
-  font-size: 15px;
-  background-color: #fff;   /* option background */
-  color: #333;              /* option text color */
-}
 
-/* Highlighted option when hovered */
-.form-group select option:hover {
-  background-color: #e3f2fd; /* light blue hover */
-  color: #000;
-}
+  <style>
+  /* ======================================================
+     KSEB Prosumer Bill Calculator - Consolidated CSS
+     (HTML + CSS structured; nothing removed)
+     ====================================================== */
 
-/* Add more vertical gap between field groups */
-.form-group {
-  margin-bottom: 10px; /* space below each group */
-}
+  /* ===== 0. Page container ================================= */
+  .container {
+    max-width: 980px;
+    margin: 18px auto;
+    padding: 0 14px;
+  }
 
+  /* ===== 1. Base Layout & Typography ======================== */
+  body, input, select, button, label, h1, h2, h3, h4, h5, h6, div, span {
+    font-family: Arial, Helvetica, "Noto Sans Malayalam", "Kartika", sans-serif;
+    font-size: 14px;
+    color: #222;
+  }
 
-    /* ---------- Compact TOD mini-block ---------- */
-    .tod-mini {
-      background: #f9f9f9;
-      padding: 6px;
-      border-radius: 8px;
-    }
-    .tod-mini .tod-heading {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      line-height: 1.15;
-    }
-    .tod-head {
-      display: grid;
-      grid-template-columns: 2fr 150px 150px;
-      text-align: center;
-      gap: 30px;
-      font-size: 12px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-    .tod-row {
-      display: grid;
-      grid-template-columns: 2fr 150px 150px;
-      gap: 2px;
-      margin-bottom: 4px;
-      font-size: 13px;
-    }
-    .tod-row .slot-name { text-align:left; }
-    .tod-mini input[type="number"] {
-      width: 110px;
-      padding: 3px;
-      font-size: 18px;
-      text-align: center;
-      color: blue;
-    }
-    
-
-
-   
-  
-/* ===== 1. Base Layout & Typography ==================== */
-body {
-  font-family: 'Noto Sans Malayalam', Arial, sans-serif;
-  margin: 1rem;
-  background: #f7f7f7;
-}
-
- h1  { color: #5508f0; font-size: 1.5rem;
-     text-align: center;
+  h1 {
+    color: #5508f0;
+    text-align: center;
     font-family: 'Noto Sans Malayalam', 'Noto Sans', 'Arial', sans-serif;
-    font-size: 20px; /* change size as you like */
-    font-weight: bold; /* optional */ }
+    font-size: 20px;
+    font-weight: bold;
+    margin: 10px 0 14px;
+  }
 
-h3  { margin: 0.1rem 0; }
-hr  { margin: 0.1rem 0; }
+  h2 {
+    color: blue;
+    font-size: 16px;
+    text-align: left;
+    font-family: 'Noto Sans Malayalam', 'Noto Sans', 'Arial', sans-serif;
+    font-weight: bold;
+    margin: 0.5rem 0;
+    display: inline-block;
+    border-bottom: 3px solid blue;
+    padding-bottom: 2px;
+  }
 
-@media (max-width: 600px) {
-      .form-grid {
-        grid-template-columns: 2fr;
-      }
+  h3 {
+    color: blue;
+    font-size: 16px;
+    text-align: left;
+    font-family: 'Noto Sans Malayalam', 'Noto Sans', 'Arial', sans-serif;
+    font-weight: bold;
+    margin: 0.25rem 0;
+  }
+
+  .no-underline { border-bottom: none !important; }
+
+  hr { margin: 0.1rem 0; }
+
+  @media (min-width: 600px) {
+    h1 { font-size: 2rem; }
+  }
+
+  /* ===== 2. Form Elements ================================== */
+  select,
+  input[type="number"],
+  button {
+    font-size: 16px;
+    padding: 8px;
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+  }
+
+  input,
+  select,
+  textarea {
+    line-height: 1.4;
+    padding: 8px; /* Prevents mobile zoom on focus */
+  }
+
+  button { cursor: pointer; }
+
+  @media (min-width: 768px) {
+    select,
+    input[type="number"],
+    button { max-width: 500px; }
+  }
+
+  @media (max-width: 767px) {
+    select,
+    input[type="number"],
+    button { font-size: 20px; }
+  }
+
+  /* Hide buttons and controls when printing */
+  @media print {
+    .no-print { display: none !important; }
+  }
+
+  input, select, button, label {
+    max-width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  /* ===== 3. Grid Placement Helpers ========================= */
+  .full-row { grid-column: span 2; }
+  .left-col { grid-column: 1; }
+  .right-col { grid-column: 2; }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* fixed 2 columns */
+    gap: 12px;
+    max-width: 900px;
+    margin: auto;
+  }
+
+  .form-group.full-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  .form-group.full-row label {
+    flex: none;
+    width: 220px;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.3;
+  }
+
+  .form-group.full-row input,
+  .form-group.full-row select { flex: none; }
+
+  .form-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: #f9f9f9;
+  }
+
+  .form-group label {
+    flex: 1 1 200px;
+    min-width: 120px;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.3;
+  }
+
+  .form-group input,
+  .form-group select {
+    flex: 1 1 100px;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ===== 4. Results Output Box ============================= */
+  .result {
+    background: #e3f2fd;
+    padding: 1rem;
+    margin-top: 1rem;
+    word-wrap: break-word;
+    page-break-inside: avoid;
+  }
+
+  .result h3 { margin: 1rem 0; }
+
+  /* ===== 5. Timestamp & Update Info ======================== */
+  .timestamp {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 1rem;
+  }
+
+  /* ===== 6. Debug Panel ==================================== */
+  .debug {
+    background: #fff8dc;
+    color: #333;
+    font-family: monospace;
+    white-space: pre-wrap;
+    border: 1px dashed #aaa;
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+
+  .hidden {
+    display: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+  }
+
+  /* ===== 7. PDF Download Button ============================ */
+  #downloadFullPDF {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    font-size: 1rem;
+    width: 100%;
+    margin-top: 2rem;
+  }
+
+  /* -- Force page break in PDF -- */
+  .pdf-page-break {
+    page-break-before: always !important;
+    break-before: page !important;
+    display: block !important;
+    margin: 0;
+    padding: 0;
+    border: none;
+    height: 50px;
+    background: none;
+  }
+
+  /* -- Avoid page break inside these -- */
+  .avoid-page-break {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    -moz-column-break-inside: avoid !important;
+    display: block !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 1 !important;
+    overflow: visible !important;
+  }
+
+  /* ===== 8. PDF & Print Adjustments ======================== */
+  @media screen and (max-width: 768px) {
+    #pdfContent {
+      transform: scale(0.94);
+      transform-origin: top left;
     }
-
-/* ===== 2. Form Elements =============================== */
-select,
-input[type="number"],
-button {
-  font-size: 16px;
-  padding: 8px;
-  width: 100%;
-  max-width: 400px;
-  box-sizing: border-box;
-  margin-bottom: 10px;
-}
-
-input,
-select,
-textarea {
-  line-height: 1.4;
-  padding: 8px; /* Prevents mobile zoom on focus */
-}
-
-button { cursor: pointer; }
-
-@media (min-width: 768px) {
-  select,
-  input[type="number"],
-  button {
-    max-width: 500px;
-  }
-}
-
-@media (max-width: 767px) {
-  select,
-  input[type="number"],
-  button {
-    font-size: 20px;  /* Larger for touch devices */
-  }
-}
-
-/* Hide buttons and controls when printing */
-@media print {
-  .no-print { display: none !important; }
-}
-
-input,
-select,
-button,
-label {
-  max-width: 100% !important;
-  box-sizing: border-box;
-}
-
-/* ===== 3. Results Output Box =========================== */
-.result {
-  background: #e3f2fd;
-  padding: 1rem;
-  margin-top: 1rem;
-  border-left: 5px solid #1e88e5;
-  word-wrap: break-word;
-}
-
-.result h3 {
-  margin: 1rem 0;
-}
-
-/* ===== 4. Timestamp & Update Info ===================== */
-.timestamp {
-  font-size: 0.9rem;
-  color: #555;
-  margin-bottom: 1rem;
-}
-
-/* ===== 5. Debug Panel Style =========================== */
-.debug {
-  background: #fff8dc;
-  color: #333;
-  font-family: monospace;
-  white-space: pre-wrap;
-  border: 1px dashed #aaa;
-  padding: 1rem;
-  margin-top: 1rem;
-}
-
-.hidden { display: none; }
-
-/* ===== 6. PDF Download Button Style =================== */
-#downloadFullPDF {
-  background: #4CAF50;
-  color: white;
-  border: none;
-  padding: 0.75rem;
-  font-size: 1rem;
-  width: 100%;
-  margin-top: 2rem;
-}
-
-/* ===== 7. PDF & Print Adjustments ===================== */
-#pdfContent {
-  transform: scale(0.94);
-  transform-origin: top left;
-  width: 100%;
-}
-
-.result,
-.input-section {
-  zoom: 0.85;
-  transform-origin: top left;
-}
-
-/* -- Force page break in PDF -- */
-.pdf-page-break {
-  page-break-before: always !important;
-  break-before: page !important;
-  display: block !important;
-  margin: 0;
-  padding: 0;
-  border: none;
-  height: 50px;
-  background: none;
-}
-
-/* -- Avoid page break inside these -- */
-.avoid-page-break {
-  page-break-inside: avoid !important;
-  break-inside: avoid !important;
-  -webkit-column-break-inside: avoid !important;
-  -moz-column-break-inside: avoid !important;
-  display: block !important;
-  margin-bottom: 0 !important;
-  padding-bottom: 1 !important;
-  overflow: visible !important;
-}
-
-/* -- Print-only layout overrides -- */
-@media print {
-  body,
-  html,
-  #pdfContent {
-    width: 90% !important;
   }
 
-  #billForm,
-  #downloadFullPDF,
-  .timestamp,
-  #debugPanel {
-    display: none;
+  @media print {
+    #pdfContent {
+      width: 100% !important;
+      font-size: 12px !important;
+      transform: none !important;
+    }
+    #billForm,
+    #downloadFullPDF,
+    .timestamp,
+    #debugPanel { display: none !important; }
+    .result { display: block !important; }
+    body {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
   }
 
-  .result { display: block !important; }
-}
+  /* ===== 9. Global Width & Overflow Fix ==================== */
+  html, body, #pdfContent {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-/* ===== 8. Global Width & Overflow Fix ================= */
-html,
-body,
-#pdfContent {
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow-x: hidden !important;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+  #pdfNameInputs {
+    margin: 2px 0 !important;
+    padding: 0 !important;
+  }
 
-</style>
+  #downloadFullPDF { margin-top: 4px !important; }
+
+  /* ===== 10. Toggle switch ================================= */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 30px;
+    height: 18px;
+  }
+
+  .slider {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    border-radius: 16px;
+    transition: .4s;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 12px; width: 12px;
+    left: 2px; bottom: 2px;
+    background-color: white;
+    border-radius: 50%;
+    transition: .4s;
+  }
+
+  .switch input:checked + .slider { background-color: #4CAF50; }
+  .switch input:checked + .slider:before { transform: translateX(14px); }
+
+  /* ===== 11. Ensure Solar Generation Group Shows =========== */
+  #solarGenerationGroup {
+    display: block !important;
+    visibility: visible !important;
+  }
+
+  /* ===== 12. Small-screen label tweak (moved from body) ==== */
+  @media screen and (max-width: 480px) {
+    #wheelingCategory + label,
+    .form-group label { font-size: 12px !important; }
+  }
+  </style>
 </head>
 
 <body>
+  <div class="container">
+    <!-- Hidden field: software last update date -->
+    <input type="hidden" id="lastUpdated">
 
+    <!-- ===== Main PDF Content ========================================== -->
 
- <!-- Hidden field: software last update date -->
-<input type="hidden" id="lastUpdated">
+    <!-- Title -->
+    <h1>KSEB Prosumer Bill Calculator / കെ.എസ്.ഇ.ബി. പ്രോസ്യൂമർ ബിൽ കാൽക്കുലേറ്റർ</h1>
 
-<!-- ===== Main PDF Content ====================================================== -->
-
-<!-- Title -->
- <br><br> <br>
-<div class="form-group full-row" style="white-space:nowrap;">
-    <h1 style="text-align:center; line-height:2; margin:0 auto; white-space:nowrap;">
-    KSEB Prosumer Bill Calculator / <br>കെ.എസ്.ഇ.ബി. പ്രോസ്യൂമർ ബിൽ കാൽക്കുലേറ്റർ
-  </h1>      
-</div>
-
-<!-- Top Info Bar: Timestamp & Last Update -->
-<div style="display: flex; justify-content: space-around; width:90%; font-size: 0.9rem; color: #555; margin-bottom: 1rem;">
-  <div id="timestamp"></div>
-  <div id="lastUpdatedDisplay"></div>
-</div>
-
-
-<!-- ===== Bill Input Form ===== -->
-<form id="billForm">
-  <div class="form-grid full-row">
-
-    <!-- Example normal inputs -->
-    <div class="form-group full-row">
-       <div style="display:flex; align-items:center; gap:30px;">
-      <label for="connectionType"><b>Connection Type / കണക്ഷൻ തരം</b></label>
-      <select id="connectionType" style="width:170px;">
-      <option>LT-1 Domestic</option></select>
-    </div>
+    <!-- Top Info Bar: Timestamp & Last Update -->
+    <div style="display:flex; justify-content:space-between; font-size:0.9rem; color:#555; margin-bottom:1rem;">
+      <div id="timestamp"></div>
+      <div id="timestampDisplay" style="font-size: small; color: gray;"></div>
+      <div id="lastUpdatedDisplay"></div>
     </div>
 
-    <!-- Previous Bank Balance -->
-  <div class="form-group full-row">
-    <div style="display:flex; align-items:center; gap:30px;">
-  <label for="Bank"><b>Previous Bank Balance / മുൻ ബാങ്ക് ബാലൻസ്</b></label>
-  <input type="number" id="Bank" value="0" 
-       style="height:30px; width:100px; padding:5px; font-size:18px;color:blue">
- </div>
- </div>
-
- <!-- Phase Type Selection -->
- <div class="form-group full-row">
-  <div style="display:flex; align-items:center; gap:30px;">
-      <label for="phaseType"> <b>Phase Type / ഫേസ് തരം</b> </label>
-      <select id="phaseType" style="width:300px;">
-      <option value="single">Single Phase / സിംഗിൾ ഫേസ്</option>
-      <option value="three">Three Phase / ത്രിഫേസ്</option>
-      </select>
-    </div>  
-    </div>   
-    
-   <!-- Meter Owner Selection -->
-<div class="form-group full-row">
-  <div style="display:flex; align-items:center; gap:30px;">
-<label for="meterOwner"><b>Meter Owner / മീറ്റർ ഉടമ</b></label>
-<select id="meterOwner" style="width:250px;">
-  <option value="kseb">KSEB / കെഎസ്ഇബി</option>
-  <option value="prosumer">Prosumer / പ്രോസ്യൂമർ</option>
-</select>
+    <!-- Announcement text -->
+<div style="display: flex; flex-direction: column; font-size: 0.9rem; color: #f40808; margin-bottom: 1rem;">
+   Announcement: In the calculator, the surcharge has been updated to 10 paise per unit.<br>
+   അറിയിപ്പ്: കാൽക്കുലേറ്ററിൽ സർചാർജ് യൂണിറ്റിന് 10 പൈസയായി പുതുക്കിയിരിക്കുന്നു.
 </div>
-</div> 
 
 
-    <!-- Solar Generation -->
-<div class="form-group full-row">
-  <div id="solargeneration" style="display:flex; align-items:center; gap:30px;">
-    <label style="line-height:1.5; font-size:14px;">
-      <b>Total Solar Energy Generated [GM] / മൊത്തം സോളാർ ഊർജ ഉൽപാദനം</b>
+<!-- Floating Diff Panel -->
+<div id="diffPanel" style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 250px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  padding: 10px;
+  font-size: 14px;
+  display: none;
+  z-index: 9999;
+">
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <strong>Meter to Units</strong>
+    <button onclick="document.getElementById('diffPanel').style.display='none'" 
+            style="background:none; border:none; font-weight:bold; cursor:pointer;">✖</button>
+  </div>
+  <div id="diffPanelContent" style="margin-top:10px; max-height:200px; overflow:auto;"></div>
+</div>
+
+
+    <!-- ===== Bill Input Form ===== -->
+    <form id="billForm">
+      
+      <!-- Connection Type -->
+      <div class="form-group">
+        <label for="connectionType"><b>Connection Type / കണക്ഷൻ തരം</b></label>
+        <select id="connectionType" style="width:100px;" title="Select your connection type">
+          <option value="LT1">LT-1 Domestic</option>
+        </select>
+      </div>
+
+      <!-- Phase Type -->
+      <div class="form-group">
+        <label for="phaseType"><b>Phase Type / ഫേസ് തരം</b></label>
+        <select id="phaseType" title="Select your phase type" style="width:100px;">
+          <option value="single">Single Phase / സിംഗിൾ ഫേസ്</option>
+          <option value="three">Three Phase / ത്രിഫേസ്</option>
+        </select>
+      </div>
+
+      <!-- Meter Owner Selection -->
+      <div class="form-group">
+        <label for="meterOwner"><b>Meter Owner / മീറ്റർ ഉടമ</b></label>
+        <select id="meterOwner" name="meterOwner" style="width:100px;" required>
+          <option value="kseb">KSEB / കെഎസ്ഇബി</option>
+          <option value="prosumer">Prosumer / പ്രോസ്യൂമർ</option>
+        </select>
+      </div>
+
+      <!-- Previous Bank Balance -->
+      <div class="form-group">
+        <label for="Bank"><b>Previous Bank Balance / മുൻ ബാങ്ക് ബാലൻസ്</b></label>
+        <input type="number" id="Bank" value="0" style="width:100px;">
+      </div>
+
+      <!-- TOD Availability -->
+      <div class="form-group">
+        <label for="TODAvailability"><b>Is TOD Bill Available? / ടിഒഡി ബിൽ ലഭ്യമാണോ?</b></label>
+        <select id="TODAvailability" title="Select yes if TOD bill is available" style="width:100px;">
+          <option value="No">No / ഇല്ല</option>
+          <option value="Yes">Yes / ഉണ്ട്</option>
+        </select>
+      </div>
+
+      <!-- Global Meter/Unit Toggle -->
+      <div class="input-mode-toggle" style="display:flex; align-items:center; gap:10px; padding:40px 0;">
+        <span style="font-size:16px; font-weight:600; white-space:nowrap;">Units / യൂണിറ്റ്</span>
+        <label class="switch" style="margin:0; display:flex; align-items:center;">
+          <input type="checkbox" id="globalModeToggle">
+          <span class="slider"></span>
+        </label>
+        <span style="font-size:16px; font-weight:600; white-space:nowrap;">Meter Reading / മീറ്റർ റീഡിംഗ്</span>
+      </div>
+
+    <!-- Swap Curr/Prev Toggle -->
+    <div id="swapToggleContainer" style="display:none; margin:10px 0;">
+    <label style="font-weight:bold;">
+        <input type="checkbox" id="swapColumns">
+        Swap Curr & Prev columns / നിലവിൽ ↔ മുൻ
     </label>
-    <input type="number" id="Solar" value="0" style="height:30px; width:80px; padding:5px; font-size:18px; color:blue;">
+    </div>
+
+
+      <!-- ================= Import / Export Groups ================= -->
+
+<!-- Non-TOD Unit -->
+<div id="ImpExp_nonTOD_Unit_Group" style="margin:20px 0;">
+  <!-- Import Units -->
+  <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+    <label style="margin:0; white-space:nowrap;">
+      <b>Imported from Grid [I] /<br>ഗ്രിഡിൽ നിന്നുള്ള ഇംപോർട്ട്</b>
+    </label>
+    <input type="number" id="importUnits" class="auto-meter" style="width:80px; height:30px;">
+  </div>
+
+  <!-- Export Units -->
+  <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+    <label style="margin:0; white-space:nowrap;">
+      <b>Exported to Grid [E] /<br>ഗ്രിഡിലേക്ക് അയച്ചത് </b>
+    </label>
+    <input type="number" id="exportUnits" class="auto-meter" style="width:80px; height:30px;">
   </div>
 </div>
 
-
-  <!-- TOD Availability -->
-   <div class="form-group full-row">
-    <div style="display:flex; align-items:center; gap:30px;">
-  <label for="TODAvailability"><b>Is TOD Bill Available? / ടിഒഡി ബിൽ ലഭ്യമാണോ?</b></label>
-  <select id="TODAvailability" >
-    <option value="No">No / ഇല്ല</option>
-    <option value="Yes">Yes / ഉണ്ട്</option>
-  </select>
-  </div>
-  </div>
-
-
-  <!-- Import Units (hidden when TOD is enabled) -->
-    <div class="form-group">
-  <div id="importField" style="display:flex; align-items:center; gap:20px;">
-    <label style="line-height:1.5; font-size:14px;">
-        <b>Units Imported from Grid [I] / <br>ഗ്രിഡിൽ നിന്നുള്ള ഇംപോർട്ട്</b></label>
-    <input type="number" id="importUnits"  style="height:30px; width:60px; padding:5px; font-size:18px; color:blue;">
-  </div>
+<!-- Non-TOD Meter -->
+<div id="ImpExp_nonTOD_Meter_Group" style="margin:20px 0;">
+  <!-- Import Units -->
+  <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+    <label style="margin:0; white-space:nowrap;">
+      <b>Imported from Grid [I] /<br>ഗ്രിഡിൽ നിന്നുള്ള ഇംപോർട്ട്</b>
+    </label>
+    <input type="number" id="importUnits_curr" class="auto-meter curr-reading" placeholder="Curr / നിലവിൽ" style="flex:1; height:30px;" data-target="importUnits_diff">
+    <input type="number" id="importUnits_prev" class="auto-meter prev-reading" placeholder="Prev / മുൻ" style="flex:1; height:30px;">
+    <input type="number" id="importUnits_diff" style="display:none;">
   </div>
 
-  <!-- Export Units (hidden when TOD is enabled) -->
-   <div class="form-group right-col">
-    <div id="exportField" style="display:flex; align-items:center; gap:20px;">
-   <label style="line-height:1.5; font-size:14px;">
-  <b>Units Exported to Grid [E] /<br>ഗ്രിഡിലേക്ക് അയച്ച യൂണിറ്റുകൾ</b></label>
-  <input type="number" id="exportUnits" style="height:30px; width:60px; padding:5px; font-size:18px; color:blue;">
-   </div>
-   </div>
+  <!-- Export Units -->
+  <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+    <label style="margin:0; white-space:nowrap;">
+      <b>Exported to Grid [E] /<br>ഗ്രിഡിലേക്ക് അയച്ചത് </b>
+    </label>
+    <input type="number" id="exportUnits_curr" class="auto-meter curr-reading" placeholder="Curr / നിലവിൽ" style="flex:1; height:30px;" data-target="exportUnits_diff">
+    <input type="number" id="exportUnits_prev" class="auto-meter prev-reading" placeholder="Prev / മുൻ" style="flex:1; height:30px;">
+    <input type="number" id="exportUnits_diff" style="display:none;">
+  </div>
+</div>
 
- 
-  <!-- TOD block for Import/export -->
-<div class="form-group full-row" style="display:flex; justify-content:center; margin-top:15px;">
-  <table id="todFields" class="hidden" 
-         style="border-collapse:collapse; background:#fafafa; padding:10px; border-radius:6px;">
-     <thead>
+              <!-- === TOD Groups ==== -->
+
+<!-- TOD Units -->
+<div id="ImpExp_TOD_Unit_Group" style="margin:20px 0; display:none;">
+  <!-- Import Table -->
+  <div style="margin-bottom:30px;">
+    <b>Import [I] / ഇംപോർട്ട് </b>
+    <table style="width:100%; border-collapse:collapse; margin-top:12px; margin-bottom:20px;">
       <tr>
-        <th style="text-align:left; padding:6px 15px;"><b>TOD Readings</b></th>
-        <th style="text-align:center; padding:6px 15px;">Import / ഇമ്പോർട്ട്</th>
-        <th style="text-align:center; padding:6px 15px;">Export / എക്സ്പോർട്ട്</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td style="padding:6px 15px;">NL / നോർമൽ</td>
-        <td style="text-align:center; padding:6px 15px;">
-          <input type="number" min="0" step="1" id="todDay" style="width:70px; height:32px;color: #2403f7;font-size:14px;">
-        </td>
-        <td style="text-align:center; padding:6px 15px;">
-          <input type="number" min="0" step="1" id="EtodDay" style="width:70px; height:32px;color:#2403f7;font-size:14px;">
-        </td>
+        <th style="border:1px solid #ccc; padding:10px 12px;">Period</th>
+        <th style="border:1px solid #ccc; padding:10px 12px;">Units</th>
       </tr>
       <tr>
-        <td style="padding:6px 15px;">OP / ഓഫ്-പീക്ക്</td>
-        <td style="text-align:center; padding:6px 15px;">
-          <input type="number" min="0" step="1" id="todOffpeak" style="width:70px; height:32px;color:#2403f7;font-size:14px;">
-        </td>
-        <td style="text-align:center; padding:6px 15px;">
-          <input type="number" min="0" step="1" id="EtodOffpeak" style="width:70px; height:32px;color:#2403f7;font-size:14px;">
-        </td>
+        <td style="border:1px solid #ccc; padding:10px 12px;">NL/നോർമൽ</td>
+        <td><input type="number" id="IM_TodNL_units" style="width:100%; padding:6px; margin:4px 0;"></td>
       </tr>
       <tr>
-        <td style="padding:6px 15px;">PK / പീക്ക് ടൈം</td>
-        <td style="text-align:center; padding:6px 15px;">
-          <input type="number" min="0" step="1" id="todPeak" style="width:70px; height:32px;color:#2403f7;font-size:14px;">
-        </td>
-        <td style="text-align:center; padding:6px 15px;">
-          <input type="number" min="0" step="1" id="EtodPeak" style="width:70px; height:32px;color:#2403f7;font-size:14px;">
-        </td>
+        <td style="border:1px solid #ccc; padding:10px 12px;">OP/ഓഫ്-പീക്ക്</td>
+        <td><input type="number" id="IM_TodOP_units" style="width:100%; padding:6px; margin:4px 0;"></td>
       </tr>
-    </tbody>
+      <tr>
+        <td style="border:1px solid #ccc; padding:10px 12px;">PK/പീക്ക് ടൈം</td>
+        <td><input type="number" id="IM_TodPK_units" style="width:100%; padding:6px; margin:4px 0;"></td>
+      </tr>
     </table>
-</div>
+  </div>
 
-  <!-- TOD Consumer Row -->
-<div class="form-group full-row" style="display:flex; justify-content:center; margin-top:10px;">
-  <div id="ConsumertodFields" class="hidden" >
-  <div style="display:grid; grid-template-columns: 300px 150px 150px 150px; align-items:left; gap:2px; background:#fafafa; padding:10px; border-radius:6px;">
-    
-    <!-- Table Heading -->
-    <strong><b>Consumer TOD /കൺസ്യൂമർ ടിഒഡി</b></strong>
-    <span style="font-weight:bold; text-align:left;">NL / നോർമൽ</span>
-    <span style="font-weight:bold; text-align:left;">PK / പീക്ക് ടൈം</span>
-    <span style="font-weight:bold; text-align:left;">OP / ഓഫ്-പീക്ക്</span>
-
-    <!-- Inputs Row -->
-    <span></span> <!-- empty to align under heading -->
-    <input type="number" min="0" step="1" id="consumer_TodNL" class="tod-consumer" style="width:70px; height:32px; text-align:center;">
-    <input type="number" min="0" step="1" id="consumer_TodPK" class="tod-consumer" style="width:70px; height:32px; text-align:center;">
-    <input type="number" min="0" step="1" id="consumer_TodOP" class="tod-consumer" style="width:70px; height:32px; text-align:center;">
-  
+  <!-- Export Table -->
+  <div style="margin-top:24px;">
+    <b>Export [E] / എക്സ്‌പോർട്ട് </b>
+    <table style="width:100%; border-collapse:collapse; margin-top:12px; margin-bottom:20px;">
+      <tr>
+        <th style="border:1px solid #ccc; padding:10px 12px;">Period</th>
+        <th style="border:1px solid #ccc; padding:10px 12px;">Units</th>
+      </tr>
+      <tr>
+        <td style="border:1px solid #ccc; padding:10px 12px;">NL/നോർമൽ</td>
+        <td><input type="number" id="EX_TodNL_units" style="width:100%; padding:6px; margin:4px 0;"></td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #ccc; padding:10px 12px;">OP/ഓഫ്-പീക്ക്</td>
+        <td><input type="number" id="EX_TodOP_units" style="width:100%; padding:6px; margin:4px 0;"></td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #ccc; padding:10px 12px;">PK/പീക്ക് ടൈം</td>
+        <td><input type="number" id="EX_TodPK_units" style="width:100%; padding:6px; margin:4px 0;"></td>
+      </tr>
+    </table>
   </div>
 </div>
-</div>
-  
 
-<div></div>
 
-   <!-- Are you wheeling? -->
-   <div class="form-group full-row"> 
-   <div style="display:flex; align-items:center; gap:10px;">
-    <label for="isWheeling" style="line-height:1.5; font-size:14px;">
-    <b>Are you wheeling / നിങ്ങൾ വീലിംഗ് ചെയ്യുന്നുണ്ടോ ?</b></label>
-    <select id="isWheeling" name="isWheeling" style="width:150px" >
-    <option value="No" selected>No / ഇല്ല</option>
-    <option value="Yes">Yes / ഉണ്ട്</option>
-</select>
+<!-- TOD Meter -->
+<div id="ImpExp_TOD_Meter_Group" style="margin:20px 0; display:none;">
+  <!-- Import Table -->
+  <div style="margin-bottom:30px;">
+    <b>Import [I] / ഇംപോർട്ട് </b>
+    <table style="width:100%; border-collapse:collapse; margin-top:12px; margin-bottom:20px;">
+      <tr>
+        <th style="border:1px solid #ccc; padding:10px 12px;">Period</th>
+        <th style="border:1px solid #ccc; padding:10px 12px;">Curr Reading / നിലവിൽ</th>
+        <th style="border:1px solid #ccc; padding:10px 12px;">Prev Reading / മുൻ</th>
+      </tr>
+      <tr>
+        <td style="border:1px solid #ccc; padding:10px 12px;">NL/നോർമൽ</td>
+        <td><input type="number" id="IM_TodNL_curr" class="curr-reading" style="width:100%; padding:6px; margin:4px 0;"></td>
+        <td><input type="number" id="IM_TodNL_prev" class="prev-reading" style="width:100%; padding:6px; margin:4px 0;"></td>
+        <td><input type="hidden" id="IM_TodNL_diff"></td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #ccc; padding:10px 12px;">OP/ഓഫ്-പീക്ക്</td>
+        <td><input type="number" id="IM_TodOP_curr" class="curr-reading" style="width:100%; padding:6px; margin:4px 0;"></td>
+        <td><input type="number" id="IM_TodOP_prev" class="prev-reading" style="width:100%; padding:6px; margin:4px 0;"></td>
+        <td><input type="hidden" id="IM_TodOP_diff"></td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #ccc; padding:10px 12px;">PK/പീക്ക് ടൈം</td>
+        <td><input type="number" id="IM_TodPK_curr" class="curr-reading" style="width:100%; padding:6px; margin:4px 0;"></td>
+        <td><input type="number" id="IM_TodPK_prev" class="prev-reading" style="width:100%; padding:6px; margin:4px 0;"></td>
+        <td><input type="hidden" id="IM_TodPK_diff"></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Export Table -->
+  <div style="margin-top:24px;">
+    <b>Export [E] / എക്സ്‌പോർട്ട് </b>
+    <table style="width:100%; border-collapse:collapse; margin-top:12px; margin-bottom:20px;">
+      <tr>
+        <th style="border:1px solid #ccc; padding:10px 12px;">Period</th>
+        <th style="border:1px solid #ccc; padding:10px 12px;">Curr Reading  / നിലവിൽ</th>
+        <th style="border:1px solid #ccc; padding:10px 12px;">Prev Reading / മുൻ</th>
+      </tr>
+      <tr>
+        <td style="border:1px solid #ccc; padding:10px 12px;">NL/നോർമൽ</td>
+        <td><input type="number" id="EX_TodNL_curr" class="curr-reading" style="width:100%; padding:6px; margin:4px 0;"></td>
+        <td><input type="number" id="EX_TodNL_prev" class="prev-reading" style="width:100%; padding:6px; margin:4px 0;"></td>
+        <td><input type="hidden" id="EX_TodNL_diff"></td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #ccc; padding:10px 12px;">OP/ഓഫ്-പീക്ക്</td>
+        <td><input type="number" id="EX_TodOP_curr" class="curr-reading" style="width:100%; padding:6px; margin:4px 0;"></td>
+        <td><input type="number" id="EX_TodOP_prev" class="prev-reading" style="width:100%; padding:6px; margin:4px 0;"></td>
+        <td><input type="hidden" id="EX_TodOP_diff"></td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #ccc; padding:10px 12px;">PK/പീക്ക് ടൈം</td>
+        <td><input type="number" id="EX_TodPK_curr" class="curr-reading" style="width:100%; padding:6px; margin:4px 0;"></td>
+        <td><input type="number" id="EX_TodPK_prev" class="prev-reading" style="width:100%; padding:6px; margin:4px 0;"></td>
+        <td><input type="hidden" id="EX_TodPK_diff"></td>
+      </tr>
+    </table>
+  </div>
 </div>
+
+<!-- ================= Solar Generation Groups ================= -->
+
+<!-- Solar Generation nonTOD Unit -->
+<div id="Generation_nonTOD_unit" style="display:none; margin:20px 0;">
+  <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+    <label for="solarGeneration_nonTOD_unit" style="margin:0; white-space:nowrap; flex:1;">
+      <b>Solar Generation / ഊർജ ഉൽപാദനം</b>
+    </label>
+    <input type="number" id="solarGeneration_nonTOD_unit" 
+           style="flex:1; height:30px; width:100%;">
+  </div>
 </div>
+
+<!-- Solar Generation nonTOD Meter -->
+<div id="Generation_nonTOD_meter" style="display:none;">
+  <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+    <label style="margin:0; white-space:nowrap; flex:1;">
+      <b>Solar Generation [G] /<br>സോളാർ ജനറേഷൻ</b>
+    </label>
+
+    <!-- Curr input -->
+    <input type="number" id="generation_curr" class="auto-meter curr-reading" 
+           placeholder="Curr / നിലവിൽ" style="flex:1; height:30px; width:100%;" data-target="generation_diff">
+
+    <!-- Prev input -->
+    <input type="number" id="generation_prev" class="auto-meter prev-reading" 
+           placeholder="Prev / മുൻ" style="flex:1; height:30px; width:100%;">
+
+    <!-- Hidden diff -->
+    <input type="number" id="generation_diff" style="display:none;">
+  </div>
+</div>
+
+<!-- Solar Generation TOD Unit -->
+<div id="Generation_TOD_unit" style="margin:20px 0; display:none;">
+  <b>Solar Generation [G] / സോളാർ ജനറേഷൻ</b>
+  <table style="width:100%; border-collapse:collapse; margin-top:12px; margin-bottom:20px;">
+    <tr>
+      <th style="border:1px solid #ccc; padding:10px 12px;">Period</th>
+      <th style="border:1px solid #ccc; padding:10px 12px;">Units</th>
+    </tr>
+    <tr>
+      <td style="border:1px solid #ccc; padding:10px 12px;">WNL/നോർമൽ</td>
+      <td><input type="number" id="GEN_NL_units" style="width:100%; padding:6px; margin:4px 0;"></td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #ccc; padding:10px 12px;">WOP/ഓഫ്-പീക്ക്</td>
+      <td><input type="number" id="GEN_OP_units" style="width:100%; padding:6px; margin:4px 0;"></td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #ccc; padding:10px 12px;">WPK/പീക്ക് ടൈം</td>
+      <td><input type="number" id="GEN_PK_units" style="width:100%; padding:6px; margin:4px 0;"></td>
+    </tr>
+  </table>
+</div>
+
+<!-- Solar Generation TOD Meter -->
+<div id="Generation_TOD_meter" style="margin-top:40px; margin-bottom:40px; display:none;">
+  <b>Solar Generation [G] / സോളാർ ജനറേഷൻ</b>
+  <table style="width:100%; border-collapse:collapse; margin-top:12px; margin-bottom:20px;">
+    <tr>
+      <th>Period</th>
+      <th>Curr / നിലവിൽ</th>
+      <th>Prev / മുൻ</th>      
+    </tr>
+    <tr>
+      <td>WNL/നോർമൽ</td>
+      <td><input type="number" id="GEN_NL_curr" class="curr-reading" data-target="GEN_NL_diff"></td>
+      <td><input type="number" id="GEN_NL_prev" class="prev-reading"></td>
+      <td><input type="number" id="GEN_NL_diff" style="display:none;"></td>
+    </tr>
+    <tr>
+      <td>WOP/ഓഫ്-പീക്ക്</td>
+      <td><input type="number" id="GEN_OP_curr" class="curr-reading" data-target="GEN_OP_diff"></td>
+      <td><input type="number" id="GEN_OP_prev" class="prev-reading"></td>
+      <td><input type="number" id="GEN_OP_diff" style="display:none;"></td>
+    </tr>
+    <tr>
+      <td>WPK/പീക്ക് ടൈം</td>
+      <td><input type="number" id="GEN_PK_curr" class="curr-reading" data-target="GEN_PK_diff"></td>
+      <td><input type="number" id="GEN_PK_prev" class="prev-reading"></td>
+      <td><input type="number" id="GEN_PK_diff" style="display:none;"></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ================= Wheeling Groups ================= -->
+
+      <!-- Are you wheeling? -->
+      <div class="form-group" style="background-color:#ffe6cc;">
+        <label for="isWheeling" style="display:flex; flex-direction:column; justify-content:center;">
+          <b>Are you wheeling / നിങ്ങൾ വീലിംഗ് ചെയ്യുന്നുണ്ടോ ?</b>
+        </label>
+        <select id="isWheeling" name="isWheeling" style="width:120px;" required>
+          <option value="No" selected>No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </div>
+
+      <!-- Wheeling-related fields (hidden by default) -->
+      <div id="wheelingFields" style="display:none; margin-top:15px;">
+
+        <!-- Wheeled location category -->
+        <div class="form-group" style="margin-bottom:10px; padding:10px; border-radius:6px; background-color:#ffe6cc; display:flex; flex-wrap:wrap; align-items:center; gap:10px;">
+          <label for="wheelingCategory" style="font-weight:bold; flex:none; min-width:200px; margin:0; font-size:14px;">
+            Wheeled location Connection Type / വീൽഡ് ലൊക്കേഷനിലെ കണക്ഷൻ തരം
+          </label>
+          <select id="wheelingCategory" name="wheelingCategory" style="flex:1 1 150px; max-width:200px; padding:5px; border-radius:4px; box-sizing:border-box;">
+            <option value="LT1">LT1</option>
+            <option value="LT7A">LT7A</option>
+            <option value="LT7B">LT7B</option>
+          </select>
+        </div>
+
+        <!-- Wheeling TOD Availability -->
+        <div class="form-group" style="margin-bottom:10px; background-color:#ffe6cc;">
+          <label for="TODAvailabilityWheel" style="margin-bottom:10px;">
+            <b>Is TOD Bill Available for Wheeled Location? / വീൽഡ് ലൊക്കേഷനിലെ ടിഒഡി ബിൽ ലഭ്യമാണോ?</b>
+          </label>
+          <select id="TODAvailabilityWheel" title="Select yes if TOD bill is available" style="width:120px;">
+            <option value="No">No / ഇല്ല</option>
+            <option value="Yes">Yes / ഉണ്ട്</option>
+          </select>
+        </div>
+
+        <!-- Wheeling TOD Row -->
+        <div id="row-wheeling-tod" style="display:none; margin-top:10px; background-color:#ffe6cc; padding:10px; border-radius:6px;">
+          <strong>Wheeled Site TOD / വീൽഡ് ലൊക്കേഷനിലെ ടിഒഡി</strong>
+          <div style="margin:8px 0;">
+            <label><input type="radio" name="wheelMode" value="units" checked> Units Mode / യൂണിറ്റ് മോഡ്</label>
+            <label style="margin-left:12px;"><input type="radio" name="wheelMode" value="meter"> Meter Reading Mode / മീറ്റർ റീഡിംഗ് മോഡ്</label>
+          </div>
+          <div id="wheelTODInputsContainer"></div>
+        </div>
+
+        <!-- Total units consumed at wheeled location -->
+        <div id="row-wheeling-total" style="margin-top:10px;">
+          <div class="form-group" style="margin-bottom:10px; background-color:#ffe6cc;">
+            <label for="wheeledConsumedUnits"><b>Total units consumed at wheeled location / വീൽഡ് ലൊക്കേഷനിലെ ഉപയോഗം</b></label>
+            <input type="number" id="wheeledConsumedUnits" class="auto-meter" name="wheeledConsumedUnits" min="0" step="1">
+          </div>
+        </div>
+      </div>
+
+      <!-- Calculate and Reset Buttons -->
+      <div class="form-group" style="width:100%; display:flex; justify-content:center; gap:15px; flex-wrap:wrap; padding:0 10px; box-sizing:border-box;">
+        <button type="submit" class="no-print" style="background-color:#2403f7; color:white; border:none; padding:12px 20px; border-radius:4px; font-size:16px; cursor:pointer; flex:1 1 150px; max-width:250px;">
+          Calculate / കാൽക്കുലേറ്റ്
+        </button>
+        <button type="button" class="no-print" style="background-color:#a36874; color:white; border:none; padding:12px 20px; border-radius:4px; font-size:16px; cursor:pointer; flex:1 1 150px; max-width:250px;" onclick="window.location.reload();">
+          Reset / റീസെറ്റ്
+        </button>
+      </div>
+    </form>
+    <!-- ===== End of Bill Input Form ===== -->
+
+    <!-- Calculation Result -->
+    <div class="form-group full-row">
+      <div class="result" id="result" style="display:none;"></div>
+    </div>
+
+    <!-- pdf inputs for naming -->
+    <div style="width:100%; padding:0 20px; box-sizing:border-box;">
+      <div id="pdfNameInputs" style="display:none; flex-wrap:nowrap; align-items:center; gap:1rem; width:100%; max-width:900px; margin:0 auto;">
+        <div style="flex:0 0 auto; display:flex; flex-direction:column; margin:0;">
+          <label style="margin-bottom:0.2rem;"><b>Name/ID:</b></label>
+          <input type="text" id="consumerName" style="width:110px; margin:0; box-sizing:border-box;">
+        </div>
+        <div style="flex:0 0 auto; display:flex; flex-direction:column; margin:0;">
+          <label style="margin-bottom:0.2rem;"><b>Bill Month:</b></label>
+          <select id="billMonth" style="width:100px; margin:0; box-sizing:border-box;">
+            <option value="01">Jan</option><option value="02">Feb</option><option value="03">Mar</option>
+            <option value="04">Apr</option><option value="05">May</option><option value="06">Jun</option>
+            <option value="07">Jul</option><option value="08">Aug</option><option value="09">Sep</option>
+            <option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option>
+          </select>
+        </div>
+        <div style="flex:0 0 auto; display:flex; flex-direction:column; margin:0;">
+          <label style="margin-bottom:0.2rem;"><b>Bill Year:</b></label>
+          <input type="number" id="billYear" placeholder="2025" min="2000" max="2100" style="width:80px; margin:0; box-sizing:border-box;">
+        </div>
+      </div>
+
+      <div id="pdfHelperText" style="display:none; font-size:0.7rem; color:#555; margin-top:2px; text-align:left;">
+        Please fill in details for custom naming the PDF
+      </div>
+
+      <!-- Download PDF Button -->
+      <div class="form-group" style="width:100%; display:flex; justify-content:center; margin-top:10px; padding:0 10px; box-sizing:border-box;">
+        <button type="button" id="downloadFullPDF" class="no-print" style="background-color:#06412c; color:white; border:none; padding:12px 20px; border-radius:4px; font-size:16px; cursor:pointer; display:none; flex:1 1 150px; max-width:250px;">
+          Download as PDF / ഡൌൺലോഡ് PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- Latest Tariff Circular -->
+    <div class="form-group" style="width:100%; display:flex; justify-content:center; margin-top:0; margin-bottom:2;">
+      <div class="pdf-container" style="margin-top:2px; margin-bottom:0;">
+        <span style="font-size:0.9em; color:blue;">Latest KSEB Tariff Circular Used for Calculations:</span>
+        <a href="Tariff Revision Circular 2025-2027-17429697391004759589.pdf" target="_blank">📄 View Circular</a>
+      </div>
+    </div>
+
+    <!-- Debug Panel (hidden by default) -->
+    <div id="debugPanel" class="debug hidden"></div>
+
+    <!-- Draggable custom alert -->
+    <div id="customAlert" style="display:none; position:fixed; top:100px; left:100px; background:#fff; border:2px solid red; padding:20px; max-width:90%; width:300px; z-index:1000; box-shadow:0 0 10px #000; color:red; text-align:center; border-radius:8px; cursor:move;">
+      <h3 style="margin-top:0;">Alert!</h3>
+      <div id="customAlertMessage" style="margin:10px 0;"></div>
+      <button onclick="document.getElementById('customAlert').style.display='none'" style="padding:10px 20px; background:red; color:white; border:none; border-radius:4px; cursor:pointer;">Close</button>
+    </div>
+    <!-- ===== End of Main PDF Content ===== -->
+  </div>
+
  
-     <!-- Wheeled location category -->
-   <div class="form-group full-row">
-    <div style="display:flex; align-items:center; gap:10px;">
-  <label for="wheelingCategory" style="line-height:1.5; font-size:14px;">
-  <b>Wheeled Location Connection Type /വീലിംഗ് ചെയ്ത ലൊക്കേഷനിലെ കണക്ഷൻ തരം</b></label>
-  <select id="wheelingCategory" name="wheelingCategory" style="width:100px" >
-    <option value="LT1" selected>LT1</option>
-    <option value="LT7A">LT7A</option>
-    <option value="LT7B">LT7B</option>
-  </select>
-  </div>
-  </div>
-       
-  <!-- Wheeling TOD Availability -->
-   <div class="form-group full-row">
-   <div style="display:flex; align-items:center; gap:10px;">
-    <label for="TODAvailabilityWheel" style="line-height:1.5; font-size:14px;">
-    <b>TOD Bill Availability for Wheeled Location? വീലിംഗ് ലൊക്കേഷനിലെ ടിഒഡി ബിൽ ലഭ്യമാണോ?</b></label>
-  <select id="TODAvailabilityWheel" style="width:110px; height:40px;">
-    <option value="No">No / ഇല്ല</option>
-    <option value="Yes">Yes / ഉണ്ട്</option>
-  </select>
-  </div>
-  </div>
+  <script>
 
-  <!-- Total units consumed at wheeled location -->
-   <div class="form-group full-row">
-    <div id="row-wheeling-total" style="display:flex; align-items:center; gap:10px;">
-    <label for="wheeledConsumedUnits" style="line-height:1.5; font-size:14px;">
-      <b>Actual Usage at Wheeled Location / വീലിംഗ് ചെയ്ത ലൊക്കേഷനിലെ ഉപയോഗം</b></label>
-    <input type="number" id="wheeledConsumedUnits" name="wheeledConsumedUnits" min="0" step="1" style="height:20px; width:60px; padding:5px; font-size:18px; color:blue;">
-  </div>
-  </div>
-
-<!-- Wheeling TOD Row -->
-<div class="form-group full-row" style="display:flex; justify-content:center; margin-top:10px;">
-  <div id="row-wheeling-tod" 
-       style="display:grid; grid-template-columns: 300px 150px 150px 150px; align-items:left; gap:2px; background:#fafafa; padding:10px; border-radius:6px;">
-    
-    <!-- Table Heading -->
-    <strong><b>Wheeled Site TOD /വീലിംഗ് ടിഒഡി</b></strong>
-    <span style="font-weight:bold; text-align:left;">NL / നോർമൽ</span>
-    <span style="font-weight:bold; text-align:left;">PK / പീക്ക് ടൈം</span>
-    <span style="font-weight:bold; text-align:left;">OP / ഓഫ്-പീക്ക്</span>
-
-    <!-- Inputs Row -->
-    <span></span> <!-- empty to align under heading -->
-    <input type="number" min="0" step="1" id="wheel_TodNL" class="tod wheel" style="width:70px; height:32px; text-align:center;">
-    <input type="number" min="0" step="1" id="wheel_TodPK" class="tod wheel" style="width:70px; height:32px; text-align:center;">
-    <input type="number" min="0" step="1" id="wheel_TodOP" class="tod wheel" style="width:70px; height:32px; text-align:center;">
-  
-  </div>
-</div>
-
-
-  
-   <!-- Submit Button -->
-<div class="form-group left-col" style="width: 100%; display: flex; justify-content: center;">
-    <div id="CalculateButton" style="display: flex; gap: 10px;">
-        <button type="submit" class="no-print"
-            style="
-                background-color: #2403f7; 
-                color: white; 
-                border: none; 
-                padding: 15px 30px;  /* taller button */
-                border-radius: 4px; 
-                font-size: 16px;
-                cursor: pointer;
-            ">
-           Calculate / കാൽക്കുലേറ്റ് 
-        </button>
-    </div>
-    </div>
-
-
-<!-- Reset button -->
-<div class="form-group right-col" style="width: 100%; display: flex; justify-content: center;">
-    <div id="ResetButton" style="display: flex; gap: 10px;">
-        <button type="reset" class="no-print"
-            style="
-                background-color: #a36874; 
-                color: white; 
-                border: none; 
-                padding: 15px 30px;  /* taller button */
-                border-radius: 4px; 
-                font-size: 16px;
-                cursor: pointer;
-            ">
-            Reset / റീസെറ്റ് 
-        </button>
-    </div>
-</div>
-  </div>
-  </form>
-
-
-<!-- Calculation Result -->
- <div class="form-group full-row">
-<div class="result" id="result" style="display:none;">
- </div>
- </div>
-
-<!-- PDF Download Button -->
-<div class="form-group right-col" style="width: 100%; display: flex; justify-content: center;">
-    <div style="display: flex; gap: 10px;">
-        <button type="button" id="downloadFullPDF" class="no-print"
-            style="
-                background-color: #06412c; 
-                color: white; 
-                border: none; 
-                padding: 15px 30px;  /* taller button */
-                border-radius: 4px; 
-                font-size: 16px;
-                cursor: pointer;
-            ">
-            Download as PDF / ഡൌൺലോഡ് PDF
-        </button>
-    </div>
-</div>
-
-
-<!-- Latest Tariff Circular -->
- <div class="form-group right-col"style="width: 100%; display: flex; justify-content: center;">
-<div class="pdf-container" style="margin-top: 10px; margin-bottom: 15px;">
-  <span style="font-size:0.9em; color:blue;">
-    Latest KSEB Tariff Circular Used for Calculations:
-  </span>
-  <a href="Tariff Revision Circular 2025-2027-17429697391004759589.pdf" target="_blank">
-    📄 View Circular
-  </a>
-  </div>
-  </div>
-  <!-- Debug Panel (hidden by default) -->
-<div id="debugPanel" class="debug hidden"></div>
-
-
-<!-- ===== Custom Alert Box ===== -->
-<div id="customAlert"
-     style="display:none; position:fixed; top:30%; left:50%; transform:translate(-50%,-50%);
-            background:#fff; border:2px solid red; padding:20px; z-index:1000; box-shadow:0 0 10px #000; color:red;">
-  <h3 style="margin-top:0;">Alert!</h3>
-  <div id="customAlertMessage"></div>
-  <button onclick="document.getElementById('customAlert').style.display='none'">Close</button>
-</div>
-<!-- ===== End of Main PDF Content ===== -->
-
-  
-
-<script>
 
 /* ================Initial values assumed before functions ====================================== */
-  const updatedDate    = "20 Aug 2025"; // Last Software update Date
+  const updatedDate    = "06 Sep 2025"; // Last Software update Date
   let NonTelStartUnit  = 250; // Units above 250 are taiken for non-Telescopic Billing
   let ConTODStartUnit  = 500; // Units above 500 then TOD rates apply for consumer
   let ProsTODStartUnit = 250; // Net Units above 250, then TOD rates apply for prosumer
   let DistLoss         = 4.99; // Distribution loss for wheeling is 4.99%
   let wheelingRate     = 0.64; // Wheeling charge is Rs0.64/unit
+  const CTodRStart     = 500; // threshold after which TOD rates apply for consumer non-telectopic LT1
+
   let LT7A_tariff      = "tariff_LT-7A.csv"
   let LT7B_tariff      = "tariff_LT-7B.csv"
   let LT1_tariff       = "tariff_domestic_nontelescopic.csv"
@@ -703,76 +835,393 @@ body,
   let cachedTodBaseTable = null;  // // will hold the entire parsed table
   let cachedTodBaseRate  = null;  // will hold the final rate when calculated later
   let debugLog = [];
+  
+
+
+
+  /* ------------------------------
+       Import/Export/Generation toggles
+     ------------------------------ */
+
+function toggleGenerationTables() {
+  const todAvailability = document.getElementById("TODAvailability").value;
+  const isMeterMode = document.getElementById("globalModeToggle").checked;
+
+  // Hide all
+  ["Generation_nonTOD_unit", "Generation_nonTOD_meter", "Generation_TOD_unit", "Generation_TOD_meter"]
+    .forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = "none";
+    });
+
+  // Show relevant
+  if (todAvailability === "No" && !isMeterMode) {
+    document.getElementById("Generation_nonTOD_unit").style.display = "block";
+  } else if (todAvailability === "No" && isMeterMode) {
+    document.getElementById("Generation_nonTOD_meter").style.display = "block";
+  } else if (todAvailability === "Yes" && !isMeterMode) {
+    document.getElementById("Generation_TOD_unit").style.display = "block";
+  } else if (todAvailability === "Yes" && isMeterMode) {
+    document.getElementById("Generation_TOD_meter").style.display = "block";
+  }
+}
+
+function updateImpExpGroups() {
+  const todAvailability = document.getElementById("TODAvailability").value;
+  const isMeterMode = document.getElementById("globalModeToggle").checked;
+
+  const groups = [
+    "ImpExp_nonTOD_Unit_Group",
+    "ImpExp_nonTOD_Meter_Group",
+    "ImpExp_TOD_Unit_Group",
+    "ImpExp_TOD_Meter_Group"
+  ];
+
+  // Hide all
+  groups.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "none";
+  });
+
+  // Show relevant
+  if (todAvailability === "No" && !isMeterMode) {
+    document.getElementById("ImpExp_nonTOD_Unit_Group").style.display = "block";
+  } else if (todAvailability === "No" && isMeterMode) {
+    document.getElementById("ImpExp_nonTOD_Meter_Group").style.display = "block";
+  } else if (todAvailability === "Yes" && !isMeterMode) {
+    document.getElementById("ImpExp_TOD_Unit_Group").style.display = "block";
+  } else if (todAvailability === "Yes" && isMeterMode) {
+    document.getElementById("ImpExp_TOD_Meter_Group").style.display = "block";
+  }
+}
+
+
+  /* ------------------------------
+       Update Toggles
+     ------------------------------ */
+
+function updateAllToggles() {
+  toggleGenerationTables();
+  updateImpExpGroups();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("TODAvailability")?.addEventListener("change", updateAllToggles);
+  document.getElementById("globalModeToggle")?.addEventListener("change", updateAllToggles);
+
+  // Only attach if function exists
+  if (typeof updateDiffPanel === "function") {
+    document.getElementById("globalModeToggle")?.addEventListener("change", updateDiffPanel);
+  }
+
+  updateAllToggles(); // run once at load
+});
+
+  /* ------------------------------
+       5. Wheeling TOD logic
+     ------------------------------ */
+  const isWheelingField = document.getElementById("isWheeling");
+  const wheelingFields  = document.getElementById("wheelingFields");
+  const TODWheel        = document.getElementById("TODAvailabilityWheel");
+  const rowWheelTOD     = document.getElementById("row-wheeling-tod");
+  const rowWheelTotal   = document.getElementById("row-wheeling-total");
+  const wheeledUnits    = document.getElementById("wheeledConsumedUnits");
+  const wheelingCategory = document.getElementById("wheelingCategory");
+
+  let hasShownWheelingAlert = false;
+
+  function handleWheelingTOD() {
+    const isWheeling = isWheelingField.value === "Yes";
+    const TODAvailableWheel = TODWheel.value === "Yes";
+    const units = parseInt(wheeledUnits.value || "0", 10);
+    const category = wheelingCategory.value;
+
+    if (isWheeling && TODAvailableWheel) {
+      rowWheelTOD.style.display = "block";
+      rowWheelTotal.style.display = "none";
+      hasShownWheelingAlert = false;
+
+    } else if (isWheeling && !TODAvailableWheel && category === "LT1" && units > 500) {
+      if (!hasShownWheelingAlert) {
+        alert("Since LT1 consumption > 500 units, please enter TOD readings to proceed.");
+        hasShownWheelingAlert = true;
+      }
+      rowWheelTOD.style.display = "block";
+      rowWheelTotal.style.display = "none";
+
+    } else if (isWheeling) {
+      rowWheelTOD.style.display = "none";
+      rowWheelTotal.style.display = "block";
+      hasShownWheelingAlert = false;
+
+    } else {
+      rowWheelTOD.style.display = "none";
+      rowWheelTotal.style.display = "none";
+      hasShownWheelingAlert = false;
+    }
+  }
+
+  isWheelingField.addEventListener("change", () => {
+    wheelingFields.style.display = isWheelingField.value === "Yes" ? "block" : "none";
+    handleWheelingTOD();
+  });
+
+  TODWheel.addEventListener("change", handleWheelingTOD);
+  wheeledUnits.addEventListener("input", handleWheelingTOD);
+  wheelingCategory.addEventListener("change", handleWheelingTOD);
+
+
+    /* ------------------------------
+       6. Wheeled TOD input fields
+     ------------------------------ */
+  function renderWheelTODFields(mode = "units") {
+    const container = document.getElementById("wheelTODInputsContainer");
+    container.innerHTML = "";
+
+    const labels = [
+      { key: "NL", label: "NL / നോർമൽ" },
+      { key: "OP", label: "OP / ഓഫ്-പീക്ക്" },
+      { key: "PK", label: "PK / പീക്ക് ടൈം" }
+    ];
+
+    labels.forEach(({ key, label }) => {
+      const row = document.createElement("div");
+      row.style.cssText = "display:flex; gap:8px; align-items:center; margin-bottom:6px;";
+
+      const lbl = document.createElement("label");
+      lbl.textContent = label + ":";
+      lbl.style.width = "110px";
+      row.appendChild(lbl);
+
+      if (mode === "units") {
+        const input = document.createElement("input");
+        input.type = "number";
+        input.min = "0";
+        input.step = "1";
+        input.id = `wheel_Tod${key}`;
+        input.className = "tod wheel";
+        input.style.width = "70px";
+        row.appendChild(input);
+      } else {
+        const curr = document.createElement("input");
+        curr.type = "number";
+        curr.placeholder = "Curr";
+        curr.id = `wheel_Tod${key}_curr`;
+        curr.dataset.target = `wheel_Tod${key}`;
+        curr.className = "curr-reading";
+        curr.style.width = "110px";
+        row.appendChild(curr);
+
+        const prev = document.createElement("input");
+        prev.type = "number";
+        prev.placeholder = "Prev";
+        prev.id = `wheel_Tod${key}_prev`;
+        prev.dataset.target = `wheel_Tod${key}`;
+        prev.className = "prev-reading";
+        prev.style.width = "110px";
+        row.appendChild(prev);
+
+        const diffField = document.createElement("input");
+        diffField.type = "number";
+        diffField.id = `wheel_Tod${key}`;
+        diffField.style.display = "none";
+        row.appendChild(diffField);
+      }
+
+      container.appendChild(row);
+    });
+  }
+
+  document.querySelectorAll("input[name='wheelMode']").forEach(radio => {
+    radio.addEventListener("change", function () {
+      renderWheelTODFields(this.value);
+    });
+  });
+
+  renderWheelTODFields("units"); // default
+
+  /* ------------------------------
+   Document level listner
+   ------------------------------ */
+document.addEventListener("input", function (e) {
+  if (e.target.classList.contains("curr-reading") || e.target.classList.contains("prev-reading")) {
+    // Compute base ID by removing _curr or _prev
+    const baseId = e.target.id.replace(/_(curr|prev)$/, "");
+    const curr = parseFloat(document.getElementById(baseId + "_curr")?.value || "0");
+    const prev = parseFloat(document.getElementById(baseId + "_prev")?.value || "0");
+    const diff = Math.max(curr - prev, 0);
+
+    const targetField = document.getElementById(baseId + "_diff");
+    if (targetField) {
+      targetField.value = diff;
+    }
+
+    // === Update floating panel ===
+    updateDiffPanel();
+  }
+});
+
+
+/* ------------Updating Floating Panel-------------------------------- */
+
+/* ======================================================
+   Dynamic Diff Calculation
+   ====================================================== */
+function setupDiffCalculation(fieldBase) {
+  const prevInput = document.getElementById(fieldBase + "_prev");
+  const currInput = document.getElementById(fieldBase + "_curr");
+  const diffInput = document.getElementById(fieldBase + "_diff");
+
+  if (!prevInput || !currInput || !diffInput) return;
+
+  function calculateDiff() {
+    const prevVal = parseFloat(prevInput.value) || 0;
+    const currVal = parseFloat(currInput.value) || 0;
+
+    if (prevInput.value === "" || currInput.value === "") {
+      diffInput.value = "";
+    } else {
+      diffInput.value = Math.max(currVal - prevVal, 0).toFixed(2);
+    }
+
+    updateDiffPanel(); // refresh floating panel
+  }
+
+  prevInput.addEventListener("input", calculateDiff);
+  currInput.addEventListener("input", calculateDiff);
+}
 
 
 /* ======================================================
-   KSEB Prosumer Bill Calculator - JavaScript
-   Consolidated and Fully Annotated
+   Floating Diff/Units Panel
    ====================================================== */
+function updateDiffPanel() {
+  const isMeterMode = document.getElementById("globalModeToggle").checked;
+  const panel = document.getElementById("diffPanel");
+  const content = document.getElementById("diffPanelContent");
 
-document.addEventListener('DOMContentLoaded', function () {
-
-    /* ------------------------------------------------------
-     1. Initialisation (timestamp and last-updated display)
-     ------------------------------------------------------ */
-  const now = new Date();
-  document.getElementById('timestamp').textContent =
-    `Date: ${now.toLocaleDateString()} | Time: ${now.toLocaleTimeString()}`;
-
-  document.getElementById('lastUpdated').value = updatedDate;
-  
-    const lastUpdatedValue = document.getElementById('lastUpdated').value;
-  document.getElementById('lastUpdatedDisplay').textContent =
-    `Software Last Updated: ${lastUpdatedValue}`;
-
-/* ------------------------------------------------------
-     2. Wheeling Toggle
-     ------------------------------------------------------ */
-// Main wheeling toggle for dropdown
-  document.getElementById("isWheeling").addEventListener("change", function () {
-  document.getElementById("wheelingFields").style.display =
-    (this.value === "Yes") ? "block" : "none";
-});
-
-// TOD toggle inside wheelingFields
-document.getElementById("TODAvailabilityWheel").addEventListener("change", function () {
-  if (this.value === "Yes") {
-    document.getElementById("row-wheeling-tod").style.display = "block";
-    document.getElementById("row-wheeling-total").style.display = "none";
-  } else {
-    document.getElementById("row-wheeling-tod").style.display = "none";
-    document.getElementById("row-wheeling-total").style.display = "block";
+  if (!isMeterMode) {
+    panel.style.display = "none";
+    return;
   }
-});
 
-  /* ------------------------------------------------------
-     3. TOD Availability Toggle (controls which fields show)
-     ------------------------------------------------------ */
-  const todDropdown      = document.getElementById('TODAvailability');
-  const todSection       = document.getElementById('todFields');
-  const importField      = document.getElementById('importField');
-  const importUnitsInput = document.getElementById('importUnits');
-  const exportField      = document.getElementById('exportField')
-  const exportUnitsInput = document.getElementById('exportUnits');
+  // Friendly name map for display
+  const nameMap = {
+    "importUnits_diff": "Import Units",
+    "exportUnits_diff": "Export Units",
+    "generation_diff": "Solar Generation",
+    "Gen_TodNL_diff": "Generation – Normal (NL)",
+    "Gen_TodOP_diff": "Generation – Off-Peak (OP)",
+    "Gen_TodPK_diff": "Generation – Peak (PK)",
+    "wheel_TodNL_diff": "Wheeling – Normal (NL)",
+    "wheel_TodOP_diff": "Wheeling – Off-Peak (OP)",
+    "wheel_TodPK_diff": "Wheeling – Peak (PK)",
 
-  // Show/hide TOD / Import fields based on dropdown value
-  function handleTODToggle() {
-    if (todDropdown.value === 'Yes') {
-      todSection.classList.remove('hidden');
-      importField.classList.add('hidden');
-      exportField.classList.add('hidden');
-      importUnitsInput.removeAttribute('required')
-      exportUnitsInput.removeAttribute('required');
-    } else {
-      todSection.classList.add('hidden');
-      importField.classList.remove('hidden');
-      exportField.classList.remove('hidden');
-      importUnitsInput.setAttribute('required', '')
-      exportUnitsInput.setAttribute('required', '');
+  // Added GEN TOD for floating panel
+  "GEN_NL_diff": "Solar Generation – Normal (NL)",
+  "GEN_OP_diff": "Solar Generation – Off-Peak (OP)",
+  "GEN_PK_diff": "Solar Generation – Peak (PK)",
+
+
+    // --- Units mode (TOD Import/Export) ---
+    "IM_TodNL_units": "Import – Normal (NL)",
+    "IM_TodOP_units": "Import – Off-Peak (OP)",
+    "IM_TodPK_units": "Import – Peak (PK)",
+    "EX_TodNL_units": "Export – Normal (NL)",
+    "EX_TodOP_units": "Export – Off-Peak (OP)",
+    "EX_TodPK_units": "Export – Peak (PK)"
+  };
+
+  let html = "";
+
+  // Case 1: Show diff values (meter mode)
+  document.querySelectorAll("input[id$='_diff']").forEach(input => {
+    if (input.value !== "") {
+      const label = nameMap[input.id] || input.id;
+      html += `<div><b>${label}</b>: ${input.value}</div>`;
     }
+  });
+
+  // Case 2: Show unit values (units mode)
+  document.querySelectorAll("input[id$='_units']").forEach(input => {
+    if (input.value !== "") {
+      const label = nameMap[input.id] || input.id;
+      html += `<div><b>${label}</b>: ${input.value}</div>`;
+    }
+  });
+
+  content.innerHTML = html || "<i>No readings yet</i>";
+  panel.style.display = "block";
+}
+
+
+
+/* ======================================================
+   Initialize on Page Load
+   ====================================================== */
+document.addEventListener("DOMContentLoaded", () => {
+  [
+    // Meter-mode fields
+    "importUnits",
+    "exportUnits",
+    "generation",
+    "Gen_TodNL",
+    "Gen_TodOP",
+    "Gen_TodPK",
+    "wheel_TodNL",
+    "wheel_TodOP",
+    "wheel_TodPK",
+
+    // GEN TOD fields
+    "GEN_NL",
+    "GEN_OP",
+    "GEN_PK",
+
+    // Units-mode fields
+    "IM_TodNL",
+    "IM_TodOP",
+    "IM_TodPK",
+    "EX_TodNL",
+    "EX_TodOP",
+    "EX_TodPK"
+  ].forEach(setupDiffCalculation);
+
+  document.getElementById("globalModeToggle")
+    ?.addEventListener("change", updateDiffPanel);
+
+  updateDiffPanel(); // run once at load
+});
+
+
+// -------------------------Force update of all _diff fields-------------------------
+function refreshDiffs() {
+  // List all field bases you are using
+  const diffFields = ["IM_TodNL", "IM_TodOP", "IM_TodPK",
+                      "GEN_NL", "GEN_OP", "GEN_PK",
+                      "wheel_TodNL", "wheel_TodOP", "wheel_TodPK"];
+
+  diffFields.forEach(base => {
+    const prev = document.getElementById(base + "_prev");
+    const curr = document.getElementById(base + "_curr");
+    const diff = document.getElementById(base + "_diff");
+
+    if (prev && curr && diff) {
+      const prevVal = parseFloat(prev.value) || 0;
+      const currVal = parseFloat(curr.value) || 0;
+
+      if (prev.value === "" || curr.value === "") {
+        diff.value = "";
+      } else {
+        diff.value = Math.max(currVal - prevVal, 0).toFixed(2);
+      }
+    }
+  });
+
+  // also refresh your floating panel
+  if (typeof updateDiffPanel === "function") {
+    updateDiffPanel();
   }
-  todDropdown.addEventListener('change', handleTODToggle);
-  handleTODToggle();  // run on page load
+}
 
   /* ------------------------------------------------------
      4. Custom Alert Utility (for messages that don't need Yes/No)
@@ -781,6 +1230,43 @@ document.getElementById("TODAvailabilityWheel").addEventListener("change", funct
     document.getElementById("customAlertMessage").innerHTML = message;
     document.getElementById("customAlert").style.display = "block";
   }
+
+
+/* ------------------------------------------------------
+     5. Draggable alert
+     ------------------------------------------------------ */
+dragElement(document.getElementById("customAlert"));
+
+function dragElement(el) {
+  let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+  el.onmousedown = dragMouseDown;
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    el.style.top = (el.offsetTop - pos2) + "px";
+    el.style.left = (el.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
 
   /* ------------------------------------------------------
      5. Custom Yes/No Prompt Utility (returns a Promise<boolean>)
@@ -810,38 +1296,141 @@ document.getElementById("TODAvailabilityWheel").addEventListener("change", funct
     });
   }
 
+
+
   /* ------------------------------------------------------
-     6. PDF Download Handler
+     6. Auto select month and year based on tadays date for pdf labeling
      ------------------------------------------------------ */
-  document.getElementById('downloadFullPDF').addEventListener('click', () => {
-    // Hide all .no-print elements
-    document.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
+  window.addEventListener("DOMContentLoaded", () => {
+  const today = new Date();
 
-    const element = document.getElementById('pdfContent');
-    const opt = {
-      margin: 0.3,
-      filename: `KSEB_Bill_${new Date().toISOString().split('T')[0]}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: {
-        scale: 3,
-        scrollY: 0,
-        useCORS: true,
-        windowWidth:  element.scrollWidth,
-        windowHeight: element.scrollHeight
-      },
-      jsPDF:  { unit: 'in', format: 'a4', orientation: 'portrait' },
-      pagebreak: {
-        mode: ['css', 'legacy'],
-        before: '.pdf-page-break',   // Force new page before this element
-        avoid:  '.avoid-page-break'  // Prevent page break inside these elements
-      }
-    };
+  // --- set billMonth ---
+  const currentMonth = String(today.getMonth() + 1).padStart(2, "0"); // e.g. "09"
+  const billMonthSelect = document.getElementById("billMonth");
+  if (billMonthSelect) {
+    billMonthSelect.value = currentMonth; // auto-select matching option
+  }
 
-    html2pdf().set(opt).from(element).save().then(() => {
-      // Restore no-print elements after PDF is generated
-      document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
+  // --- set billYear ---
+  const currentYear = today.getFullYear();
+  const billYearInput = document.getElementById("billYear");
+  if (billYearInput) {
+    billYearInput.value = currentYear;
+
+
+     
+  const now = new Date();
+  document.getElementById('timestamp').textContent =
+    `Date: ${now.toLocaleDateString()} | Time: ${now.toLocaleTimeString()}`;
+
+  document.getElementById('lastUpdated').value = updatedDate;
+  
+    const lastUpdatedValue = document.getElementById('lastUpdated').value;
+  document.getElementById('lastUpdatedDisplay').textContent =
+    `Software Last Updated: ${lastUpdatedValue}`;
+  }
+});
+
+ /* ------------------------------------------------------
+     Swap Columns Prev & Curr
+     ------------------------------------------------------ */
+
+document.addEventListener("DOMContentLoaded", function () {
+  const globalModeToggle = document.getElementById("globalModeToggle");
+  const TODAvailability = document.getElementById("TODAvailability");
+  const swapToggleContainer = document.getElementById("swapToggleContainer");
+  const swapColumnsCheckbox = document.getElementById("swapColumns");
+
+  function updateSwapToggleVisibility() {
+    const globalMode = globalModeToggle.checked ? "meter" : "unit";
+    const isTOD = TODAvailability.value === "Yes";
+    swapToggleContainer.style.display = (globalMode === "meter" && isTOD) ? "block" : "none";
+  }
+
+  // Trigger visibility on change
+  globalModeToggle.addEventListener("change", updateSwapToggleVisibility);
+  TODAvailability.addEventListener("change", updateSwapToggleVisibility);
+
+  // Swap columns on toggle
+  swapColumnsCheckbox.addEventListener("change", function () {
+    const checked = this.checked;
+
+    // Loop through TOD Meter tables
+    const todTables = document.querySelectorAll("#ImpExp_TOD_Meter_Group table, #Generation_TOD_meter table");
+    todTables.forEach(table => {
+      const rows = table.querySelectorAll("tr");
+
+      rows.forEach((row, index) => {
+        // Skip header row (index 0)
+        if (index === 0) {
+          if (checked) {
+            row.cells[1].textContent = "Prev / മുൻ";
+            row.cells[2].textContent = "Curr / നിലവിൽ";
+          } else {
+            row.cells[1].textContent = "Curr / നിലവിൽ";
+            row.cells[2].textContent = "Prev / മുൻ";
+          }
+        } else {
+          const currCell = row.cells[1];
+          const prevCell = row.cells[2];
+          if (checked) {
+            row.insertBefore(prevCell, currCell);
+          } else {
+            row.insertBefore(currCell, prevCell);
+          }
+        }
+      });
     });
   });
+
+  // Run once at startup
+  updateSwapToggleVisibility();
+});
+
+
+
+
+/* ------------------------------------------------------
+     6. PDF Download Handler
+     ------------------------------------------------------ */
+document.getElementById('downloadFullPDF').addEventListener('click', () => {
+  // Hide all .no-print elements
+  document.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
+
+  // Get user inputs
+  const name = document.getElementById("consumerName")?.value.trim() || "Prosumer";
+  const month = document.getElementById("billMonth")?.options[
+    document.getElementById("billMonth").selectedIndex
+  ]?.text || "Month";
+  const year = document.getElementById("billYear")?.value || new Date().getFullYear();
+
+  // Filename: Year_Month_Bill_Name.pdf
+  const fileName = `${year}_${month}_Bill_${name}.pdf`;
+
+  const element = document.getElementById('pdfContent');
+  const opt = {
+    margin: 0.3,
+    filename: fileName,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: {
+      scale: 2,          // High-quality capture (2x is usually enough)
+      scrollY: 0,
+      useCORS: true
+    },
+    jsPDF:  { unit: 'in', format: 'a4', orientation: 'portrait' },
+    pagebreak: {
+      mode: ['css', 'legacy'],
+      before: '.pdf-page-break',
+      avoid:  '.avoid-page-break'
+    }
+  };
+
+  html2pdf().set(opt).from(element).save().then(() => {
+    // Restore no-print elements after PDF is generated
+    document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
+  });
+});
+
 
   /* ------------------------------------------------------
      7. CSV Loading and Parsing Helper Functions
@@ -1023,7 +1612,7 @@ function calculateDomesticChargeString(units) {
     if (units <= 0) break;
     const slabUnits = Math.min(units, slab.limit - prevLimit);
     const charge   = slabUnits * slab.rate;
-    parts.push(`${slabUnits} units * ₹${slab.rate.toFixed(2)} = ₹${charge.toFixed(2)}`);
+    parts.push(`${slabUnits.toFixed(2)} units * ₹${slab.rate.toFixed(2)} = ₹${charge.toFixed(2)}`);
     units -= slabUnits;
     prevLimit = slab.limit;
   }
@@ -1056,25 +1645,38 @@ function getTodBaseRate(totalImport,cachedTodBaseTable) {
    12. TOD Energy Charge (Prosumer Mode & Consumer Mode)
    ------------------------------------------------------ */
 function calculateTODCharge(day, peak, offpeak, NET, isConsumer) {
+  const threshold = isConsumer ? ConTODStartUnit : ProsTODStartUnit;
 
- const threshold = isConsumer ? ConTODStartUnit : ProsTODStartUnit;
+  // Create a safe copy of todRates
+  const localTodRates = { ...todRates };
 
-if (NET <= threshold) {
-    ['nl', 'pk', 'op'].forEach(key => { if (todRates.hasOwnProperty(key)) todRates[key] = 1; });
+  // If below threshold, override rates ONLY in the local copy
+  if (NET <= threshold) {
+    ['nl', 'pk', 'op'].forEach(key => {
+      if (localTodRates.hasOwnProperty(key)) localTodRates[key] = 1;
+    });
   }
-    /*
+
+  /*
     NET = (day + offpeak + peak) after export adjustments.
     Base rate depends on NET (from getTodBaseRate).
     Multipliers = todRates.nl / todRates.pk / todRates.op
   */
-  const todBaseRate = getTodBaseRate(NET,cachedTodBaseTable).base;
+  const todBaseRate = getTodBaseRate(NET, cachedTodBaseTable).base;
 
-  return todBaseRate * (
-      (day     * todRates.nl) +
-      (peak    * todRates.pk) +
-      (offpeak * todRates.op)
+  const charge = todBaseRate * (
+    (day     * localTodRates.nl) +
+    (peak    * localTodRates.pk) +
+    (offpeak * localTodRates.op)
   );
+
+  console.log("calculateTODCharge -> base:", todBaseRate,
+              " day:", day, " pk:", peak, " op:", offpeak,
+              " rates:", localTodRates, " charge:", charge.toFixed(2));
+
+  return charge;
 }
+
 
 
 /* ------------------------------------------------------
@@ -1082,24 +1684,29 @@ if (NET <= threshold) {
    ------------------------------------------------------ */
 
 function getTODCalculationString(day, peak, offpeak, NET, isConsumer) {
-
   const threshold = isConsumer ? ConTODStartUnit : ProsTODStartUnit;
 
+  // clone todRates so we don’t overwrite the global object
+  let localTodRates = { ...todRates };
+
   if (NET <= threshold) {
-    ['nl', 'pk', 'op'].forEach(key => { if (todRates.hasOwnProperty(key)) todRates[key] = 1; });
+    ['nl', 'pk', 'op'].forEach(key => { 
+      if (localTodRates.hasOwnProperty(key)) localTodRates[key] = 1; 
+    });
   }
 
-  const todBaseRate = getTodBaseRate(NET,cachedTodBaseTable).base;
+  const todBaseRate = getTodBaseRate(NET, cachedTodBaseTable).base;
   let parts = [];
 
-  if (day)     parts.push(`NL: ${day} × ₹${todBaseRate} × ${todRates.nl} = ₹${(day * todBaseRate * todRates.nl).toFixed(2)}`);
-  if (offpeak) parts.push(`OP: ${offpeak} × ₹${todBaseRate} × ${todRates.op} = ₹${(offpeak * todBaseRate * todRates.op).toFixed(2)}`);
-  if (peak)    parts.push(`PK: ${peak} × ₹${todBaseRate} × ${todRates.pk} = ₹${(peak * todBaseRate * todRates.pk).toFixed(2)}`);
+  if (day)     parts.push(`NL: ${day} × ₹${todBaseRate} × ${localTodRates.nl} = ₹${(day * todBaseRate * localTodRates.nl).toFixed(2)}`);
+  if (offpeak) parts.push(`OP: ${offpeak} × ₹${todBaseRate} × ${localTodRates.op} = ₹${(offpeak * todBaseRate * localTodRates.op).toFixed(2)}`);
+  if (peak)    parts.push(`PK: ${peak} × ₹${todBaseRate} × ${localTodRates.pk} = ₹${(peak * todBaseRate * localTodRates.pk).toFixed(2)}`);
 
-    // Add "+" symbol between parts
   if (parts.length > 1) {
     for (let i = 0; i < parts.length - 1; i++) parts[i] += ' +';
   }
+
+  console.log("getTODCalculationString TOD Rates = ", localTodRates);
 
   return parts.join('<br>') || '0 units billed';
 }
@@ -1228,77 +1835,84 @@ function round2(num) {
 /* ------------------------------------------------------
    18. Wheeled Energy Cost calculation
    ------------------------------------------------------ */
-
-// 1. Cache the correct CSV file only once
+// ---------------------------
+// 1 Cache Wheeling Tariff CSV
+// ---------------------------
 async function cacheWheelingTariff(wheelingCategory) {
-  
-  // Explicit mapping with if/switch
+  let file;
+
   switch (wheelingCategory) {
+    case "LT1":
+      file = LT1_tariff;
+      break;
     case "LT7A":
       file = LT7A_tariff;
       break;
     case "LT7B":
       file = LT7B_tariff;
       break;
-    case "LT1":
-      file = LT1_tariff;
-      break;
     default:
       console.warn(`⚠ No CSV file defined for category: ${wheelingCategory}`);
       return;
   }
 
-  // For LT-VIIA, LT-VIIB, etc. load CSV dynamically
   if (file) {
     const text = await loadCSVAsync(file);
     cachedWheeledRateTable = parseTODTariff(text);
-    console.log(`Cached Wheeled ${wheelingCategory} RateTable:`, cachedWheeledRateTable);
+    console.log(`✅ Cached Wheeled ${wheelingCategory} RateTable:`, cachedWheeledRateTable);
   }
-  
 }
 
-
-// 2. Use cached table to calculate energy charge
-function WheelingEnergyCharge(wheelingCategory, wheeledConsumedUnits, todNL=0, todPK=0, todOP=0) {
+// ---------------------------
+// 2️⃣ Compute Wheeling Energy Charge
+// ---------------------------
+function WheelingEnergyCharge(wheelingCategory, wheeledConsumedUnits, todNL = 0, todPK = 0, todOP = 0) {
   let WheelEnergy = 0;
   let WheelEString = "";
   let billmethWheel = "";
-  let slabupperlabel;
   let slabRange = "";
+  let slabupperlabel = "";
+  let isConsumer = true; // explicitly declared
+
+  console.log("▶ WheelingEnergyCharge inputs:", {
+    wheelingCategory,
+    wheeledConsumedUnits,
+    todNL,
+    todPK,
+    todOP
+  });
 
   if (wheelingCategory === "LT1") {
-    isConsumer = true;
-    billmethWheel = getBillingTypeConsumer(wheeledConsumedUnits, 0, 0, 0).billtype;
-    console.log("▶ billmethWheel =", billmethWheel);
+    // Determine billing type for LT1 consumer
+    billmethWheel = getBillingTypeConsumer(wheelingCategory, wheeledConsumedUnits, 0, 0).billtype;
+    console.log("▶ billmethWheel (LT1) =", billmethWheel);
 
     if (billmethWheel === "telescopic") {
-      WheelEnergy  = calculateDomesticCharge(wheeledConsumedUnits);
+      WheelEnergy = calculateDomesticCharge(wheeledConsumedUnits);
       WheelEString = calculateDomesticChargeString(wheeledConsumedUnits);
-
     } else if (billmethWheel === "non-telescopic") {
-      WheelEnergy  = calculateTODCharge(todNL, todPK, todOP, wheeledConsumedUnits, isConsumer);
+      WheelEnergy = calculateTODCharge(todNL, todPK, todOP, wheeledConsumedUnits, isConsumer);
       WheelEString = getTODCalculationString(todNL, todPK, todOP, wheeledConsumedUnits, isConsumer);
-      slabupperlabel = getSlabLabel(wheeledConsumedUnits,cachedWheeledRateTable).label;
+      slabupperlabel = getSlabLabel(wheeledConsumedUnits, cachedWheeledRateTable).label;
       slabRange = "0 - " + slabupperlabel;
     }
   } else {
+    // LT7A / LT7B
     if (!cachedWheeledRateTable) {
       console.warn("⚠ cachedWheeledRateTable is empty! Did you forget to call cacheWheelingTariff()?");
-      return { WheelEnergy: "NA", WheelEString: "No cached tariff table", billmethWheel: "" };
+      return { WheelEnergy: "NA", WheelEString: "No cached tariff table", billmethWheel: "", slabRange: "" };
     }
 
     const wheelBaseRate = getTodBaseRate(wheeledConsumedUnits, cachedWheeledRateTable).base;
     WheelEnergy = wheeledConsumedUnits * wheelBaseRate;
-    WheelEString = `${wheeledConsumedUnits} units × ₹${wheelBaseRate.toFixed(2)} = ₹${WheelEnergy.toFixed(2)}`;
-    slabupperlabel = getSlabLabel(wheeledConsumedUnits,cachedWheeledRateTable).label;
+    WheelEString = `${wheeledConsumedUnits.toFixed(2)} units × ₹${wheelBaseRate.toFixed(2)} = ₹${WheelEnergy.toFixed(2)}`;
+    slabupperlabel = getSlabLabel(wheeledConsumedUnits, cachedWheeledRateTable).label;
     slabRange = "0 - " + slabupperlabel;
   }
 
+  console.log("▶ WheelingEnergyCharge result:", { WheelEnergy, WheelEString, billmethWheel, slabRange });
   return { WheelEnergy, WheelEString, billmethWheel, slabRange };
 }
-
-
-
 /* ======================================================
    Render Blocks (Prosumer and Consumer billing sections)
    ====================================================== */
@@ -1314,6 +1928,8 @@ function renderProsumerBillingBlock(billmethPros, netUnits, ProsESlab, slabEPros
       ? `Slab: ${slabEPros}, Rate: ${ProsESlab.base}`
       : `Slab: 0 - ${ProsESlab.upper}, Rate: ${ProsESlab.base}`;
 
+  console.log("CProsumerBillingBlock TOD Rates = ", todRates);
+
   return `
     <span style="font-size: smaller; color: green;">
       Billing: ${billmethPros} for ${netUnits} units <br>
@@ -1321,13 +1937,16 @@ function renderProsumerBillingBlock(billmethPros, netUnits, ProsESlab, slabEPros
       TOD Rates: NL: ${todRates.nl}, OP: ${todRates.op}, PK: ${todRates.pk} <br>
     </span>
   `;
-}
+  }
 
 // -- Render Consumer Billing Block -----------------------------------------
-const CTodRStart = 500; // threshold after which TOD multipliers differ
 
 function renderConsumerBillingBlock(billmethCons, consumerImport, ConsESlab, slabECons, todRates) {
-  if (billmethCons !== "non-telescopic") return "";
+  
+  if (billmethCons !== "non-telescopic") 
+  return `
+  <span style="font-size: smaller; color: green;">
+      Billing: ${billmethCons} for ${consumerImport} units <br> </span>`;
 
   const slabText =
     (ConsESlab.upper === Infinity)
@@ -1339,7 +1958,7 @@ function renderConsumerBillingBlock(billmethCons, consumerImport, ConsESlab, sla
     (ConsESlab.upper <= CTodRStart)
       ? `<br>Different TOD rates only above ${CTodRStart} units`
       : "";
-
+    console.log("consumerBillingBlock TOD Rates = ", todRates);
   return `
     <span style="font-size: smaller; color: green;">
       Billing: ${billmethCons} for ${consumerImport} units <br>
@@ -1348,6 +1967,71 @@ function renderConsumerBillingBlock(billmethCons, consumerImport, ConsESlab, sla
       ${diffTodNote}
     </span>
   `;
+  
+}
+
+// -- Render Wheeled Billing Block -----------------------------------------
+
+function renderWheeledBillingBlock(billmethWheel, wheeledConsumedUnits, ConsESlabWheelB4, slabEConsWheelB4, todRates, wheelingCategory) {
+
+  console.log("renderWheeledBillingBlock inputs:", {
+    billmethWheel, 
+    wheeledConsumedUnits,
+    ConsESlabWheelB4, 
+    slabEConsWheelB4, 
+    todRates,
+    wheelingCategory,
+  });
+
+  const slabText =
+    (ConsESlabWheelB4.upper === Infinity)
+      ? `Slab: ${slabEConsWheelB4}, Rate: ${ConsESlabWheelB4.base}`
+      : `Slab: 0 - ${ConsESlabWheelB4.upper}, Rate: ${ConsESlabWheelB4.base}`;
+
+  // Compute the "Different TOD rates" note for LT1 only
+ let diffTodNote = "";
+if (wheelingCategory === "LT1" && billmethWheel == "non-telescopic" && ConsESlabWheelB4.upper <= CTodRStart) {
+    diffTodNote = `Different TOD rates only above ${CTodRStart} units`;
+}
+
+  if (wheelingCategory === "LT1") {
+
+    if (billmethWheel !== "non-telescopic") {
+        // For telescopic billing, always show TOD rates + diffTodNote if exists
+        return `
+        <span style="font-size: smaller; color: green;">
+            ${wheelingCategory}, ${billmethWheel} for ${wheeledConsumedUnits.toFixed(2)} units
+            ${diffTodNote ? "<br>" + diffTodNote : ""} <br> 
+        </span>`;
+    }
+
+    // For non-telescopic billing
+    if (diffTodNote) {
+        // Only show the diffTodNote
+        return `
+        <span style="font-size: smaller; color: green;">
+            ${wheelingCategory}, ${billmethWheel} for ${wheeledConsumedUnits.toFixed(2)} units
+            <br>${diffTodNote} <br>
+        </span>`;
+    } else {
+        // TOD rates exist, print normally
+        return `
+        <span style="font-size: smaller; color: green;">
+            ${wheelingCategory}, ${billmethWheel} for ${wheeledConsumedUnits.toFixed(2)} units <br>
+            ${slabText} <br>
+            TOD Rates: NL: ${todRates.nl}, OP: ${todRates.op}, PK: ${todRates.pk} <br>
+        </span>`;
+    }
+}
+
+  if (wheelingCategory === "LT7A" || wheelingCategory === "LT7B") {
+    return `
+      <span style="font-size: smaller; color: green;">
+        ${wheelingCategory}, ${billmethWheel} for ${wheeledConsumedUnits.toFixed(2)} units <br>
+        ${slabText} <br>      
+      </span>
+    `;
+  }
 }
 
 // -- Render TOD import breakdowwn Block -----------------------------------------
@@ -1382,113 +2066,318 @@ function renderProsumerTODBreakdown(billmethPros, netUnits, actualImport, netImp
 // Setup billing: loads all required CSV tables and shows/hides
 // TOD fields depending on import units
 // --------------------------------------------------------------
-async function setupBilling(importUnits) {
+async function setupBilling() {
+  // List of CSV files with corresponding parsers
+  const csvFiles = [
+    { file: 'fixed_charge.csv', parser: parseFixedCharges, name: 'Fixed Charges' },
+    { file: 'meter_charges.csv', parser: parseMeterCharges, name: 'Meter Charges' },
+    { file: 'other_charges.csv', parser: parseCharges, name: 'Other Charges' },
+    { file: 'tariff_tod.csv', parser: parseTODRates, name: 'TOD Rates' },
+    { file: 'tariff_domestic_telescopic.csv', parser: parseSlabs, name: 'Domestic Slabs' },
+    { 
+      file: 'tariff_tod_base.csv', 
+      parser: (text) => { 
+        cachedTodBaseTable = parseTODTariff(text); 
+        console.log("✅ TOD Base Table Cached:", cachedTodBaseTable); 
+      }, 
+      name: 'TOD Base Table' 
+    }
+  ];
 
-  // Load all CSV files (runs in parallel using Promise.all)
-  await Promise.all([
-    loadCSV('fixed_charge.csv', parseFixedCharges),
-    loadCSV('meter_charges.csv',  parseMeterCharges),
-    loadCSV('other_charges.csv',  parseCharges),
-    loadCSV('tariff_tod.csv',     parseTODRates),
-    loadCSV('tariff_domestic_telescopic.csv', parseSlabs),
+  try {
+    // Load all CSVs in parallel
+    await Promise.all(csvFiles.map(({file, parser, name}) =>
+      loadCSV(file, (text) => {
+        parser(text);
+        console.log(`✅ ${name} loaded successfully: ${file}`);
+      })
+      .catch(err => console.error(`❌ Failed to load ${name} (${file}):`, err))
+    ));
 
-    // Load and cache the TOD base table
-    loadCSV('tariff_tod_base.csv', function(text) {
-      cachedTodBaseTable = parseTODTariff(text);
-      console.log("TOD Base Table Cached:", cachedTodBaseTable);
-    })
-  ]);
-
-
-  // ----------------------------------------------
-  // Show or hide TOD input fields
-  // ----------------------------------------------
-  if (importUnits > 250) {
-    // TOD applicable → show the fields
-    document.getElementById('todFields').classList.remove('hidden');
-  } else {
-    // Non-TOD → hide the fields
-    document.getElementById('todFields').classList.add('hidden');
+    console.log("▶ All CSV files processed");
+  } catch (err) {
+    console.error("❌ Unexpected error during CSV loading:", err);
   }
 }
 
 
-  // ============================================
-// Form Submit Event: Main Calculation Handler
-// ============================================
+// -------------------------getProsumerTOD-------------------------
+
+function getProsumerTOD(inputs, importTOD, exportTOD, bank) {
+  console.log("▶ getProsumerTOD called");
+  console.log("Inputs:", inputs);
+  console.log("Import TOD:", importTOD);
+  console.log("Export TOD:", exportTOD);
+  console.log("Starting Bank:", bank);
+
+  // Call the existing core function
+  const ProsNetImportData = getNetImportTOD(importTOD, exportTOD, bank);
+
+  // Extract values
+  const actualImport = ProsNetImportData.actualImport; // zone-wise I - E
+  const netImport    = ProsNetImportData.netImport;    // I - E per zone
+  const adjImport    = ProsNetImportData.adjImport;    // net import - bank
+  const currentBank  = ProsNetImportData.currentBank;  // updated bank
+
+  // Totals
+  const netImpUnits  = netImport.reduce((a, b) => a + b, 0); // sum of all zones
+  const netUnits     = adjImport.reduce((a, b) => a + b, 0); // sum of all zones
+  const netExpUnits  = Math.max(0, inputs.exportUnits - inputs.importUnits);
+
+  // Debug logs
+  console.log("▶ actualImport:", actualImport);
+  console.log("▶ netImport:", netImport);
+  console.log("▶ adjImport:", adjImport);
+  console.log("▶ netImpUnits (sum of zones):", netImpUnits);
+  console.log("▶ netUnits (after bank adjustment):", netUnits);
+  console.log("▶ netExpUnits:", netExpUnits);
+  console.log("▶ newBank:", currentBank);
+
+  return {
+    actualImport,
+    netImport,
+    adjImport,
+    netImpUnits,
+    netUnits,
+    netExpUnits,
+    newBank: currentBank
+  };
+}
+
+
+
+
+// -------------Update Time Stamp---------------------------------------//
+
+
+function updateTimestamp(date) {
+    const timestampEl = document.getElementById('timestamp'); // make sure you have this element
+    if (timestampEl) {
+        timestampEl.textContent = 'Last calculated: ' + date.toLocaleString();
+    }
+}
+
+function updateTimestamp(now) {
+  const tsEl = document.getElementById("timestampDisplay");
+  if (tsEl) {
+    tsEl.textContent = 
+      `Last Calculated: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+  }
+}
+
+
+
+// -------------------------------------------------------------------------------------------------------
+
+function getFormInputs() {
+
+  if (typeof refreshDiffs === "function") {
+    refreshDiffs(); // update _diff fields before reading
+  }
+
+  // ---------------------------
+  // General Connection Info
+  // ---------------------------
+  const connectionType  = document.getElementById('connectionType')?.value || '';
+  const phaseType       = document.getElementById('phaseType')?.value || '';
+  const meterOwner      = document.getElementById('meterOwner')?.value || '';
+  const Bank            = parseFloat(document.getElementById('Bank')?.value) || 0;
+  const TODAvailability = document.getElementById('TODAvailability')?.value?.trim().toLowerCase() || 'no';
+
+  // ---------------------------
+  // Global Mode Switch
+  // ---------------------------
+  const globalMode = document.getElementById("globalModeToggle")?.checked ? "meter" : "unit";
+
+  // ---------------------------
+  // Import/Export/Generation (non-TOD)
+  // ---------------------------
+  let exportUnitsInput, importUnitsInput, SolarTotalInput;
+
+  if (globalMode === "unit") {
+    exportUnitsInput = parseFloat(document.getElementById('exportUnits')?.value) || 0;
+    importUnitsInput = parseFloat(document.getElementById('importUnits')?.value) || 0;
+    SolarTotalInput  = parseFloat(document.getElementById('solarGeneration_nonTOD_unit')?.value) || 0;
+  } else {
+    exportUnitsInput = parseFloat(document.getElementById('exportUnits_diff')?.value) || 0;
+    importUnitsInput = parseFloat(document.getElementById('importUnits_diff')?.value) || 0;
+    SolarTotalInput  = parseFloat(document.getElementById('generation_diff')?.value) || 0;
+  }
+
+  // ---------------------------
+  // TOD-specific Import/Export
+  // ---------------------------
+  let todDay=0, todOffpeak=0, todPeak=0;
+  let EtodDay=0, EtodOffpeak=0, EtodPeak=0;
+
+  if (globalMode === "unit") {
+    todDay     = parseFloat(document.getElementById("IM_TodNL_units")?.value) || 0;
+    todOffpeak = parseFloat(document.getElementById("IM_TodOP_units")?.value) || 0;
+    todPeak    = parseFloat(document.getElementById("IM_TodPK_units")?.value) || 0;
+
+    EtodDay     = parseFloat(document.getElementById("EX_TodNL_units")?.value) || 0;
+    EtodOffpeak = parseFloat(document.getElementById("EX_TodOP_units")?.value) || 0;
+    EtodPeak    = parseFloat(document.getElementById("EX_TodPK_units")?.value) || 0;
+  } else {
+    todDay     = parseFloat(document.getElementById("IM_TodNL_diff")?.value) || 0;
+    todOffpeak = parseFloat(document.getElementById("IM_TodOP_diff")?.value) || 0;
+    todPeak    = parseFloat(document.getElementById("IM_TodPK_diff")?.value) || 0;
+
+    EtodDay     = parseFloat(document.getElementById("EX_TodNL_diff")?.value) || 0;
+    EtodOffpeak = parseFloat(document.getElementById("EX_TodOP_diff")?.value) || 0;
+    EtodPeak    = parseFloat(document.getElementById("EX_TodPK_diff")?.value) || 0;
+  }
+
+  // ---------------------------
+  // Solar Generation Breakdown (TOD mode only)
+  // ---------------------------
+  let SolarGen_NL = 0, SolarGen_PK = 0, SolarGen_OP = 0;
+  let Solar = SolarTotalInput;
+
+  if (TODAvailability === 'yes') {
+    if (globalMode === "unit") {
+      SolarGen_NL = parseFloat(document.getElementById("GEN_NL_units")?.value) || 0;
+      SolarGen_OP = parseFloat(document.getElementById("GEN_OP_units")?.value) || 0;
+      SolarGen_PK = parseFloat(document.getElementById("GEN_PK_units")?.value) || 0;
+    } else {
+      SolarGen_NL = parseFloat(document.getElementById("GEN_NL_diff")?.value) || 0;
+      SolarGen_OP = parseFloat(document.getElementById("GEN_OP_diff")?.value) || 0;
+      SolarGen_PK = parseFloat(document.getElementById("GEN_PK_diff")?.value) || 0;
+    }
+    Solar = SolarGen_NL + SolarGen_OP + SolarGen_PK;
+    SolarTotalInput = Solar;
+  }
+
+  // ---------------------------
+  // Wheeling Inputs
+  // ---------------------------
+  const isWheeling        = document.getElementById("isWheeling")?.value || "No";
+  const TODAvailableWheel = document.getElementById("TODAvailabilityWheel")?.value || "No";
+  const wheelingCategory  = isWheeling === "Yes" ? document.getElementById("wheelingCategory")?.value || "" : "";
+
+  let wheeledConsumedUnits = 0;
+  let wheelTodNL = 0, wheelTodPK = 0, wheelTodOP = 0;
+
+  if (isWheeling === "Yes") {
+    if (TODAvailableWheel === "Yes") {
+      const wheelMode = document.querySelector("input[name='wheelMode']:checked")?.value || "units";
+
+      if (wheelMode === "units") {
+        wheelTodNL = parseFloat(document.getElementById("wheel_TodNL")?.value) || 0;
+        wheelTodPK = parseFloat(document.getElementById("wheel_TodPK")?.value) || 0;
+        wheelTodOP = parseFloat(document.getElementById("wheel_TodOP")?.value) || 0;
+      } else {
+        const getDiff = (key) => {
+          const curr = parseFloat(document.getElementById(`wheel_Tod${key}_curr`)?.value) || 0;
+          const prev = parseFloat(document.getElementById(`wheel_Tod${key}_prev`)?.value) || 0;
+          return Math.max(curr - prev, 0);
+        };
+        wheelTodNL = getDiff("NL");
+        wheelTodPK = getDiff("PK");
+        wheelTodOP = getDiff("OP");
+
+        document.getElementById("wheel_TodNL").value = wheelTodNL;
+        document.getElementById("wheel_TodPK").value = wheelTodPK;
+        document.getElementById("wheel_TodOP").value = wheelTodOP;
+      }
+
+      wheeledConsumedUnits = wheelTodNL + wheelTodPK + wheelTodOP;
+    } else {
+      wheeledConsumedUnits = parseFloat(document.getElementById("wheeledConsumedUnits")?.value) || 0;
+    }
+  }
+
+  // ---------------------------
+  // Bundle everything
+  // ---------------------------
+  const inputs = {
+    connectionType,
+    phaseType,
+    meterOwner,
+    Bank,
+    globalMode,
+    exportUnitsInput,
+    importUnitsInput,
+    SolarTotalInput,
+    TODAvailability,
+    todDay,
+    todOffpeak,
+    todPeak,
+    EtodDay,
+    EtodOffpeak,
+    EtodPeak,
+    SolarGen_NL,
+    SolarGen_PK,
+    SolarGen_OP,
+    Solar,
+    isWheeling,
+    TODAvailableWheel,
+    wheelingCategory,
+    wheeledConsumedUnits,
+    wheelTodNL,
+    wheelTodPK,
+    wheelTodOP
+  };
+
+  // ---------------------------
+  // Make each property global
+  // ---------------------------
+  Object.assign(window, inputs);
+  return inputs;
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 document.getElementById('billForm').addEventListener('submit', async function (e) {
   e.preventDefault();
 
-  // ---------------------------
-  // 1. Retrieve and Parse Inputs
-  // ---------------------------
-  const connectionType   = document.getElementById('connectionType').value;
-  const phaseType        = document.getElementById('phaseType').value;
-  const meterOwner       = document.getElementById("meterOwner").value;
- 
-  const exportUnitsInput = parseFloat(document.getElementById('exportUnits').value) || 0;
-  const importUnitsInput = parseFloat(document.getElementById('importUnits').value) || 0;
-  const Solar            = parseFloat(document.getElementById('Solar').value) || 0;
-  const Bank             = parseFloat(document.getElementById('Bank').value) || 0;
-  const TODAvailability  = document.getElementById('TODAvailability').value.trim().toLowerCase();
 
-  // TOD-specific import inputs
-  const todDay     = parseFloat(document.getElementById('todDay').value) || 0;
-  const todOffpeak = parseFloat(document.getElementById('todOffpeak').value) || 0;
-  const todPeak    = parseFloat(document.getElementById('todPeak').value) || 0;
-
- // TOD-specific export inputs
-  const EtodDay     = Number(document.getElementById('EtodDay').value || 0);
-  const EtodOffpeak = Number(document.getElementById('EtodOffpeak').value || 0);
-  const EtodPeak    = Number(document.getElementById('EtodPeak').value || 0);
+// Timestamp + last updated
+  const now = new Date();
+  const updatedDate = "2025-09-06"; // or dynamically set elsewhere
+  const lastUpdatedValue = updatedDate;
 
 
-  // ---------------------------
-  // Wheeling related inputs
-  // ---------------------------
-    const isWheeling        = document.getElementById("isWheeling")?.value || "No"; // Check TOD availability for wheeled location    
-    const TODAvailableWheel = document.getElementById("TODAvailabilityWheel")?.value || "No"; // Check TOD availability for wheeled location
+const inputs = getFormInputs();
 
-    const wheelingCategory = isWheeling === "Yes" 
-    ? document.getElementById("wheelingCategory")?.value || ""
-    : "";
-    
-    // Values depending on selection
-   let wheeledConsumedUnits = 0;
-   let wheelTodNL = 0;  
-   let wheelTodPK = 0;  
-   let wheelTodOP = 0;
-
-if (isWheeling === "Yes") {
-  if (TODAvailableWheel === "Yes") {
-    // Assign values to existing variables, not redeclare them
-    wheelTodNL = Number(document.getElementById("wheel_TodNL")?.value || 0);
-    wheelTodPK = Number(document.getElementById("wheel_TodPK")?.value || 0);
-    wheelTodOP = Number(document.getElementById("wheel_TodOP")?.value || 0);
-
-    // Optional: calculate total units
-    wheeledConsumedUnits = wheelTodNL + wheelTodPK + wheelTodOP;
-  } else {
-    wheeledConsumedUnits = Number(document.getElementById("wheeledConsumedUnits")?.value || 0);
-  }
-}
-
-console.log("wheelTodNL:", wheelTodNL);
-console.log("wheelTodPK:", wheelTodPK);
-console.log("wheelTodOP:", wheelTodOP);
-
-   
-  // ---------------------------
-  // 2. Determine Import Units
-  // ---------------------------
-  let importUnits = 0;  let exportUnits = 0;   let netUnits = 0;   let newBank = 0; //  declare the variables
-  let netImpUnits = 0; 
-
-  let importTOD = { day:0, offpeak:0, peak:0 };   let exportTOD = { day:0, offpeak:0, peak:0 };
-  let ProsNetImportData;   
+let {
+    connectionType,
+    phaseType,
+    meterOwner,
+    Bank,
+    globalMode,
+    exportUnitsInput,
+    importUnitsInput,
+    SolarTotalInput,
+    TODAvailability,
+    todDay,
+    todOffpeak,
+    todPeak,
+    EtodDay,
+    EtodOffpeak,
+    EtodPeak,
+    SolarGen_NL,
+    SolarGen_PK,
+    SolarGen_OP,
+    Solar,
+    isWheeling,
+    TODAvailableWheel,
+    wheelingCategory,
+    wheeledConsumedUnits,
+    wheelTodNL,
+    wheelTodPK,
+    wheelTodOP
+  } = inputs;
 
 
-  if (TODAvailability === "yes") {
+let importUnits = 0, exportUnits = 0, netUnits = 0, newBank = 0;
+  let netImpUnits = 0, netExpUnits = 0;
+
+  let importTOD = { day:0, offpeak:0, peak:0 };
+  let exportTOD = { day:0, offpeak:0, peak:0 };
+  let ProsNetImportData;
+
+    if (TODAvailability === "yes") {
 
     importUnits = todDay + todOffpeak + todPeak;
     exportUnits = EtodDay + EtodOffpeak + EtodPeak;
@@ -1507,7 +2396,8 @@ console.log("wheelTodOP:", wheelTodOP);
           adjImport    = ProsNetImportData.adjImport; // net import - bank in any zone 
           netImpUnits  = netImport[0] + netImport[1] + netImport[2];     // N = I - E
           netUnits     = adjImport[0] + adjImport[1] + adjImport[2]; // N - B
-          newBank      = ProsNetImportData.currentBank;   // UB       
+          newBank      = ProsNetImportData.currentBank;   // UB   
+          netExpUnits  =  Math.max(0, exportUnits - importUnits);     
 
 
   } else {
@@ -1519,6 +2409,7 @@ console.log("wheelTodOP:", wheelTodOP);
     console.log("▶ exportUnitsInput =", exportUnitsInput);
     console.log("▶ exportUnits =", exportUnits);
     netImpUnits = Math.max(0, importUnits - exportUnits);
+    netExpUnits = Math.max(0, exportUnits - importUnits);
 
     netUnits  = Math.max(0, importUnits - (Bank + exportUnits)); // N - B
     newBank = Math.max(0, Bank + exportUnits - importUnits); 
@@ -1588,6 +2479,7 @@ console.log("wheelTodOP:", wheelTodOP);
   const dutyAmount      = energyCharge * duty / 100;
   const surchargeAmount = surcharge * netUnits;
 
+
 // ---------------------------
   // 6. Wheeling
 // ---------------------------
@@ -1595,8 +2487,15 @@ console.log("wheelTodOP:", wheelTodOP);
     let WheelingCharge = 0; let Avail_4_Wheel = 0; let Avail_4_Wheel_String = ``;
     let Avail_After_Wheel = 0;  let Avail_After_Wheel_String = ``;
     let Bank_after_Wheeling = 0; let Bank_after_Wheeling_String = ``; let wheelingUnitsNew;
-    let Int_Avail_4_Wheel; let ConsumptionAfterWheeling =0;
+    let Int_Avail_4_Wheel; let ConsumptionAfterWheeling =0; 
     
+    let WheelEnergy_After = 0;    let WheelEString_After = '';    let WheelAfterduty = 0;
+    let WheelAftersurcharge = 0; let WheelResultAfter;  let TotalAfterWheel = 0;
+    let InfoWheel;    let ConsESlabWheel;   let ConsslabEConsWheel;
+
+    let WheelEnergy = 0; let WheelEString = '';  let billmethWheel = ''; let slabRange = '';
+    let WheelB4duty = 0; let WheelB4surcharge=0; let WheelResultBefore;  let TotalB4Wheel = 0;
+    let InfoWheelB4; let ConsESlabWheelB4;   let slabEConsWheelB4; 
 
 
     if (isWheeling === "Yes") {
@@ -1619,36 +2518,78 @@ console.log("wheelTodOP:", wheelTodOP);
         Bank_after_Wheeling         = round2(Avail_After_Wheel / (1 - DistLoss/100));
         Bank_after_Wheeling_String  =  `AW:${Avail_After_Wheel} ÷ [1 - ${DistLoss/100}] = ${Bank_after_Wheeling}, Dist loss ${DistLoss}%`;  
         WheelingCharge              = round2(wheelingUnitsNew * wheelingRate);
-        ConsumptionAfterWheeling    = wheeledConsumedUnits -  wheelingUnitsNew;    
-    }
+        ConsumptionAfterWheeling    = wheeledConsumedUnits -  wheelingUnitsNew;  
+        EnergyLostWheeling          = newBank - wheelingUnitsNew - Bank_after_Wheeling;  
+    
+
+ let WheelimportTOD = {day:wheelTodNL, offpeak:wheelTodOP, peak:wheelTodPK };   let WheelexportTOD = { day:0, offpeak:0, peak:0 };
+  let WheeledAdjTodData;    let WheelAdjImport = []; let WheelnetUnits = 0;
+
+if (isWheeling === "Yes") {
+  if (TODAvailableWheel === "Yes") {
+    // Calculated Adj TOD
+         WheeledAdjTodData = getNetImportTOD (WheelimportTOD, WheelexportTOD, wheelingUnitsNew);
+         WheelAdjImport = WheeledAdjTodData.adjImport.map(v =>
+                    Number.isInteger(v) ? v : parseFloat(v.toFixed(2))
+);// net import - bank in any zone 
+         WheelnetUnits = WheelAdjImport[0] + WheelAdjImport[1] + WheelAdjImport[2]; // N - B    
+  } 
+}
+
+if (isWheeling === "Yes" && TODAvailableWheel === "No" && wheeledConsumedUnits < 500) {
+  wheelTodNL = wheeledConsumedUnits;
+}
 
 
-   // wheeling Energy calculations (before wheeling) 
+// wheeling Energy calculations (before wheeling) 
    
    console.log("▶ ConsumptionAfterWheeling =", ConsumptionAfterWheeling);
 
    await cacheWheelingTariff(wheelingCategory);
 
-  const { 
-    WheelEnergy, 
-    WheelEString, 
-    billmethWheel,
-    slabRange 
-    } = WheelingEnergyCharge(wheelingCategory, wheeledConsumedUnits, wheelTodNL, wheelTodPK, wheelTodOP);
+  WheelResultBefore = WheelingEnergyCharge(wheelingCategory, wheeledConsumedUnits, wheelTodNL, wheelTodPK, wheelTodOP);
+  WheelEnergy = Number(WheelResultBefore.WheelEnergy) || 0;
+  WheelEString = WheelResultBefore.WheelEString;
+  billmethWheel = WheelResultBefore.billmethWheel;
+  slabRange = WheelResultBefore.slabRange;
+
+  WheelB4duty      = WheelEnergy * duty / 100;
+  WheelB4surcharge = surcharge * wheeledConsumedUnits;
+
+  TotalB4Wheel = WheelB4surcharge + WheelB4duty + WheelEnergy;
+
+
+  wheelTodNL, wheelTodPK, wheelTodOP
+
+console.log("▶ wwheeledConsumedUnits =", wheeledConsumedUnits);
+console.log("▶ wheelingCategory =", wheelingCategory);
+console.log("▶ wheelTodNL =", wheelTodNL);
+console.log("▶ wheelTodPK =", wheelTodPK);
+console.log("▶ wheelTodOP =", wheelTodOP);
+
+
   
   console.log("▶ WheelEnergy =", WheelEnergy);
   console.log("▶ WheelEString =",WheelEString);
   console.log("▶ billmethWheel =",billmethWheel);
-    console.log("▶ slabRange =",slabRange);
+  console.log("▶ slabRange =",slabRange);
 
+  InfoWheelB4 = getSlabLabel(wheeledConsumedUnits,cachedWheeledRateTable);
+  ConsESlabWheelB4 = InfoWheelB4.slabObj;
+  slabEConsWheelB4 = InfoWheelB4.label;
+  console.log("▶ ConsESlabWheelB4 =", ConsESlabWheelB4);
+  console.log("▶ slabEConsWheelB4  =",slabEConsWheelB4);
 
-  const {
-  WheelEnergy: WheelEnergy_After,
-  WheelEString: WheelEString_After,
-  billmethWheel: billmethWheel_After,
-  slabRange:slabRange_After
-  } = WheelingEnergyCharge(wheelingCategory, ConsumptionAfterWheeling, wheelTodNL, wheelTodPK, wheelTodOP);
+  WheelResultAfter = WheelingEnergyCharge(wheelingCategory, ConsumptionAfterWheeling, WheelAdjImport[0], WheelAdjImport[2], WheelAdjImport[1]);
+  WheelEnergy_After = Number(WheelResultAfter.WheelEnergy) || 0;
+  WheelEString_After = WheelResultAfter.WheelEString;
+  billmethWheel_After = WheelResultAfter.billmethWheel;
+  slabRange_After = WheelResultAfter.slabRange;
 
+  WheelAfterduty      = WheelEnergy_After * duty / 100;
+  WheelAftersurcharge = surcharge * ConsumptionAfterWheeling;
+
+  TotalAfterWheel = WheelAftersurcharge + WheelAfterduty + WheelEnergy_After;
 
   console.log("▶ WheelEnergy_After =",WheelEnergy_After);
   console.log("▶ WheelEString_After =",WheelEString_After);
@@ -1656,11 +2597,14 @@ console.log("wheelTodOP:", wheelTodOP);
   console.log("▶ slabRange =",slabRange);
    
   //let NETConsWheel = wheelTodNL + wheelTodPK + wheelTodOP;     // total TOD consumption at the wheeled site
-  const consInfoWheel = getSlabLabel(wheeledConsumedUnits,cachedWheeledRateTable);
-  const ConsESlabWheel = consInfoWheel.slabObj;
-  const slabEConsWheel = consInfoWheel.label;
-  console.log("▶ ConsESlabWheel =",ConsESlabWheel);
-  console.log("▶ slabRange_After =",slabRange_After);
+  InfoWheelAfter = getSlabLabel(ConsumptionAfterWheeling,cachedWheeledRateTable);
+  ConsESlabWheel = InfoWheelAfter.slabObj;
+  slabEConsWheel = InfoWheelAfter.label;
+  console.log("▶ ConsESlabWheel =", ConsESlabWheel);
+  console.log("▶ slabEConsWheelr =", slabEConsWheel);
+  }
+
+  const WheelSaving = TotalB4Wheel - TotalAfterWheel;
      
     // // // // // // // // // // // // // 
     
@@ -1693,8 +2637,8 @@ if (userChoice === "" && TODAvailability === "yes" && consumerImport >= 250) {
   dayTotal = todDay + ownSolarDay;
 }
 
-// Prompt only when TOD is not available and import >=250
-if (TODAvailability === "no" && consumerImport >= 250 && userChoice === "") {
+// Prompt only when TOD is not available and import >500
+if (TODAvailability === "no" && consumerImport > 500 && userChoice === "") {
   const message = `📌 Do you want to skip estimating bill as a Consumer?<br>
   നിങ്ങൾ ഉപഭോക്തൃ ബിൽ കണക്കാക്കുന്നത് ഒഴിവാക്കണോ?`;
   const proceed = await showYesNoPrompt(message);
@@ -1704,16 +2648,26 @@ if (TODAvailability === "no" && consumerImport >= 250 && userChoice === "") {
 // -------------------------------------------------------------
 // 8. Consumer Mode Adjustments (when user wants the consumer calculation)
 // -------------------------------------------------------------
-if (userChoice === "need" && TODAvailability === "no" && consumerImport >= 250) {
+
+if (TODAvailability === "no" && consumerImport <= 500) {
+dayTotal = consumerImport;  
+}
+
+
+if (userChoice === "need" && TODAvailability === "no" && consumerImport > 500) {
 
   // No TOD values entered
   if (todDay === 0 && todPeak === 0 && todOffpeak === 0) {
-    showCustomAlert(`
-      <br>ഉപഭോക്താവായി കണക്കാക്കുന്നതിനായി മൊത്തം യൂണിറ്റുകൾ (I + OC) [${consumerImport} യൂണിറ്റുകൾ]
-      ΤΟD രീതി അനുസരിച്ചു നൽകണം. സ്വയം ഉപയോഗിച്ച സോളാർ: <b>${ownSolarDay} യൂണിറ്റുകൾ</b>.
-    `);
-    return;
-  }
+  const msg = `
+    ഉപഭോക്താവായി കണക്കാക്കുന്നതിനായി മൊത്തം യൂണിറ്റുകൾ (I + OC) 
+    <b>[${consumerImport} യൂണിറ്റുകൾ]</b> ΤΟD രീതി അനുസരിച്ചു നൽകണം.<br><br>
+    സ്വയം ഉപയോഗിച്ച സോളാർ: <b>${ownSolarDay} യൂണിറ്റുകൾ</b>.
+  `;
+
+  showCustomAlert(msg);
+  return; // stops further calculation
+}
+
 
   const sumImport = todDay + todPeak + todOffpeak;
 
@@ -1732,7 +2686,7 @@ if (userChoice === "need" && TODAvailability === "no" && consumerImport >= 250) 
   // Set consumer daytime units to user-entered TOD Day value
   dayTotal = todDay;
 
-} else if (userChoice === "need" && TODAvailability === "yes" && consumerImport >= 250) {
+} else if (userChoice === "need" && TODAvailability === "yes" && consumerImport > 500) {
   // If TOD bill is available, daytime = TOD Day + ownSolarDay
   dayTotal = todDay + ownSolarDay;
 }
@@ -1772,6 +2726,9 @@ const consInfo = getSlabLabel(NETCons,cachedTodBaseTable);
 const ConsESlab = consInfo.slabObj;
 const slabECons = consInfo.label;
 
+console.log("▶ ConsESlab =",ConsESlab);
+console.log("▶ slabECons =",slabECons);
+
 // -------------------------------------------
 // 12. Duty, Surcharge, and Total Consumer Bill
 // -------------------------------------------
@@ -1784,6 +2741,9 @@ const consumerTotal = consumerEnergy
                      + consumerdutyAmount
                      + consumersurchargeAmount;
 
+const SavedSolar = consumerTotal - total;
+const TotalSaved = SavedSolar + WheelSaving;
+
 
   // =============================
 // 13. Render Calculation Result
@@ -1794,33 +2754,95 @@ resultDiv.style.display = 'block';
 
 // Build HTML output
 resultDiv.innerHTML = `
-<div id="pdfContent">
+<div id="pdfContent" style="width:210mm; max-width:100%; margin:0 auto;">
 
   <!-- ===== Title ===== -->
-  <h3 style="color: blue;">KSEB Prosumer Bill Calculator</h3>
+  <br>
+  <h2 style="font-size: larger"class="no-underline">KSEB Prosumer Bill Calculator <br> പ്രോസ്യൂമർ ബിൽ കാൽക്കുലേറ്റർ</h2>
+  <br>
 
   <!-- Timestamp and Revision Note -->
   <span style="font-size: smaller; color: purple;">
-    Date: ${now.toLocaleDateString()} | Time: ${now.toLocaleTimeString()} <br>
-    Software Last Updated: ${lastUpdatedValue}
+    Date / തീയതി: ${now.toLocaleDateString()} |&nbsp;&nbsp; Time / സമയം: ${now.toLocaleTimeString()} <br>
+    Software Last Updated / സോഫ്റ്റ്‌വെയർ അവസാനം പുതുക്കിയത്: ${lastUpdatedValue}
   </span>
   <br><br>
 
+<!-- ===== Savings Section ===== -->
+  <br>
+  <h2>SAVINGS / സേവിംഗ്സ്</h2> <br>
+
+  <span style="color: green; font-weight: bold;">
+  From direct solar usage / <br> സോളാർ ഉപയോഗത്തിൽ നിന്ന് : ₹ ${SavedSolar.toFixed(2)}
+</span><br>
+<span style=" color: red;">
+  (CT: ₹ ${consumerTotal.toFixed(2)} - PT: ₹ ${total.toFixed(2)})
+</span><br><br>
+
+   ${isWheeling.toLowerCase() === "yes" 
+  ? `<span style=" color: green; font-weight: bold;">
+       From wheeling / വീലിംഗിൽ നിന്ന്: ₹ ${WheelSaving.toFixed(2)}
+     </span><br>
+     <span style="font-size: smaller; color: red;">
+        (B4W: ₹ ${TotalB4Wheel.toFixed(2)} - AFW: ₹ ${TotalAfterWheel.toFixed(2)})
+     </span><br><br>
+     
+     <span style=" color: black; font-weight: bold;">
+       TOTAL / ആകെ: ₹ ${TotalSaved.toFixed(2)} </span>
+       <span style="font-size: smaller; color: black;">(₹ ${SavedSolar.toFixed(2)} + ₹ ${WheelSaving.toFixed(2)})
+     </span><br><br>
+     `
+  : ""
+}
+
+${isWheeling.toLowerCase() === "yes" 
+  ? `<span style=" color: green; font-weight: bold;">
+       Units saved / ബാങ്ക് യൂണിറ്റുകൾ: ${Bank_after_Wheeling}
+     </span> <br>
+     <span style="font-size: smaller; color: red;">
+        (Updated total banked units)
+     </span><br>` 
+
+  : `<span style=" color: green; font-weight: bold;">
+       Units Saved / ബാങ്ക് യൂണിറ്റുകൾ: ${newBank}
+     </span> <br>
+     <span style="font-size: smaller; color: red;">
+        (Updated total banked units)
+     </span><br>` 
+}
+ 
+
+${isWheeling.toLowerCase() === "yes" 
+  ? `<br><span style=" color: blue; font-weight: bold;">
+       Units lost / നഷ്ടപ്പെട്ട യൂണിറ്റുകൾ : ${EnergyLostWheeling.toFixed(2)}
+     </span> <br>
+     <span style="font-size: smaller; color: red;">
+        (Distribution loss/ വിതരണ നഷ്ടം)
+     </span><br>`  
+
+  : "" 
+}
+  
+
+ <br><br>
   <!-- ===== Input Summary ===== -->
-  <h3>Input Values</h3>
-  Connection Type: <strong>${connectionType}</strong>,
-  Phase Type: <strong>${phaseType}</strong><br><br>
+  <h2>INPUT VALUES / നൽകിയ വിവരങ്ങൾ</h2> <br>
+  Connection Type / കണക്ഷൻ തരം: <strong>${connectionType}</strong> <br>
+  Phase Type/ ഫേസ് തരം: <strong>${phaseType}</strong><br>
+  Meter Owner / മീറ്റർ ഉടമ: <strong>${meterOwner}</strong><br><br>
 
-  Is TOD bill available? <strong>${TODAvailability.charAt(0).toUpperCase() + TODAvailability.slice(1)}</strong><br><br>
+  Is TOD bill available / ടി.ഒ.ഡി ബില് ലഭ്യമാണോ ?<strong>${TODAvailability.charAt(0).toUpperCase() + TODAvailability.slice(1)}</strong><br><br>
 
-  <!-- ===== Show TOD Table if TOD available or Import >=250 ===== -->
+  <!-- ===== Show TOD Table if TOD available or Import > ===== -->
   ${
-    (TODAvailability === "yes" || consumerImport >= 250)
+    (TODAvailability === "yes" || consumerImport > 500)
       ? `
         ${
           TODAvailability === "yes"
-            ? `TOD bill reading`
-            : `User-entered TOD values for estimating consumer bill`
+            ? `TOD bill reading /ടി.ഒ.ഡി ബിൽ`
+            : `User-entered TOD values for estimating consumer bill <br> 
+            കൺസ്യൂമർ  ബില്ലിന് വേണ്ടി യൂസർ നൽകിയ TOD
+            `
         }
         <br><br>
 
@@ -1877,29 +2899,42 @@ resultDiv.innerHTML = `
 
   <!-- ===== Summary of I/E/OC/B ===== -->
   <br>
-  Units Imported (I): <strong>${importUnits}</strong><span style="font-size: smaller; color: green;"> (As a Prosumer) </span><br>
-  Units Exported (E): <strong>${exportUnits}</strong><span style="font-size: smaller; color: green;"> (As a Prosumer) </span><br><br>
-  Total Solar Energy Generated (GM): <strong>${isNaN(Solar) ? "NA" : Solar} units</strong><br>
-  Own solar consumption during Day [OC]: <strong>${ownSolarDay} units</strong><br><br>
-  Net units Imported [N] (N = I - E): <strong>${netImpUnits} units</strong><br>
-  Previous banked balance [B]: <strong>${Bank} units</strong><br>
+  Units Imported / ഇമ്പോർട്ട് [I]: <strong>${importUnits}</strong><span style="font-size: smaller; color: green;"> (As a Prosumer) </span><br>
+  Units Exported / എക്സ്പോർട്ട്  [E]: <strong>${exportUnits}</strong><span style="font-size: smaller; color: green;"> (As a Prosumer) </span><br><br>
+  Total Solar Energy Generated / ജനറേറ്റ് ചെയ്തത് [GM]: <strong>${isNaN(Solar) ? "NA" : Solar} units</strong><br>
+  Own consumption during Day / നേരിട്ടുള്ള ഉപയോഗം [OC]: <strong>${ownSolarDay} units</strong><br><br>
+  Net Imported / നെറ്റ് ഇമ്പോർട്ട് [N] (N = I - E): <strong>${netImpUnits} units</strong><br>
+  Net Exported / നെറ്റ് എക്സ്പോർട്ട്  [NE] (NE = E - I): <strong>${netExpUnits} units</strong><br>
+  Previous Banked Balance / മുൻ ബാങ്ക്  [B]: <strong>${Bank} units</strong><br>
 
   ${isWheeling.toLowerCase() === "yes" 
   ? `<br>
-      Wheeled Units [W]: <strong>${wheelingUnitsNew}</strong> <br>`
-  : ``}
+      Wheeled Units / വീൽഡ്  യൂണിറ്റുകൾ [W]: <strong>${wheelingUnitsNew}</strong> <br>
+      Wheeled Location Category/ വീൽഡ് ലൊക്കേഷൻ തരം: <strong>${wheelingCategory}</strong> <br>
+      ${
+        TODAvailableWheel.toLowerCase() === "yes"
+          ? `Wheeled Location TOD / വീൽഡ് ടി.ഒ.ഡി; NL: <strong>${wheelTodNL}</strong>,
+             OP: <strong>${wheelTodOP}</strong>,
+             PK: <strong>${wheelTodPK}</strong><br>`
+          : `Wheeled Location Usage / വീൽഡ് ലൊക്കേഷൻ ഉപയോഗം: <strong>${wheeledConsumedUnits} Units</strong><br>`
+      }
+    `
+  : ``
+    }
+
   
   <!-- ===== Prosumer Section ===== -->
   <div class="pdf-page-break"></div>
-  <h3 style="color: blue;">Prosumer Bill</h3><br>
+  <br>
+  <h2 style="color: blue;">PROSUMER BILL / പ്രോസ്യൂമർ ബിൽ</h2><br>
   Billing Type: <strong>${connectionType}, ${importUnits >= 250 ? 'TOD' : 'Non-TOD'}</strong><br><br>
 
-  Own solar consumption during Day [OC]: <strong>${ownSolarDay} units</strong><br>  
-  Previous banked balance [B]: <strong>${Bank} units</strong><br>
-  Updated banked balance [UB]: <strong>${newBank} units</strong> <br> 
+  Own Consumption During Day / നേരിട്ടുള്ള ഉപയോഗം[OC]: <strong>${ownSolarDay} units</strong><br>  
+  Previous Banked Balance / മുൻ ബാങ്ക് [B]: <strong>${Bank} units</strong><br>
+  Updated Bank / പുതുക്കിയ ബാങ്ക്  [UB]: <strong>${newBank} units</strong> <br> 
 
   <br>
-  Units Billed [N-B]: <strong>${netUnits}</strong> 
+  Units Billed / ബിൽ ചെയ്ത യൂണിറ്റുകൾ [N-B]: <strong>${netUnits}</strong> 
   <span style="font-size: smaller; color: red;">(${netImpUnits} - ${Bank} => ${netUnits})</span><br>
   
   
@@ -1911,9 +2946,8 @@ ${ TODAvailability === "yes"
 <br>
 
 
-
   <!-- Energy Charge (Prosumer) -->
-  Energy Charge:
+  Energy Charge / എനർജി ചാർജ്:
   <strong>₹ ${energyCharge.toFixed(2)}</strong><br>
   <span style="font-size: smaller; color: red;">${EChargeString}</span><br>
   ${ renderProsumerBillingBlock(billmethPros, netUnits, ProsESlab, slabEPros, todRates) }
@@ -1921,65 +2955,40 @@ ${ TODAvailability === "yes"
 
   <!-- Fixed, Duty, Fuel and Meter Charges -->
   <div class="avoid-page-break">
-    Fixed Charge: <strong>₹ ${fixedCharge.toFixed(2)}</strong>
-    <span style="font-size: smaller; color: green;">(${fixedChargeStr}: ${fixedLabel} slab, ${phaseType} phase)</span><br>
+    Fixed Charge / ഫിക്സഡ് ചാർജ്: <strong>₹ ${fixedCharge.toFixed(2)}</strong><br>
+    <span style="font-size: smaller; color: green;">(${fixedChargeStr}: ${fixedLabel} slab, ${phaseType} phase)</span><br><br>
 
-    Duty (${duty}% of Energy): <strong>₹ ${dutyAmount.toFixed(2)}</strong>
-    <span style="font-size: smaller; color: red;">(${energyCharge.toFixed(2)} × ${duty}% = ${dutyAmount.toFixed(2)})</span><br>
+    Duty / ഡ്യൂട്ടി (${duty}% of Energy): <strong>₹ ${dutyAmount.toFixed(2)}</strong><br>
+    <span style="font-size: smaller; color: red;">(${energyCharge.toFixed(2)} × ${duty}% = ${dutyAmount.toFixed(2)})</span><br><br>
 
-    Fuel Surcharge (${surcharge}/unit):
-    <strong>₹ ${surchargeAmount.toFixed(2)}</strong>
+    Fuel Surcharge / സർചാർജ് (${surcharge}/unit):
+    <strong>₹ ${surchargeAmount.toFixed(2)}</strong><br>
     <span style="font-size: smaller; color: red;">(${netUnits} × ${surcharge} = ${surchargeAmount.toFixed(2)})</span><br><br>
   
 
   ${(isWheeling.toLowerCase() === "yes" && Avail_After_Wheel >= 0) 
-  ? `Wheeling Charges (${wheelingRate}/unit): <strong>₹ ${WheelingCharge}</strong>
+  ? `Wheeling Charges / വീലിംഗ് ചാർജ് (${wheelingRate}/unit): <strong>₹ ${WheelingCharge}</strong><br>
      <span style="font-size: smaller; color: red;">(W: ${wheelingUnitsNew} × ${wheelingRate} = ${WheelingCharge})</span><br><br>` 
   : ""}
   
    ${meterOwner.toLowerCase() === "prosumer" 
   ? `` 
-  : `Meter Rent: <strong>₹ ${meterCharge.toFixed(2)}</strong> 
+  : `Meter Rent/ മീറ്റർ വാടക: <strong>₹ ${meterCharge.toFixed(2)}</strong> 
       <span style="font-size: smaller; color: green;">(${phaseType} phase, net meter rent)</span><br><br>`}
   </div>
 
-  <b>Total Bill (prosumer): ₹ ${total.toFixed(2)}</b><br>
-
-  <!-- ===== Wheeling Section ===== -->
+  <span style="font-size: larger; font-weight: bold;">TOTAL BILL (prosumer) [PT] / ആകെ: ₹ ${total.toFixed(2)}</span><br>
+  <br>
   
-  ${isWheeling.toLowerCase() === "yes" 
-  ? `
-    <div class="pdf-page-break"></div>
-    <h3 style="color: blue;">Wheeling & Bank </h3><br>
-
-    <span style="color:brown;"> 
-     Bank Opening [UB]: ${newBank} units <br>
-     Units available for wheeling [BW]: <strong>${Avail_4_Wheel}</strong> </span><br>
-     <span style="font-size: smaller; color: red;">${Avail_4_Wheel_String} </span><br><br>
-
-     <span style="color:brown;"> 
-     Wheeled site consumption: ${wheeledConsumedUnits} <br>
-     Wheeled Units [W]: <strong>${wheelingUnitsNew}</strong> <br>
-     Balance after wheeling [AW]:<strong> ${Avail_After_Wheel}</strong></span>
-     <span style="font-size: smaller; color: red;">(${Avail_After_Wheel_String})</span><br><br>
-
-     <span style="color:brown;"> 
-     <strong>Updated Bank Closing</strong>: <strong>${Bank_after_Wheeling}</strong><br>
-     <span style="font-size: smaller; color: red;">${Bank_after_Wheeling_String} </span><br>`
-
-
-
-
-  :``}
-
-
-  <!-- ===== Consumer Section ===== -->
-  <div class="pdf-page-break"></div>
+  <div class="pdf-page-break"></div>  
+  <!-- ========================= Consumer Section ======================================== -->    
+  <br><br>
   <div class="avoid-page-break">
-    <h3 style="color: blue;">Predicted Bill: If You Were a Consumer </h3><br>
-    Billing Type: <strong>${connectionType}, ${consumerImport >= 250 ? 'TOD' : 'Non-TOD'}</strong><br><br>
+    <h2 style="color: blue;">PREDICTED BILL: if you were a consumer <br>
+      നിങ്ങൾ ഒരു കൺസ്യൂമറായിരുന്നെങ്കിൽ  </h2><br>
+    Billing Type / ബില്ലിംഗ് തരം: <strong>${connectionType}, ${consumerImport >= 250 ? 'TOD' : 'Non-TOD'}</strong><br><br>
 
-    Billed Units [I + OC]: ${importUnits} + ${ownSolarDay} = <strong>${consumerImport}</strong><br>
+    Billed Units / ബിൽ ചെയ്ത യൂണിറ്റുകൾ  [I + OC]: ${importUnits} + ${ownSolarDay} = <strong>${consumerImport}</strong><br>
 
     <!-- Adjusted TOD units (Consumer, non-telescopic) -->
     ${billmethCons === "non-telescopic"
@@ -1993,7 +3002,7 @@ ${ TODAvailability === "yes"
     <br>
 
     <!-- Energy Charge (Consumer) -->
-    Energy Charge:
+    Energy Charge / എനർജി ചാർജ്:
     <strong>${userChoice === "skipped" ? 'NA' : consumerEnergy.toFixed(2)}</strong><br>
     <span style="font-size: smaller; color: red;">
       ${userChoice === "skipped" ? 'TOD readings to be provided' : consumerEString}
@@ -2005,41 +3014,113 @@ ${ TODAvailability === "yes"
     <br><br>
 
     <!-- Fixed, Duty, Fuel and Meter Charges (Consumer) -->
-    Fixed Charge: <strong>₹ ${consumerFixed.toFixed(2)}</strong>
-    <span style="font-size: smaller; color: green;">(${fixedChargeStr}: ${fixedLabel} slab, ${phaseType} phase)</span><br>
+    Fixed Charge / ഫിക്സഡ് ചാർജ്:: <strong>₹ ${consumerFixed.toFixed(2)}</strong><br>
+    <span style="font-size: smaller; color: green;">(${fixedChargeStr}: ${fixedLabel} slab, ${phaseType} phase)</span><br><br>
 
-    Duty (${duty}% of Energy): <strong>₹ ${consumerdutyAmount.toFixed(2)}</strong>
-    <span style="font-size: smaller; color: red;">(${consumerEnergy.toFixed(2)} × ${duty}% = ${consumerdutyAmount.toFixed(2)})</span><br>
+    Duty / ഡ്യൂട്ടി (${duty}% of Energy): <strong>₹ ${consumerdutyAmount.toFixed(2)}</strong><br>
+    <span style="font-size: smaller; color: red;">(${consumerEnergy.toFixed(2)} × ${duty}% = ${consumerdutyAmount.toFixed(2)})</span><br><br>
 
-    Fuel Surcharge (${surcharge}/unit): <strong>₹ ${consumersurchargeAmount.toFixed(2)}</strong>
+    Fuel Surcharge / സർചാർജ്  (${surcharge}/unit): <strong>₹ ${consumersurchargeAmount.toFixed(2)}</strong><br>
     <span style="font-size: smaller; color: red;">(${consumerImport} × ${surcharge} = ${consumersurchargeAmount.toFixed(2)})</span><br><br>
 
-    Meter Rent: <strong>₹ ${consumerMeter.toFixed(2)}</strong>
+    Meter Rent / മീറ്റർ വാടക: <strong>₹ ${consumerMeter.toFixed(2)}</strong>
     <span style="font-size: smaller; color: green;">(${phaseType} phase meter rent)</span>
   <br><br>
-    <b>Total Bill (consumer): ₹ ${userChoice === "skipped" ? 'NA' : consumerTotal.toFixed(2)}</b>
-  </div>
+    <span style="font-size: larger; font-weight: bold;">TOTAL BILL (consumer) [CT] / ആകെ: ₹ ${userChoice === "skipped" ? 'NA' : consumerTotal.toFixed(2)}</span>
+  
 
+<!-- ===== ==================== Wheeling Section =========================================== -->
+  
+  ${isWheeling.toLowerCase() === "yes" 
+  ? `
+    <div class="pdf-page-break"></div>
+    <br>
+    <h2 style="color: blue;">WHEELING / വീലിങ് </h2> <br> 
+    <h2 style="color:#6A0DAD; font-size:larger; display:inline-block; border-bottom:2px solid #6A0DAD;">
+    Bank unit calculation / ബാങ്ക് യൂണിറ്റ്  </h2> <br>
+     Bank Opening / ബാങ്ക് ഓപ്പണിങ് [UB]: ${newBank} units <br>
+     Available for Wheeling / ലഭ്യമായത് [BW]: <strong>${Avail_4_Wheel}</strong> <br>
+     <span style="font-size: smaller; color: red;">${Avail_4_Wheel_String} units </span><br><br>
+
+     Wheeled Site Consumption / വീൽഡ് സൈറ്റ് ഉപഭോഗം [WC]: <strong>${wheeledConsumedUnits}</strong> units <br>
+     Wheeled/ വീൽഡ്  യൂണിറ്റുകൾ [W]: <strong>${wheelingUnitsNew}</strong> units <br>
+     Balance After Wheeling / ബാലൻസ് [AW]:<strong> ${Avail_After_Wheel}</strong> units<br>
+     <span style="font-size: smaller; color: red;">(${Avail_After_Wheel_String})</span><br><br>
+ 
+     <strong>Updated Bank Closing / ബാങ്ക് ക്ലോസിങ് </strong>: <strong>${Bank_after_Wheeling}</strong> units<br>
+     <span style="font-size: smaller; color: red;">${Bank_after_Wheeling_String} </span><br>
+     <br>
+     Energy Lost During Wheeling / നഷ്ടപെട്ട യൂണിറ്റ് :  <strong>${EnergyLostWheeling.toFixed(2)}</strong> units<br>
+     <span style="font-size: smaller; color: red;">(UB:${newBank} - W:${wheelingUnitsNew} - AW:${Bank_after_Wheeling} = ${EnergyLostWheeling.toFixed(2)})  </span><br>
+     <br> 
+
+     <h2 style="color:#6A0DAD; font-size:larger; display:inline-block; border-bottom:2px solid #6A0DAD;">
+     Charges after adjusting wheeled units <br>
+     വീലിങ്:ശേഷമുള്ള ചാർജുകൾ </h2> <br> 
+    
+    Charged Units / ചാർജ് ചെയ്ത യൂണിറ്റുകൾ: ${ConsumptionAfterWheeling.toFixed(2)} units<br>
+    <span style="font-size: smaller; color: red;">(WC:${wheeledConsumedUnits} - W:${wheelingUnitsNew} = ${ConsumptionAfterWheeling.toFixed(2)})</span><br><br>
+
+    Energy Charge / എനർജി ചാർജ്: <strong> ₹ ${WheelEnergy_After.toFixed(2)} </strong><br>
+    <span style="font-size: smaller; color: red;">${WheelEString_After}</span> <br>
+    <span style=color: green;">
+     ${ renderWheeledBillingBlock(billmethWheel_After, ConsumptionAfterWheeling,  ConsESlabWheel, slabEConsWheel, todRates, wheelingCategory) }     
+    </span>
+    <br><br>
+    
+    Duty / ഡ്യൂട്ടി (${duty}% of Energy): <strong>₹ ${WheelAfterduty.toFixed(2)}</strong> <br>
+    <span style="font-size: smaller; color: red;">(${WheelEnergy_After.toFixed(2)} × ${duty}% = ${WheelAfterduty.toFixed(2)})</span><br><br>
+    
+
+    Fuel Surcharge / സർചാർജ് (${surcharge}/unit):
+    <strong>₹ ${WheelAftersurcharge.toFixed(2)}</strong><br>
+    <span style="font-size: smaller; color: red;">(${ConsumptionAfterWheeling.toFixed(2)} × ${surcharge} = ${WheelAftersurcharge.toFixed(2)})</span><br><br>
+    
+    <span style="font-size: larger; font-weight: bold;">TOTAL (after wheeling) [AFW] / ആകെ: ₹ ${TotalAfterWheel.toFixed(2)}</span><br><br>
+
+    <div class="pdf-page-break"></div>
+  <br>
+    <h2 style="color:#6A0DAD; font-size:larger; display:inline-block; border-bottom:2px solid #6A0DAD;">
+     Predicted charges without wheeled units </h2> <br> 
+    
+    Units Consumed / ഉപയോഗിച്ച യൂണിറ്റുകൾ: <strong>${wheeledConsumedUnits} units </strong><br><br>    
+
+     Energy Charge / എനർജി ചാർജ്:<strong> ₹ ${WheelEnergy.toFixed(2)}</strong><br> 
+     <span style="font-size: smaller; color: red;">${WheelEString}</span> <br>
+     <span style=color: green;">
+     ${ renderWheeledBillingBlock(billmethWheel, wheeledConsumedUnits,  ConsESlabWheelB4, slabEConsWheelB4, todRates, wheelingCategory) }  
+    </span>
+    <br><br>
+    
+    Duty / ഡ്യൂട്ടി (${duty}% of Energy): <strong>₹ ${WheelB4duty.toFixed(2)}</strong><br>
+    <span style="font-size: smaller; color: red;">(${WheelEnergy.toFixed(2)} × ${duty}% = ${WheelB4duty.toFixed(2)})</span><br><br>
+
+    Fuel Surcharge / സർചാർജ് (${surcharge}/unit):
+    <strong>₹ ${WheelB4surcharge.toFixed(2)}</strong><br>
+    <span style="font-size: smaller; color: red;">(${wheeledConsumedUnits} × ${surcharge} = ${WheelB4surcharge.toFixed(2)})</span><br>
+    <br>
+    <span style="font-size: larger; font-weight: bold;">TOTAL (without wheeling) [B4W] / ആകെ: ₹ ${TotalB4Wheel.toFixed(2)}</span><br>
+    
+     `
+  :``}
 </div>
 `
   resultDiv.scrollIntoView({behavior: 'smooth'}); 
     // Optional: Enable debug panel if needed
     // showDebugPanel();
-});
+    /* ------------------------------------------------------
+     downloadFullPDF & related input fiels hidden initially
+     ------------------------------------------------------ */
+document.getElementById("pdfNameInputs").style.display = "flex";
+document.getElementById("pdfHelperText").style.display = "block";  // <-- show helper now
+document.getElementById("downloadFullPDF").style.display = "inline-block";
 
 });
  
 
 </script>
-
 </body>
-
 </html>
-
-
-  
-
-
 
 
 
