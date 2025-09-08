@@ -2806,7 +2806,7 @@ ${isWheeling.toLowerCase() === "yes"
 
   : `<span style=" color: green; font-weight: bold;">
        Units Saved / ബാങ്ക് യൂണിറ്റുകൾ: ${newBank}
-     </span> <br>
+     </span> 
      <span style="font-size: smaller; color: red;">
         (Updated total banked units)
      </span><br>` 
@@ -2907,7 +2907,7 @@ ${isWheeling.toLowerCase() === "yes"
   Units Imported / ഇമ്പോർട്ട് [I]: <strong>${importUnits}</strong><span style="font-size: smaller; color: green;"> (As a Prosumer) </span><br>
   Units Exported / എക്സ്പോർട്ട്  [E]: <strong>${exportUnits}</strong><span style="font-size: smaller; color: green;"> (As a Prosumer) </span><br><br>
   Total Solar Energy Generated / ജനറേറ്റ് ചെയ്തത് [GM]: <strong>${isNaN(Solar) ? "NA" : Solar} units</strong><br>
-  Own consumption during Day / നേരിട്ടുള്ള ഉപയോഗം [OC]: <strong>${ownSolarDay} units</strong><br><br>
+  Own consumption / നേരിട്ടുള്ള ഉപയോഗം [OC]: <strong>${ownSolarDay} units</strong><br><br>
   Net Imported / നെറ്റ് ഇമ്പോർട്ട് [N] (N = I - E): <strong>${netImpUnits} units</strong><br>
   Net Exported / നെറ്റ് എക്സ്പോർട്ട്  [NE] (NE = E - I): <strong>${netExpUnits} units</strong><br>
   Previous Banked Balance / മുൻ ബാങ്ക്  [B]: <strong>${Bank} units</strong><br>
@@ -2934,7 +2934,7 @@ ${isWheeling.toLowerCase() === "yes"
   <h2 style="color: blue;">PROSUMER BILL / പ്രോസ്യൂമർ ബിൽ</h2><br>
   Billing Type: <strong>${connectionType}, ${importUnits >= 250 ? 'TOD' : 'Non-TOD'}</strong><br><br>
 
-  Own Consumption During Day / നേരിട്ടുള്ള ഉപയോഗം[OC]: <strong>${ownSolarDay} units</strong><br>  
+  Own Consumption / നേരിട്ടുള്ള ഉപയോഗം[OC]: <strong>${ownSolarDay} units</strong><br>  
   Previous Banked Balance / മുൻ ബാങ്ക് [B]: <strong>${Bank} units</strong><br>
   Updated Bank / പുതുക്കിയ ബാങ്ക്  [UB]: <strong>${newBank} units</strong> <br> 
 
