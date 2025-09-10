@@ -8,6 +8,17 @@
   <!-- Malayalam font -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam&display=swap" rel="stylesheet">
 
+   <!-------------------------------------------->
+ 
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-512.png">
+
+  <meta name="theme-color" content="#0d6efd">
+
   <!-- PDF download support -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
@@ -324,6 +335,35 @@
     #wheelingCategory + label,
     .form-group label { font-size: 12px !important; }
   }
+
+* Make history table occupy full width */
+#historyTable {
+  width: 100%;            /* Full width */
+  border-collapse: collapse;
+  table-layout: fixed;    /* Prevent columns from shrinking too much */
+}
+
+/* Table cells */
+#historyTable th,
+#historyTable td {
+  border: 1px solid #ccc;
+  padding: 10px;          /* Increase padding for taller rows */
+  text-align: left;
+  word-wrap: break-word;   /* Wrap long text */
+}
+
+/* Optional: alternate row colors for readability */
+#historyTable tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Optional: scroll horizontally if table too wide for mobile */
+#historyTableContainer {
+  overflow-x: auto;
+  width: 100%;
+}
+
+
   </style>
 </head>
 
@@ -379,7 +419,7 @@
     <form id="billForm">
       
       <!-- Connection Type -->
-      <div class="form-group">
+      <div class="form-group" >
         <label for="connectionType"><b>Connection Type / കണക്ഷൻ തരം</b></label>
         <select id="connectionType" style="width:100px;" title="Select your connection type">
           <option value="LT1">LT-1 Domestic</option>
@@ -387,7 +427,7 @@
       </div>
 
       <!-- Phase Type -->
-      <div class="form-group">
+      <div class="form-group" >
         <label for="phaseType"><b>Phase Type / ഫേസ് തരം</b></label>
         <select id="phaseType" title="Select your phase type" style="width:100px;">
           <option value="single">Single Phase / സിംഗിൾ ഫേസ്</option>
@@ -396,7 +436,7 @@
       </div>
 
       <!-- Meter Owner Selection -->
-      <div class="form-group">
+      <div class="form-group" >
         <label for="meterOwner"><b>Meter Owner / മീറ്റർ ഉടമ</b></label>
         <select id="meterOwner" name="meterOwner" style="width:100px;" required>
           <option value="kseb">KSEB / കെഎസ്ഇബി</option>
@@ -405,13 +445,13 @@
       </div>
 
       <!-- Previous Bank Balance -->
-      <div class="form-group">
+      <div class="form-group" >
         <label for="Bank"><b>Previous Bank Balance / മുൻ ബാങ്ക് ബാലൻസ്</b></label>
         <input type="number" id="Bank" value="0" style="width:100px;">
       </div>
 
       <!-- TOD Availability -->
-      <div class="form-group">
+      <div class="form-group" >
         <label for="TODAvailability"><b>Is TOD Bill Available? / ടിഒഡി ബിൽ ലഭ്യമാണോ?</b></label>
         <select id="TODAvailability" title="Select yes if TOD bill is available" style="width:100px;">
           <option value="No">No / ഇല്ല</option>
@@ -421,7 +461,7 @@
 
       <!-- Global Meter/Unit Toggle -->
       <div class="input-mode-toggle" style="display:flex; align-items:center; gap:10px; padding:40px 0;">
-        <span style="font-size:16px; font-weight:600; white-space:nowrap;">Units / യൂണിറ്റ്</span>
+        <span style="font-size:16px; font-weight:600; white-space:nowrap;margin-left:20px;">Units / യൂണിറ്റ്</span>
         <label class="switch" style="margin:0; display:flex; align-items:center;">
           <input type="checkbox" id="globalModeToggle">
           <span class="slider"></span>
@@ -697,50 +737,83 @@
         </select>
       </div>
 
+ <!-- No of wheeling sites ? -->
+
+<div class="form-group" id="wheelingCountContainer" style="display:none; margin:1px 0; justify-content:space-between; align-items:center;
+background-color:#ffe6cc;">
+  <label for="numWheelingSites">
+    <b>How many wheeling sites? / എത്ര വീൽഡ് സൈറ്റുകൾ?</b>
+  </label>
+  <select id="numWheelingSites" style="width:120px; text-align:left;">
+    <option value="1" selected>1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+  </select>
+</div>
+
+
+<div id="wheelingFields" style="display:none; margin-top:15px;"></div>
+
       <!-- Wheeling-related fields (hidden by default) -->
-      <div id="wheelingFields" style="display:none; margin-top:15px;">
+      <template id="wheelingSiteTemplate">
+  <div class="wheelingSiteBlock" style="border:1px solid #ccc; margin:10px 0; padding:10px; border-radius:6px;">
+    <h4>Wheeling Site <span class="siteIndex"></span></h4>
 
-        <!-- Wheeled location category -->
-        <div class="form-group" style="margin-bottom:10px; padding:10px; border-radius:6px; background-color:#ffe6cc; display:flex; flex-wrap:wrap; align-items:center; gap:10px;">
-          <label for="wheelingCategory" style="font-weight:bold; flex:none; min-width:200px; margin:0; font-size:14px;">
-            Wheeled location Connection Type / വീൽഡ് ലൊക്കേഷനിലെ കണക്ഷൻ തരം
-          </label>
-          <select id="wheelingCategory" name="wheelingCategory" style="flex:1 1 150px; max-width:200px; padding:5px; border-radius:4px; box-sizing:border-box;">
-            <option value="LT1">LT1</option>
-            <option value="LT7A">LT7A</option>
-            <option value="LT7B">LT7B</option>
-          </select>
-        </div>
+    <!-- Wheeled location category -->
+    <div class="form-group" style="margin-bottom:10px; padding:10px; border-radius:6px; background-color:#ffe6cc; display:flex; flex-wrap:wrap; align-items:center; gap:10px;">
+      <label for="wheelingCategory-{i}" style="font-weight:bold; flex:none; min-width:200px; margin:0; font-size:14px;">
+        Wheeled Location Connection Type / വീൽഡ് ലൊക്കേഷനിലെ കണക്ഷൻ തരം
+      </label>
+      <select id="wheelingCategory-{i}" name="wheelingCategory-{i}" style="flex:1 1 150px; max-width:200px; padding:5px; border-radius:4px; box-sizing:border-box;">
+        <option value="LT1">LT1</option>
+        <option value="LT7A">LT7A</option>
+        <option value="LT7B">LT7B</option>
+      </select>
+    </div>
 
-        <!-- Wheeling TOD Availability -->
-        <div class="form-group" style="margin-bottom:10px; background-color:#ffe6cc;">
-          <label for="TODAvailabilityWheel" style="margin-bottom:10px;">
-            <b>Is TOD Bill Available for Wheeled Location? / വീൽഡ് ലൊക്കേഷനിലെ ടിഒഡി ബിൽ ലഭ്യമാണോ?</b>
-          </label>
-          <select id="TODAvailabilityWheel" title="Select yes if TOD bill is available" style="width:120px;">
-            <option value="No">No / ഇല്ല</option>
-            <option value="Yes">Yes / ഉണ്ട്</option>
-          </select>
-        </div>
+    <!-- Wheeled location Transformer -->
+    <div class="form-group" style="margin-bottom:10px; padding:10px; border-radius:6px; background-color:#ffe6cc; display:flex; flex-wrap:wrap; align-items:center; gap:10px;">
+      <label for="wheelingTransformer-{i}" style="font-weight:bold; flex:none; min-width:200px; margin:0; font-size:14px;">
+        Is it Under Same Transformer / അതെ ട്രാൻസ്ഫോർമറിന്റെ കീഴിൽ വരുമോ ?
+      </label>
+      <select id="wheelingTransformer-{i}" name="wheelingTransformer-{i}" style="flex:1 1 150px; max-width:200px; padding:5px; border-radius:4px; box-sizing:border-box;">
+        <option value="Yes" selected>Yes</option>
+        <option value="No">No</option>
+      </select>
+    </div>
 
-        <!-- Wheeling TOD Row -->
-        <div id="row-wheeling-tod" style="display:none; margin-top:10px; background-color:#ffe6cc; padding:10px; border-radius:6px;">
-          <strong>Wheeled Site TOD / വീൽഡ് ലൊക്കേഷനിലെ ടിഒഡി</strong>
-          <div style="margin:8px 0;">
-            <label><input type="radio" name="wheelMode" value="units" checked> Units Mode / യൂണിറ്റ് മോഡ്</label>
-            <label style="margin-left:12px;"><input type="radio" name="wheelMode" value="meter"> Meter Reading Mode / മീറ്റർ റീഡിംഗ് മോഡ്</label>
-          </div>
-          <div id="wheelTODInputsContainer"></div>
-        </div>
+    <!-- Wheeling TOD Availability -->
+    <div class="form-group" style="margin-bottom:10px; background-color:#ffe6cc;">
+      <label for="TODAvailabilityWheel-{i}" style="margin-bottom:10px;">
+        <b>Is TOD Bill Available for Wheeled Location? / വീൽഡ് ലൊക്കേഷനിലെ ടിഒഡി ബിൽ ലഭ്യമാണോ?</b>
+      </label>
+      <select id="TODAvailabilityWheel-{i}" name="TODAvailabilityWheel-{i}" style="width:120px;">
+        <option value="No">No / ഇല്ല</option>
+        <option value="Yes">Yes / ഉണ്ട്</option>
+      </select>
+    </div>
 
-        <!-- Total units consumed at wheeled location -->
-        <div id="row-wheeling-total" style="margin-top:10px;">
-          <div class="form-group" style="margin-bottom:10px; background-color:#ffe6cc;">
-            <label for="wheeledConsumedUnits"><b>Total units consumed at wheeled location / വീൽഡ് ലൊക്കേഷനിലെ ഉപയോഗം</b></label>
-            <input type="number" id="wheeledConsumedUnits" class="auto-meter" name="wheeledConsumedUnits" min="0" step="1">
-          </div>
-        </div>
+    <!-- Wheeling TOD Row -->
+    <div id="row-wheeling-tod-{i}" style="display:none; margin-top:10px; background-color:#ffe6cc; padding:10px; border-radius:6px;">
+      <strong>Wheeled Site TOD / വീൽഡ് ലൊക്കേഷനിലെ ടിഒഡി</strong>
+      <div style="margin:8px 0;">
+        <label><input type="radio" name="wheelMode-{i}" value="units" checked> Units Mode / യൂണിറ്റ് മോഡ്</label>
+        <label style="margin-left:12px;"><input type="radio" name="wheelMode-{i}" value="meter"> Meter Reading Mode / മീറ്റർ റീഡിംഗ് മോഡ്</label>
       </div>
+      <div id="wheelTODInputsContainer-{i}"></div>
+    </div>
+
+    <!-- Total units consumed at wheeled location -->
+    <div id="row-wheeling-total-{i}" style="margin-top:10px;">
+      <div class="form-group" style="margin-bottom:10px; background-color:#ffe6cc;">
+        <label for="wheeledConsumedUnits-{i}"><b>Total units consumed at wheeled location / വീൽഡ് ലൊക്കേഷനിലെ ഉപയോഗം</b></label>
+        <input type="number" id="wheeledConsumedUnits-{i}" class="auto-meter" name="wheeledConsumedUnits-{i}" min="0" step="1">
+      </div>
+    </div>
+  </div>
+</template>
+
 
       <!-- Calculate and Reset Buttons -->
       <div class="form-group" style="width:100%; display:flex; justify-content:center; gap:15px; flex-wrap:wrap; padding:0 10px; box-sizing:border-box;">
@@ -788,10 +861,42 @@
       <!-- Download PDF Button -->
       <div class="form-group" style="width:100%; display:flex; justify-content:center; margin-top:10px; padding:0 10px; box-sizing:border-box;">
         <button type="button" id="downloadFullPDF" class="no-print" style="background-color:#06412c; color:white; border:none; padding:12px 20px; border-radius:4px; font-size:16px; cursor:pointer; display:none; flex:1 1 150px; max-width:250px;">
-          Download as PDF / ഡൌൺലോഡ് PDF
+          Save & Download PDF / സേവ് & ഡൌൺലോഡ്
         </button>
       </div>
     </div>
+
+<!-- ================= Bill History Section ================= -->
+<details id="historySection" style="margin-top:20px;">
+  <summary style="font-size:18px; font-weight:bold; cursor:pointer;">
+    📜 View Bill History
+  </summary>
+
+  <div style="margin-top:10px;">
+    <h2>Bill History</h2>
+
+    <!-- Table container for horizontal scroll -->
+    <div id="historyTableContainer" style="overflow-x:auto; width:100%;">
+      <table id="historyTable" border="1" style="width:100%; border-collapse: collapse; table-layout: fixed;">
+        <tr>
+          <th style="padding:10px; text-align:left; word-wrap:break-word;">Filename</th>
+          <th style="padding:10px; text-align:left; word-wrap:break-word;">Date</th>
+          <th style="padding:10px; text-align:left; word-wrap:break-word;">Action</th>
+        </tr>
+      </table>
+    </div>
+
+    <div style="margin-top:10px;">
+      <button onclick="exportHistoryAsCSV()" style="padding:10px 20px; border-radius:4px; background-color:#06412c; color:white; border:none; cursor:pointer;">
+        Download All History (CSV)
+      </button>
+      <button onclick="loadHistory()" style="padding:10px 20px; border-radius:4px; background-color:#2403f7; color:white; border:none; cursor:pointer; margin-left:10px;">
+        Refresh History
+      </button>
+    </div>
+  </div>
+</details>
+
 
     <!-- Latest Tariff Circular -->
     <div class="form-group" style="width:100%; display:flex; justify-content:center; margin-top:0; margin-bottom:2;">
@@ -822,7 +927,8 @@
   let NonTelStartUnit  = 250; // Units above 250 are taiken for non-Telescopic Billing
   let ConTODStartUnit  = 500; // Units above 500 then TOD rates apply for consumer
   let ProsTODStartUnit = 250; // Net Units above 250, then TOD rates apply for prosumer
-  let DistLoss         = 4.99; // Distribution loss for wheeling is 4.99%
+  let DistLossSame     = 4.99; // Distribution loss for wheeling is 4.99% under same Transformer
+  let DistLossDiff     = 7.14 // Distribution loss for wheeling is 7.14% under different Transformer
   let wheelingRate     = 0.64; // Wheeling charge is Rs0.64/unit
   const CTodRStart     = 500; // threshold after which TOD rates apply for consumer non-telectopic LT1
 
@@ -921,125 +1027,204 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ------------------------------
        5. Wheeling TOD logic
      ------------------------------ */
-  const isWheelingField = document.getElementById("isWheeling");
-  const wheelingFields  = document.getElementById("wheelingFields");
-  const TODWheel        = document.getElementById("TODAvailabilityWheel");
-  const rowWheelTOD     = document.getElementById("row-wheeling-tod");
-  const rowWheelTotal   = document.getElementById("row-wheeling-total");
-  const wheeledUnits    = document.getElementById("wheeledConsumedUnits");
-  const wheelingCategory = document.getElementById("wheelingCategory");
 
-  let hasShownWheelingAlert = false;
+const isWheelingField = document.getElementById("isWheeling");
+const wheelingFields  = document.getElementById("wheelingFields");
+const siteCountSelect = document.getElementById("numWheelingSites"); // added selector
 
-  function handleWheelingTOD() {
-    const isWheeling = isWheelingField.value === "Yes";
-    const TODAvailableWheel = TODWheel.value === "Yes";
-    const units = parseInt(wheeledUnits.value || "0", 10);
-    const category = wheelingCategory.value;
+// Track if alerts were shown per site
+let wheelingAlerts = {};
 
-    if (isWheeling && TODAvailableWheel) {
-      rowWheelTOD.style.display = "block";
-      rowWheelTotal.style.display = "none";
-      hasShownWheelingAlert = false;
+function generateWheelingSites(count) {
+  const container = wheelingFields;
+  container.innerHTML = ""; // clear old sites
 
-    } else if (isWheeling && !TODAvailableWheel && category === "LT1" && units > 500) {
-      if (!hasShownWheelingAlert) {
-        alert("Since LT1 consumption > 500 units, please enter TOD readings to proceed.");
-        hasShownWheelingAlert = true;
+  const template = document.getElementById("wheelingSiteTemplate").innerHTML;
+
+  wheelingSites = []; // reset global array
+
+  for (let i = 1; i <= count; i++) {
+    let siteHTML = template.replace(/\{i\}/g, i);
+    const div = document.createElement("div");
+    div.innerHTML = siteHTML;
+    div.querySelector(".siteIndex").textContent = i;
+    container.appendChild(div);
+
+    // Attach per-site logic
+    const todSelect      = div.querySelector(`#TODAvailabilityWheel-${i}`);
+    const rowTOD         = div.querySelector(`#row-wheeling-tod-${i}`);
+    const rowTotal       = div.querySelector(`#row-wheeling-total-${i}`);
+    const unitsField     = div.querySelector(`#wheeledConsumedUnits-${i}`);
+    const categorySel    = div.querySelector(`#wheelingCategory-${i}`);
+    const transformerSel = div.querySelector(`#wheelingTransformer-${i}`);
+
+    function handleWheelingTOD() {
+      const isWheeling = isWheelingField.value === "Yes";
+      const todAvailable = todSelect.value === "Yes";
+      const units = parseInt(unitsField.value || "0", 10);
+      const category = categorySel.value;
+
+      if (isWheeling && todAvailable) {
+        rowTOD.style.display = "block";
+        rowTotal.style.display = "none";
+        wheelingAlerts[i] = false;
+
+      } else if (isWheeling && !todAvailable && category === "LT1" && units > 500) {
+        if (!wheelingAlerts[i]) {
+          alert(`Site ${i}: Since LT1 consumption > 500 units, please enter TOD readings to proceed.`);
+          wheelingAlerts[i] = true;
+        }
+        rowTOD.style.display = "block";
+        rowTotal.style.display = "none";
+
+      } else if (isWheeling) {
+        rowTOD.style.display = "none";
+        rowTotal.style.display = "block";
+        wheelingAlerts[i] = false;
+
+      } else {
+        rowTOD.style.display = "none";
+        rowTotal.style.display = "none";
+        wheelingAlerts[i] = false;
       }
-      rowWheelTOD.style.display = "block";
-      rowWheelTotal.style.display = "none";
-
-    } else if (isWheeling) {
-      rowWheelTOD.style.display = "none";
-      rowWheelTotal.style.display = "block";
-      hasShownWheelingAlert = false;
-
-    } else {
-      rowWheelTOD.style.display = "none";
-      rowWheelTotal.style.display = "none";
-      hasShownWheelingAlert = false;
     }
-  }
 
-  isWheelingField.addEventListener("change", () => {
-    wheelingFields.style.display = isWheelingField.value === "Yes" ? "block" : "none";
+    // Listeners
+    todSelect.addEventListener("change", handleWheelingTOD);
+    unitsField.addEventListener("input", handleWheelingTOD);
+    categorySel.addEventListener("change", handleWheelingTOD);
+
+    // TOD mode radio logic
+    const modeRadios = div.querySelectorAll(`input[name='wheelMode-${i}']`);
+    modeRadios.forEach(radio => {
+      radio.addEventListener("change", function () {
+        renderWheelTODFields(i, this.value);
+      });
+    });
+
+    // Default TOD render (units)
+    renderWheelTODFields(i, "units");
+
+    // Run initial toggle
     handleWheelingTOD();
-  });
 
-  TODWheel.addEventListener("change", handleWheelingTOD);
-  wheeledUnits.addEventListener("input", handleWheelingTOD);
-  wheelingCategory.addEventListener("change", handleWheelingTOD);
+    // -----------------------------
+    // Push site data (old + new variables)
+    // -----------------------------
+    const wheelingCategory    = categorySel.value;
+    const WheelingTransformer = transformerSel.value;
+    const TODAvailableWheel   = todSelect.value;
+    const wheeledConsumedUnits = parseFloat(unitsField.value) || 0;
+    const wheelTodNL = parseFloat(div.querySelector(`#wheel_TodNL-${i}`)?.value) || 0;
+    const wheelTodPK = parseFloat(div.querySelector(`#wheel_TodPK-${i}`)?.value) || 0;
+    const wheelTodOP = parseFloat(div.querySelector(`#wheel_TodOP-${i}`)?.value) || 0;
+
+    wheelingSites.push({
+      siteIndex: i,
+      // old variable names
+      wheelingCategory,
+      WheelingTransformer,
+      TODAvailableWheel,
+      wheeledConsumedUnits,
+      wheelTodNL,
+      wheelTodPK,
+      wheelTodOP,
+
+      // loop-friendly aliases
+      category: wheelingCategory,
+      transformer: WheelingTransformer,
+      TODAvailable: TODAvailableWheel,
+      units: wheeledConsumedUnits,
+      todNL: wheelTodNL,
+      todPK: wheelTodPK,
+      todOP: wheelTodOP
+    });
+  }
+}
+
+
+
+// Main toggle: show/hide all wheeling fields
+isWheelingField.addEventListener("change", () => {
+  if (isWheelingField.value === "Yes") {
+    wheelingFields.style.display = "block";
+    siteCountSelect.parentElement.style.display = "flex"; // show site count selector
+    generateWheelingSites(parseInt(siteCountSelect.value, 10));
+  } else {
+    wheelingFields.style.display = "none";
+    siteCountSelect.parentElement.style.display = "none";
+    wheelingFields.innerHTML = "";
+  }
+});
+
+// Change number of sites dynamically
+siteCountSelect.addEventListener("change", function() {
+  generateWheelingSites(parseInt(this.value, 10));
+});
+
 
 
     /* ------------------------------
        6. Wheeled TOD input fields
      ------------------------------ */
-  function renderWheelTODFields(mode = "units") {
-    const container = document.getElementById("wheelTODInputsContainer");
-    container.innerHTML = "";
+  function renderWheelTODFields(siteIndex, mode = "units") {
+  const container = document.getElementById(`wheelTODInputsContainer-${siteIndex}`);
+  container.innerHTML = "";
 
-    const labels = [
-      { key: "NL", label: "NL / നോർമൽ" },
-      { key: "OP", label: "OP / ഓഫ്-പീക്ക്" },
-      { key: "PK", label: "PK / പീക്ക് ടൈം" }
-    ];
+  const labels = [
+    { key: "NL", label: "NL / നോർമൽ" },
+    { key: "OP", label: "OP / ഓഫ്-പീക്ക്" },
+    { key: "PK", label: "PK / പീക്ക് ടൈം" }
+  ];
 
-    labels.forEach(({ key, label }) => {
-      const row = document.createElement("div");
-      row.style.cssText = "display:flex; gap:8px; align-items:center; margin-bottom:6px;";
+  labels.forEach(({ key, label }) => {
+    const row = document.createElement("div");
+    row.style.cssText = "display:flex; gap:8px; align-items:center; margin-bottom:6px;";
 
-      const lbl = document.createElement("label");
-      lbl.textContent = label + ":";
-      lbl.style.width = "110px";
-      row.appendChild(lbl);
+    const lbl = document.createElement("label");
+    lbl.textContent = label + ":";
+    lbl.style.width = "110px";
+    row.appendChild(lbl);
 
-      if (mode === "units") {
-        const input = document.createElement("input");
-        input.type = "number";
-        input.min = "0";
-        input.step = "1";
-        input.id = `wheel_Tod${key}`;
-        input.className = "tod wheel";
-        input.style.width = "70px";
-        row.appendChild(input);
-      } else {
-        const curr = document.createElement("input");
-        curr.type = "number";
-        curr.placeholder = "Curr";
-        curr.id = `wheel_Tod${key}_curr`;
-        curr.dataset.target = `wheel_Tod${key}`;
-        curr.className = "curr-reading";
-        curr.style.width = "110px";
-        row.appendChild(curr);
+    if (mode === "units") {
+      const input = document.createElement("input");
+      input.type = "number";
+      input.min = "0";
+      input.step = "1";
+      input.id = `wheel${siteIndex}_Tod${key}`;
+      input.className = "tod wheel";
+      input.style.width = "70px";
+      row.appendChild(input);
+    } else {
+      const curr = document.createElement("input");
+      curr.type = "number";
+      curr.placeholder = "Curr";
+      curr.id = `wheel${siteIndex}_Tod${key}_curr`;
+      curr.dataset.target = `wheel${siteIndex}_Tod${key}`;
+      curr.className = "curr-reading";
+      curr.style.width = "110px";
+      row.appendChild(curr);
 
-        const prev = document.createElement("input");
-        prev.type = "number";
-        prev.placeholder = "Prev";
-        prev.id = `wheel_Tod${key}_prev`;
-        prev.dataset.target = `wheel_Tod${key}`;
-        prev.className = "prev-reading";
-        prev.style.width = "110px";
-        row.appendChild(prev);
+      const prev = document.createElement("input");
+      prev.type = "number";
+      prev.placeholder = "Prev";
+      prev.id = `wheel${siteIndex}_Tod${key}_prev`;
+      prev.dataset.target = `wheel${siteIndex}_Tod${key}`;
+      prev.className = "prev-reading";
+      prev.style.width = "110px";
+      row.appendChild(prev);
 
-        const diffField = document.createElement("input");
-        diffField.type = "number";
-        diffField.id = `wheel_Tod${key}`;
-        diffField.style.display = "none";
-        row.appendChild(diffField);
-      }
+      const diffField = document.createElement("input");
+      diffField.type = "number";
+      diffField.id = `wheel${siteIndex}_Tod${key}`;
+      diffField.style.display = "none";
+      row.appendChild(diffField);
+    }
 
-      container.appendChild(row);
-    });
-  }
-
-  document.querySelectorAll("input[name='wheelMode']").forEach(radio => {
-    radio.addEventListener("change", function () {
-      renderWheelTODFields(this.value);
-    });
+    container.appendChild(row);
   });
+}
 
-  renderWheelTODFields("units"); // default
 
   /* ------------------------------
    Document level listner
@@ -1061,6 +1246,25 @@ document.addEventListener("input", function (e) {
     updateDiffPanel();
   }
 });
+
+
+/* ------------Changing the names of wheeling variables to match old code-------------------------------- */
+
+function mapSiteProperties(site, useOldNames = false) {
+  if (useOldNames) {
+    return {
+      wheelingCategory: site.category,
+      WheelingTransformer: site.transformer,
+      TODAvailableWheel: site.TODAvailable,
+      wheeledConsumedUnits: site.units,
+      wheelTodNL: site.todNL,
+      wheelTodPK: site.todPK,
+      wheelTodOP: site.todOP
+    };
+  } else {
+    return site; // keep loop-friendly names
+  }
+}
 
 
 /* ------------Updating Floating Panel-------------------------------- */
@@ -1392,10 +1596,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 /* ------------------------------------------------------
-     6. PDF Download Handler
-     ------------------------------------------------------ */
+   1. PDF Download Handler (with IndexedDB save)
+------------------------------------------------------ */
 document.getElementById('downloadFullPDF').addEventListener('click', () => {
-  // Hide all .no-print elements
+  // Hide all .no-print elements temporarily
   document.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
 
   // Get user inputs
@@ -1405,7 +1609,7 @@ document.getElementById('downloadFullPDF').addEventListener('click', () => {
   ]?.text || "Month";
   const year = document.getElementById("billYear")?.value || new Date().getFullYear();
 
-  // Filename: Year_Month_Bill_Name.pdf
+  // Filename
   const fileName = `${year}_${month}_Bill_${name}.pdf`;
 
   const element = document.getElementById('pdfContent');
@@ -1413,25 +1617,200 @@ document.getElementById('downloadFullPDF').addEventListener('click', () => {
     margin: 0.3,
     filename: fileName,
     image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: {
-      scale: 2,          // High-quality capture (2x is usually enough)
-      scrollY: 0,
-      useCORS: true
-    },
-    jsPDF:  { unit: 'in', format: 'a4', orientation: 'portrait' },
-    pagebreak: {
-      mode: ['css', 'legacy'],
-      before: '.pdf-page-break',
-      avoid:  '.avoid-page-break'
-    }
+    html2canvas: { scale: 2, scrollY: 0, useCORS: true },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['css', 'legacy'], before: '.pdf-page-break', avoid: '.avoid-page-break' }
   };
 
-  html2pdf().set(opt).from(element).save().then(() => {
-    // Restore no-print elements after PDF is generated
-    document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
+  // Generate PDF and save to DB + download
+  html2pdf().set(opt).from(element).outputPdf('blob').then((pdfBlob) => {
+    savePdfToDB(fileName, pdfBlob, {
+      date: `${month}-${year}`,
+      consumerNo: name,
+      billType: document.getElementById("prosumerMode")?.checked ? "Prosumer" : "Consumer",
+      totalCharge: document.getElementById("totalAmount")?.textContent || ""
+    }).then(() => {
+      console.log("✅ Bill stored in History DB");
+    }).catch(err => console.error("❌ Error saving to DB:", err));
+
+    // Trigger download
+    html2pdf().set(opt).from(element).save().then(() => {
+      // Restore .no-print elements
+      document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
+      loadHistory(); // refresh history immediately
+    });
   });
 });
 
+/* ------------------------------------------------------
+   2. Save PDF to IndexedDB
+------------------------------------------------------ */
+async function savePdfToDB(filename, pdfBlob, billMeta) {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("ksebDB", 1);
+
+    request.onupgradeneeded = function(event) {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains("pdfs")) {
+        db.createObjectStore("pdfs", { keyPath: "filename" });
+      }
+    };
+
+    request.onsuccess = function(event) {
+      const db = event.target.result;
+      const tx = db.transaction("pdfs", "readwrite");
+      const store = tx.objectStore("pdfs");
+
+      const data = {
+        filename: filename,
+        pdf: pdfBlob,
+        date: billMeta.date || new Date().toLocaleDateString(),
+        consumerNo: billMeta.consumerNo || "N/A",
+        billType: billMeta.billType || "Prosumer",
+        totalCharge: billMeta.totalCharge || 0
+      };
+
+      store.put(data);
+
+      tx.oncomplete = () => resolve();
+      tx.onerror = e => reject("DB save error: " + e.target.errorCode);
+    };
+
+    request.onerror = e => reject("DB open error: " + e.target.errorCode);
+  });
+}
+
+/* ------------------------------------------------------
+   3. Load History from IndexedDB
+------------------------------------------------------ */
+function loadHistory() {
+  const request = indexedDB.open("ksebDB", 1);
+
+  request.onsuccess = function(event) {
+    const db = event.target.result;
+    const tx = db.transaction("pdfs", "readonly");
+    const store = tx.objectStore("pdfs");
+
+    store.getAll().onsuccess = function(event) {
+      const results = event.target.result;
+
+      const table = document.getElementById("historyTable");
+      table.innerHTML = `
+        <tr>
+          <th style="padding:10px;">Filename</th>
+          <th style="padding:10px;">Date</th>
+          <th style="padding:10px;">Action</th>
+        </tr>
+      `;
+
+      results.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      results.forEach(item => {
+        const row = document.createElement("tr");
+        row.style.wordWrap = "break-word";
+        row.innerHTML = `
+          <td><a href="#" onclick="viewPDF('${item.filename}')">${item.filename}</a></td>
+          <td>${item.date}</td>
+          <td>
+            <button onclick="deletePDF('${item.filename}')" style="cursor:pointer;">🗑 Delete</button>
+          </td>
+        `;
+        table.appendChild(row);
+      });
+    };
+  };
+}
+
+/* ------------------------------------------------------
+   4. View PDF
+------------------------------------------------------ */
+function viewPDF(filename) {
+  const request = indexedDB.open("ksebDB", 1);
+
+  request.onsuccess = function(event) {
+    const db = event.target.result;
+    const tx = db.transaction("pdfs", "readonly");
+    const store = tx.objectStore("pdfs");
+
+    const getReq = store.get(filename);
+    getReq.onsuccess = function(event) {
+      const data = event.target.result;
+      if (data && data.pdf) {
+        const url = URL.createObjectURL(data.pdf);
+        window.open(url, "_blank");
+      } else {
+        alert("⚠️ PDF not found.");
+      }
+    };
+  };
+}
+
+/* ------------------------------------------------------
+   5. Delete PDF
+------------------------------------------------------ */
+function deletePDF(filename) {
+  if (!confirm(`Are you sure you want to delete "${filename}"?`)) return;
+
+  const request = indexedDB.open("ksebDB", 1);
+  request.onsuccess = function(event) {
+    const db = event.target.result;
+    const tx = db.transaction("pdfs", "readwrite");
+    const store = tx.objectStore("pdfs");
+
+    const delReq = store.delete(filename);
+    delReq.onsuccess = function() {
+      console.log("Deleted:", filename);
+      loadHistory();
+    };
+    delReq.onerror = function(e) {
+      alert("❌ Delete failed: " + e.target.errorCode);
+    };
+  };
+}
+
+/* ------------------------------------------------------
+   6. Export History as CSV
+------------------------------------------------------ */
+function exportHistoryAsCSV() {
+  const request = indexedDB.open("ksebDB", 1);
+
+  request.onsuccess = function(event) {
+    const db = event.target.result;
+    const tx = db.transaction("pdfs", "readonly");
+    const store = tx.objectStore("pdfs");
+
+    store.getAll().onsuccess = function(event) {
+      const results = event.target.result;
+      if (!results || results.length === 0) return alert("⚠️ No saved history to export.");
+
+      let csv = "Filename,Date,ConsumerNo,BillType,TotalCharge\n";
+      results.forEach(item => {
+        csv += [
+          item.filename,
+          item.date,
+          item.consumerNo,
+          item.billType,
+          item.totalCharge
+        ].join(",") + "\n";
+      });
+
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "kseb_bill_history.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+  };
+}
+
+/* ------------------------------------------------------
+   7. Auto Load History on Page Load
+------------------------------------------------------ */
+window.addEventListener('load', () => {
+  loadHistory();
+});
 
   /* ------------------------------------------------------
      7. CSV Loading and Parsing Helper Functions
@@ -1885,7 +2264,7 @@ function WheelingEnergyCharge(wheelingCategory, wheeledConsumedUnits, todNL = 0,
 
   if (wheelingCategory === "LT1") {
     // Determine billing type for LT1 consumer
-    billmethWheel = getBillingTypeConsumer(wheelingCategory, wheeledConsumedUnits, 0, 0).billtype;
+    billmethWheel = getBillingTypeConsumer(wheeledConsumedUnits, 0, 0).billtype;
     console.log("▶ billmethWheel (LT1) =", billmethWheel);
 
     if (billmethWheel === "telescopic") {
@@ -2172,9 +2551,7 @@ function updateTimestamp(now) {
 
 function getFormInputs() {
 
-  if (typeof refreshDiffs === "function") {
-    refreshDiffs(); // update _diff fields before reading
-  }
+  if (typeof refreshDiffs === "function") refreshDiffs(); // update _diff fields
 
   // ---------------------------
   // General Connection Info
@@ -2250,41 +2627,76 @@ function getFormInputs() {
   }
 
   // ---------------------------
-  // Wheeling Inputs
+  // Wheeling Inputs (multi-site)
   // ---------------------------
-  const isWheeling        = document.getElementById("isWheeling")?.value || "No";
-  const TODAvailableWheel = document.getElementById("TODAvailabilityWheel")?.value || "No";
-  const wheelingCategory  = isWheeling === "Yes" ? document.getElementById("wheelingCategory")?.value || "" : "";
+  const isWheeling = document.getElementById("isWheeling")?.value || "No";
+  let wheelingSites = [];
 
-  let wheeledConsumedUnits = 0;
-  let wheelTodNL = 0, wheelTodPK = 0, wheelTodOP = 0;
+  // Initialize old site 1 variables to safe defaults
+  let wheelingCategory = "", WheelingTransformer = "Yes", TODAvailableWheel = "No";
+  let wheeledConsumedUnits = 0, wheelTodNL = 0, wheelTodPK = 0, wheelTodOP = 0;
 
   if (isWheeling === "Yes") {
-    if (TODAvailableWheel === "Yes") {
-      const wheelMode = document.querySelector("input[name='wheelMode']:checked")?.value || "units";
+    const siteCount = parseInt(document.getElementById("numWheelingSites")?.value || "0", 10);
 
-      if (wheelMode === "units") {
-        wheelTodNL = parseFloat(document.getElementById("wheel_TodNL")?.value) || 0;
-        wheelTodPK = parseFloat(document.getElementById("wheel_TodPK")?.value) || 0;
-        wheelTodOP = parseFloat(document.getElementById("wheel_TodOP")?.value) || 0;
+    for (let i = 1; i <= siteCount; i++) {
+      const category     = document.getElementById(`wheelingCategory-${i}`)?.value || "";
+      const transformer  = document.getElementById(`wheelingTransformer-${i}`)?.value || "Yes";
+      const todAvailable = document.getElementById(`TODAvailabilityWheel-${i}`)?.value || "No";
+
+      let siteWheelTodNL = 0, siteWheelTodPK = 0, siteWheelTodOP = 0, siteUnits = 0;
+
+      if (todAvailable === "Yes") {
+        const wheelMode = document.querySelector(`input[name='wheelMode-${i}']:checked`)?.value || "units";
+
+        if (wheelMode === "units") {
+          siteWheelTodNL = parseFloat(document.getElementById(`wheel_TodNL-${i}`)?.value) || 0;
+          siteWheelTodPK = parseFloat(document.getElementById(`wheel_TodPK-${i}`)?.value) || 0;
+          siteWheelTodOP = parseFloat(document.getElementById(`wheel_TodOP-${i}`)?.value) || 0;
+        } else {
+          const getDiff = (key) => {
+            const curr = parseFloat(document.getElementById(`wheel_Tod${key}_curr-${i}`)?.value) || 0;
+            const prev = parseFloat(document.getElementById(`wheel_Tod${key}_prev-${i}`)?.value) || 0;
+            return Math.max(curr - prev, 0);
+          };
+          siteWheelTodNL = getDiff("NL");
+          siteWheelTodPK = getDiff("PK");
+          siteWheelTodOP = getDiff("OP");
+
+          // update hidden fields
+          document.getElementById(`wheel_TodNL-${i}`).value = siteWheelTodNL;
+          document.getElementById(`wheel_TodPK-${i}`).value = siteWheelTodPK;
+          document.getElementById(`wheel_TodOP-${i}`).value = siteWheelTodOP;
+        }
+        siteUnits = siteWheelTodNL + siteWheelTodPK + siteWheelTodOP;
       } else {
-        const getDiff = (key) => {
-          const curr = parseFloat(document.getElementById(`wheel_Tod${key}_curr`)?.value) || 0;
-          const prev = parseFloat(document.getElementById(`wheel_Tod${key}_prev`)?.value) || 0;
-          return Math.max(curr - prev, 0);
-        };
-        wheelTodNL = getDiff("NL");
-        wheelTodPK = getDiff("PK");
-        wheelTodOP = getDiff("OP");
-
-        document.getElementById("wheel_TodNL").value = wheelTodNL;
-        document.getElementById("wheel_TodPK").value = wheelTodPK;
-        document.getElementById("wheel_TodOP").value = wheelTodOP;
+        siteUnits = parseFloat(document.getElementById(`wheeledConsumedUnits-${i}`)?.value) || 0;
       }
 
-      wheeledConsumedUnits = wheelTodNL + wheelTodPK + wheelTodOP;
-    } else {
-      wheeledConsumedUnits = parseFloat(document.getElementById("wheeledConsumedUnits")?.value) || 0;
+      // Map site object
+      const siteObj = {
+        siteIndex: i,
+        category,
+        transformer,
+        TODAvailable: todAvailable,
+        units: siteUnits,
+        todNL: siteWheelTodNL,
+        todPK: siteWheelTodPK,
+        todOP: siteWheelTodOP
+      };
+
+      wheelingSites.push(siteObj);
+
+      // Assign old site 1 variables automatically
+      if (i === 1) {
+        wheelingCategory   = category;
+        WheelingTransformer = transformer;
+        TODAvailableWheel  = todAvailable;
+        wheeledConsumedUnits = siteUnits;
+        wheelTodNL = siteWheelTodNL;
+        wheelTodPK = siteWheelTodPK;
+        wheelTodOP = siteWheelTodOP;
+      }
     }
   }
 
@@ -2312,20 +2724,22 @@ function getFormInputs() {
     SolarGen_OP,
     Solar,
     isWheeling,
-    TODAvailableWheel,
+    // old variables (site 1)
     wheelingCategory,
+    WheelingTransformer,
+    TODAvailableWheel,
     wheeledConsumedUnits,
     wheelTodNL,
     wheelTodPK,
-    wheelTodOP
+    wheelTodOP,
+    // loop-friendly array
+    wheelingSites
   };
 
-  // ---------------------------
-  // Make each property global
-  // ---------------------------
   Object.assign(window, inputs);
   return inputs;
 }
+
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -2342,33 +2756,46 @@ document.getElementById('billForm').addEventListener('submit', async function (e
 const inputs = getFormInputs();
 
 let {
-    connectionType,
-    phaseType,
-    meterOwner,
-    Bank,
-    globalMode,
-    exportUnitsInput,
-    importUnitsInput,
-    SolarTotalInput,
-    TODAvailability,
-    todDay,
-    todOffpeak,
-    todPeak,
-    EtodDay,
-    EtodOffpeak,
-    EtodPeak,
-    SolarGen_NL,
-    SolarGen_PK,
-    SolarGen_OP,
-    Solar,
-    isWheeling,
-    TODAvailableWheel,
-    wheelingCategory,
-    wheeledConsumedUnits,
-    wheelTodNL,
-    wheelTodPK,
-    wheelTodOP
-  } = inputs;
+  connectionType,
+  phaseType,
+  meterOwner,
+  Bank,
+  globalMode,
+  exportUnitsInput,
+  importUnitsInput,
+  SolarTotalInput,
+  TODAvailability,
+  todDay,
+  todOffpeak,
+  todPeak,
+  EtodDay,
+  EtodOffpeak,
+  EtodPeak,
+  SolarGen_NL,
+  SolarGen_PK,
+  SolarGen_OP,
+  Solar,
+  isWheeling,
+  wheelingSites,          // ✅ loop-friendly array
+  // site 1 old variable names for backward compatibility
+  wheelingCategory,       
+  WheelingTransformer,    
+  TODAvailableWheel,      
+  wheeledConsumedUnits,   
+  wheelTodNL,             
+  wheelTodPK,             
+  wheelTodOP              
+} = inputs;
+
+// Now you can still use old variables for site 1:
+console.log(wheelingCategory, WheelingTransformer, wheeledConsumedUnits);
+
+// And loop through all sites with loop-friendly names:
+if (isWheeling) {
+  wheelingSites.forEach(site => {
+    console.log(`Site ${site.siteIndex}:`, site.category, site.transformer, site.units);
+  });
+}
 
 
 let importUnits = 0, exportUnits = 0, netUnits = 0, newBank = 0;
@@ -2482,135 +2909,323 @@ let importUnits = 0, exportUnits = 0, netUnits = 0, newBank = 0;
 
 
 // ---------------------------
-  // 6. Wheeling
+// 6. Wheeling (multi-site loop)
 // ---------------------------
 
-    let WheelingCharge = 0; let Avail_4_Wheel = 0; let Avail_4_Wheel_String = ``;
-    let Avail_After_Wheel = 0;  let Avail_After_Wheel_String = ``;
-    let Bank_after_Wheeling = 0; let Bank_after_Wheeling_String = ``; let wheelingUnitsNew;
-    let Int_Avail_4_Wheel; let ConsumptionAfterWheeling =0; 
+// --- ensure site-1 variables exist (safe defaults) ---
+let WheelingCharge = 0;
+let Avail_4_Wheel = 0;
+let Avail_After_Wheel = 0;
+let Bank_after_Wheeling = 0;
+let wheelingUnitsNew = 0;
+let Int_Avail_4_Wheel = 0;
+let ConsumptionAfterWheeling = 0;
+let EnergyLostWheeling = 0;
+let billmethWheel = ''; let slabRange = '';
+
+let WheelEnergy = 0;
+let WheelEString = "";
+let WheelB4duty = 0;
+let WheelB4surcharge = 0;
+let TotalB4Wheel = 0;
+
+let WheelEnergy_After = 0;
+let WheelEString_After = "";
+let WheelAfterduty = 0;
+let WheelAftersurcharge = 0;
+let TotalAfterWheel = 0;
+
+let WheelSaving = 0;
+
+let Avail_4_Wheel_String = ``;
+let Avail_After_Wheel_String = ``;
+let Bank_after_Wheeling_String = ``;
+
+let InfoWheel;    let ConsESlabWheel;   let ConsslabEConsWheel;
+let InfoWheelB4; let ConsESlabWheelB4;   let slabEConsWheelB4;
+
+// --- totals (must be declared OUTSIDE the loop) ---
+let WheelTotalSaving = 0;
+let WheelTotalAdjUnit = 0;
+let WheelTotalEnergyLost = 0;
+
+let wheelingSummaryHTML = "";
+let wheelingDetailsHTML = "";
+let siteSavings = {}; 
+let siteEnergyLoss = {};
+let siteAdjustUnits = {};
+
+if (isWheeling === "Yes" && wheelingSites.length > 0) {
+  for (let i = 0; i < wheelingSites.length; i++) {
+    const site = wheelingSites[i];
+    console.log(`▶ Processing Site ${i + 1}`);
+
+
+    // Extract per-site variables (loop-friendly names)
+    const wheelingCategory = site.category;
+    const WheelingTransformer = site.transformer;
+    const TODAvailableWheel = site.TODAvailable;
+    let wheeledConsumedUnits = site.units;
+    let wheelTodNL = site.todNL;
+    let wheelTodPK = site.todPK;
+    let wheelTodOP = site.todOP;
+
+    // ---------------------------
+    // Backward compatibility: Site 1 only
+    // ---------------------------
+    if (i === 0) {
+      window.wheelingCategory = wheelingCategory;
+      window.WheelingTransformer = WheelingTransformer;
+      window.TODAvailableWheel = TODAvailableWheel;
+      window.wheeledConsumedUnits = wheeledConsumedUnits;
+      window.wheelTodNL = wheelTodNL;
+      window.wheelTodPK = wheelTodPK;
+      window.wheelTodOP = wheelTodOP;
+    }
+
+    // ---------------------------
+    // Calculations (same for all sites)
+    // ---------------------------
+    let DistLoss = (WheelingTransformer === "Yes") ? DistLossSame : DistLossDiff;
+    let Avail_4_Wheel = round2(newBank* (1 - DistLoss / 100));
+    let Int_Avail_4_Wheel = Avail_4_Wheel;
+
+    let wheelingUnitsNew =
+      Int_Avail_4_Wheel >= wheeledConsumedUnits
+        ? wheeledConsumedUnits
+        : Int_Avail_4_Wheel;
+
+    let Avail_4_Wheel_String = `UB${i + 1}:${newBank} × [1 - ${round2(DistLoss/100)}] = ${Avail_4_Wheel}, Dist loss ${DistLoss}%`;
+    let Avail_After_Wheel = round2(Avail_4_Wheel - wheelingUnitsNew);
+    let Avail_After_Wheel_String = `BW${i + 1}:${Avail_4_Wheel} - AU${i + 1}:${wheelingUnitsNew} = ${Avail_After_Wheel}`;
+    let Bank_after_Wheeling = round2(Avail_After_Wheel / (1 - DistLoss / 100));
+    let Bank_after_Wheeling_String = `AW${i + 1}:${Avail_After_Wheel} ÷ [1 - ${round2(DistLoss/100)}] = ${Bank_after_Wheeling}, Dist loss ${DistLoss}%`;
+    let ConsumptionAfterWheeling = wheeledConsumedUnits - wheelingUnitsNew;
+    let EnergyLostWheeling = newBank - wheelingUnitsNew - Bank_after_Wheeling;
+
+    // TOD adjustment
+    let WheelAdjImport = [0, 0, 0];
+    if (TODAvailableWheel === "Yes") {
+      const importTOD = { day: wheelTodNL, offpeak: wheelTodOP, peak: wheelTodPK };
+      const exportTOD = { day: 0, offpeak: 0, peak: 0 };
+      const WheeledAdjTodData = getNetImportTOD(importTOD, exportTOD, wheelingUnitsNew);
+      WheelAdjImport = WheeledAdjTodData.adjImport.map(v =>
+        Number.isInteger(v) ? v : parseFloat(v.toFixed(2))
+      );
+    } else if (wheeledConsumedUnits < 500) {
+      wheelTodNL = wheeledConsumedUnits;
+    }
+
+    // Billing before wheeling
+    await cacheWheelingTariff(wheelingCategory);
+    let WheelResultBefore = WheelingEnergyCharge(
+      wheelingCategory,
+      wheeledConsumedUnits,
+      wheelTodNL,
+      wheelTodPK,
+      wheelTodOP
+    );
+    let WheelEnergy = Number(WheelResultBefore.WheelEnergy) || 0;
+    let WheelEString = WheelResultBefore.WheelEString;
+    let billmethWheel = WheelResultBefore.billmethWheel;
+    let slabRange = WheelResultBefore.slabRange;
+    let WheelB4duty = WheelEnergy * duty / 100;
+    let WheelB4surcharge = surcharge * wheeledConsumedUnits;
+    let TotalB4Wheel = WheelEnergy + WheelB4duty + WheelB4surcharge;
+
+    let InfoWheelB4 = getSlabLabel(wheeledConsumedUnits, cachedWheeledRateTable);
+    let ConsESlabWheelB4 = InfoWheelB4.slabObj;
+    let slabEConsWheelB4 = InfoWheelB4.label;
+
+    // Billing after wheeling
+    let WheelResultAfter = WheelingEnergyCharge(
+      wheelingCategory,
+      ConsumptionAfterWheeling,
+      WheelAdjImport[0],
+      WheelAdjImport[2],
+      WheelAdjImport[1]
+    );
+    let WheelEnergy_After = Number(WheelResultAfter.WheelEnergy) || 0;
+    let WheelEString_After = WheelResultAfter.WheelEString;
+    let WheelAfterduty = WheelEnergy_After * duty / 100;
+    let WheelAftersurcharge = surcharge * ConsumptionAfterWheeling;
+    let TotalAfterWheel = WheelEnergy_After + WheelAfterduty + WheelAftersurcharge;
+
+    let billmethWheel_After = WheelResultAfter.billmethWheel;
+
+    let InfoWheelAfter = getSlabLabel(ConsumptionAfterWheeling, cachedWheeledRateTable);
+    let ConsESlabWheel = InfoWheelAfter.slabObj;
+    let slabEConsWheel = InfoWheelAfter.label;
+
+    let WheelSaving = TotalB4Wheel - TotalAfterWheel;
+    siteSavings[`S${i + 1}`] = WheelSaving;
+    siteEnergyLoss[`EL${i + 1}`] = EnergyLostWheeling;
+    siteAdjustUnits[`AU${i + 1}`] = wheelingUnitsNew;
+    // log
     
-    let WheelEnergy_After = 0;    let WheelEString_After = '';    let WheelAfterduty = 0;
-    let WheelAftersurcharge = 0; let WheelResultAfter;  let TotalAfterWheel = 0;
-    let InfoWheel;    let ConsESlabWheel;   let ConsslabEConsWheel;
+    console.log(`Saving for Site ${i + 1}: ₹${WheelSaving.toFixed(2)}`);
+    console.log(`Energy loss for Site ${i + 1}: ₹${siteEnergyLoss}`);
+    console.log(`Adjusted Units for Site ${i + 1}: ₹${siteAdjustUnits}`);
 
-    let WheelEnergy = 0; let WheelEString = '';  let billmethWheel = ''; let slabRange = '';
-    let WheelB4duty = 0; let WheelB4surcharge=0; let WheelResultBefore;  let TotalB4Wheel = 0;
-    let InfoWheelB4; let ConsESlabWheelB4;   let slabEConsWheelB4; 
+    // accumulate totals (numeric)
+    WheelTotalSaving += WheelSaving;
+    WheelTotalAdjUnit += wheelingUnitsNew;
+    WheelTotalEnergyLost += Number(EnergyLostWheeling); // keep numeric
 
+    // ---------------------------
+    // Short summary block (all sites)
+    // ---------------------------
+    wheelingSummaryHTML += `
+      <h3>Wheeling: Site ${i + 1}</h3>
+      Wheeled Location Category: <strong>${wheelingCategory}</strong> <br>
+      Same Transformer: <strong>${WheelingTransformer}</strong> <br>
+      ${
+        TODAvailableWheel.toLowerCase() === "yes"
+          ? `TOD NL: <strong>${wheelTodNL}</strong>, OP: <strong>${wheelTodOP}</strong>, PK: <strong>${wheelTodPK}</strong><br>`
+          : `Usage: <strong>${wheeledConsumedUnits} Units</strong><br>`
+      }
+    `;
 
-    if (isWheeling === "Yes") {
+    // ---------------------------
+    // PDF block: bilingual for Site 1, English-only for others
+    // ---------------------------
+    wheelingDetailsHTML += `
+      <div class="pdf-page-break"></div>
+      <br>
+      <h2 style="color: blue;">WHEELING - Site ${i + 1}</h2><br>
+      <h2 style="color:#6A0DAD; font-size:larger; display:inline-block; border-bottom:2px solid #6A0DAD;">
+      Bank unit calculation / ബാങ്ക് യൂണിറ്റ്  </h2> <br>
+       Bank Opening / ബാങ്ക് ഓപ്പണിങ് [UB${i + 1}]: ${newBank} units <br>
+       Available for Wheeling / ലഭ്യമായത് [BW${i + 1}]: <strong>${Avail_4_Wheel}</strong> <br>
+       <span style="font-size: smaller; color: red;">${Avail_4_Wheel_String} units </span><br><br>
 
-    // wheeling Units calculations
-      Avail_4_Wheel               = round2(newBank * (1 - DistLoss/100));
-      Int_Avail_4_Wheel           = Avail_4_Wheel;
+       Wheeled Site Consumption / വീൽഡ് സൈറ്റ് ഉപഭോഗം [WC${i + 1}]: <strong>${wheeledConsumedUnits}</strong> units <br>
+       Adjusted Units/ അഡ്ജസ്റ്റ് ചെയ്ത യൂണിറ്റുകൾ [AU${i + 1}]: <strong>${wheelingUnitsNew}</strong> units <br>
+       Balance After Wheeling / ബാലൻസ് [AW${i + 1}]:<strong> ${Avail_After_Wheel}</strong> units<br>
+       <span style="font-size: smaller; color: red;">(${Avail_After_Wheel_String})</span><br><br>
 
-       if (Int_Avail_4_Wheel >= wheeledConsumedUnits) {
-       wheelingUnitsNew = wheeledConsumedUnits;
-      } else {
-       wheelingUnitsNew = Int_Avail_4_Wheel;
-        }
+       <strong>Updated Bank Closing / ബാങ്ക് ക്ലോസിങ് </strong>: <strong>${Bank_after_Wheeling}</strong> units<br>
+       <span style="font-size: smaller; color: red;">${Bank_after_Wheeling_String} </span><br>
+       <br>
+       Energy Lost During Wheeling / നഷ്ടപെട്ട യൂണിറ്റ് [EL${i + 1}]:  <strong>${EnergyLostWheeling.toFixed(2)}</strong> units<br>
+       <span style="font-size: smaller; color: red;">(UB${i + 1}:${newBank} - AU${i + 1}:${wheelingUnitsNew} - AW${i + 1}:${Bank_after_Wheeling} = ${EnergyLostWheeling.toFixed(2)})  </span><br>
+       <br>
 
+       <h2 style="color:#6A0DAD; font-size:larger; display:inline-block; border-bottom:2px solid #6A0DAD;">
+       Charges after adjusting wheeled units <br>
+       വീലിലിംഗ്‌നു ശേഷമുള്ള ചാർജുകൾ </h2> <br>
 
-    // wheeling calculations        
-        Avail_4_Wheel_String        =  `UB:${newBank} × [1 - ${DistLoss/100}] = ${Avail_4_Wheel}, Dist loss ${DistLoss}%`;
-        Avail_After_Wheel           = round2(Avail_4_Wheel - wheelingUnitsNew);
-        Avail_After_Wheel_String    = `BW:${Avail_4_Wheel} - W:${wheelingUnitsNew} = ${Avail_After_Wheel}`;
-        Bank_after_Wheeling         = round2(Avail_After_Wheel / (1 - DistLoss/100));
-        Bank_after_Wheeling_String  =  `AW:${Avail_After_Wheel} ÷ [1 - ${DistLoss/100}] = ${Bank_after_Wheeling}, Dist loss ${DistLoss}%`;  
-        WheelingCharge              = round2(wheelingUnitsNew * wheelingRate);
-        ConsumptionAfterWheeling    = wheeledConsumedUnits -  wheelingUnitsNew;  
-        EnergyLostWheeling          = newBank - wheelingUnitsNew - Bank_after_Wheeling;  
-    
+      Charged Units / ചാർജ് ചെയ്ത യൂണിറ്റുകൾ: ${ConsumptionAfterWheeling.toFixed(2)} units<br>
+      <span style="font-size: smaller; color: red;">(WC${i + 1}:${wheeledConsumedUnits} - AU${i + 1}:${wheelingUnitsNew} = ${ConsumptionAfterWheeling.toFixed(2)})</span><br><br>
 
- let WheelimportTOD = {day:wheelTodNL, offpeak:wheelTodOP, peak:wheelTodPK };   let WheelexportTOD = { day:0, offpeak:0, peak:0 };
-  let WheeledAdjTodData;    let WheelAdjImport = []; let WheelnetUnits = 0;
+      Energy Charge / എനർജി ചാർജ്: <strong> ₹ ${WheelEnergy_After.toFixed(2)} </strong><br>
+      <span style="font-size: smaller; color: red;">${WheelEString_After}</span> <br>
+      <span style=color: green;">
+       ${ renderWheeledBillingBlock(billmethWheel_After, ConsumptionAfterWheeling,  ConsESlabWheel, slabEConsWheel, todRates, wheelingCategory) }
+      </span>
+      <br>
 
-if (isWheeling === "Yes") {
-  if (TODAvailableWheel === "Yes") {
-    // Calculated Adj TOD
-         WheeledAdjTodData = getNetImportTOD (WheelimportTOD, WheelexportTOD, wheelingUnitsNew);
-         WheelAdjImport = WheeledAdjTodData.adjImport.map(v =>
-                    Number.isInteger(v) ? v : parseFloat(v.toFixed(2))
-);// net import - bank in any zone 
-         WheelnetUnits = WheelAdjImport[0] + WheelAdjImport[1] + WheelAdjImport[2]; // N - B    
-  } 
+      Duty / ഡ്യൂട്ടി (${duty}% of Energy): <strong>₹ ${WheelAfterduty.toFixed(2)}</strong>
+      <span style="font-size: smaller; color: red;">(${WheelEnergy_After.toFixed(2)} × ${duty}% = ${WheelAfterduty.toFixed(2)})</span><br><br>
+
+      Fuel Surcharge / സർചാർജ് (${surcharge}/unit):
+      <strong>₹ ${WheelAftersurcharge.toFixed(2)}</strong>
+      <span style="font-size: smaller; color: red;">(${ConsumptionAfterWheeling.toFixed(2)} × ${surcharge} = ${WheelAftersurcharge.toFixed(2)})</span><br><br>
+
+      <span style="font-size: larger; font-weight: bold;">TOTAL (after wheeling) [AFW] / ആകെ: ₹ ${TotalAfterWheel.toFixed(2)}</span><br><br>
+
+      <div class="pdf-page-break"></div>
+    <br>
+      <h2 style="color:#6A0DAD; font-size:larger; display:inline-block; border-bottom:2px solid #6A0DAD;">
+       Predicted charges without wheeled units: Site ${i + 1} </h2> <br>
+
+      Units Consumed / ഉപയോഗിച്ച യൂണിറ്റുകൾ: <strong>${wheeledConsumedUnits} units </strong><br><br>
+
+       Energy Charge / എനർജി ചാർജ്:<strong> ₹ ${WheelEnergy.toFixed(2)}</strong><br>
+       <span style="font-size: smaller; color: red;">${WheelEString}</span> <br>
+       <span style=color: green;">
+       ${ renderWheeledBillingBlock(billmethWheel, wheeledConsumedUnits,  ConsESlabWheelB4, slabEConsWheelB4, todRates, wheelingCategory) }
+      </span>
+      <br>
+
+      Duty / ഡ്യൂട്ടി (${duty}% of Energy): <strong>₹ ${WheelB4duty.toFixed(2)}</strong><br>
+      <span style="font-size: smaller; color: red;">(${WheelEnergy.toFixed(2)} × ${duty}% = ${WheelB4duty.toFixed(2)})</span><br><br>
+
+      Fuel Surcharge / സർചാർജ് (${surcharge}/unit):
+      <strong>₹ ${WheelB4surcharge.toFixed(2)}</strong><br>
+      <span style="font-size: smaller; color: red;">(${wheeledConsumedUnits} × ${surcharge} = ${WheelB4surcharge.toFixed(2)})</span><br>
+      <br>
+      <span style="font-size: larger; font-weight: bold;">TOTAL (without wheeling) [B4W] / ആകെ: ₹ ${TotalB4Wheel.toFixed(2)}</span><br>
+      <br><br>
+      <span style="font-size: larger; font-weight: bold;">Savings from Site ${i + 1} [S${i + 1}] / സേവിങ്സ്: ₹ ${WheelSaving.toFixed(2)}</span><br>
+      <span style="font-size: smaller; color: red;">(${TotalB4Wheel.toFixed(2)} - ${TotalAfterWheel.toFixed(2)} = ${WheelSaving.toFixed(2)})</span><br>
+    `;
+
+    // expose site-1globals for old template where needed (keeps compatibility)
+    if (i === 0) {
+      window.Avail_4_Wheel = Avail_4_Wheel;
+      window.Avail_After_Wheel = Avail_After_Wheel;
+      window.Bank_after_Wheeling = Bank_after_Wheeling;
+      window.wheelingUnitsNew = wheelingUnitsNew;
+      window.Int_Avail_4_Wheel = Int_Avail_4_Wheel;
+      window.ConsumptionAfterWheeling = ConsumptionAfterWheeling;
+      window.EnergyLostWheeling = EnergyLostWheeling;
+
+      window.WheelEnergy = WheelEnergy;
+      window.WheelEString = WheelEString || "";
+      window.WheelB4duty = WheelB4duty;
+      window.WheelB4surcharge = WheelB4surcharge;
+      window.TotalB4Wheel = TotalB4Wheel;
+
+      window.WheelEnergy_After = WheelEnergy_After;
+      window.WheelEString_After = WheelEString_After || "";
+      window.WheelAfterduty = WheelAfterduty;
+      window.WheelAftersurcharge = WheelAftersurcharge;
+      window.TotalAfterWheel = TotalAfterWheel;
+
+      window.WheelSaving = WheelSaving;
+    }
+
+    // ---------------------------
+    // Update newBank for next site
+    // ---------------------------
+    newBank = Bank_after_Wheeling;
+    finalBankAfterWheeling = Bank_after_Wheeling; // capture last site’s balance
+  } // end for loop
+
+  // after loop: expose totals to window (numeric)
+  window.WheelTotalSaving = WheelTotalSaving;
+  window.WheelTotalAdjUnit = WheelTotalAdjUnit;
+  window.WheelTotalEnergyLost = WheelTotalEnergyLost;
+  window.Bank_after_Wheeling = finalBankAfterWheeling;  // ✅ correct final balance
+
 }
 
-if (isWheeling === "Yes" && TODAvailableWheel === "No" && wheeledConsumedUnits < 500) {
-  wheelTodNL = wheeledConsumedUnits;
-}
+// // // // // // // // // // // // //
 
+// Build breakdown strings after loop
 
-// wheeling Energy calculations (before wheeling) 
-   
-   console.log("▶ ConsumptionAfterWheeling =", ConsumptionAfterWheeling);
+let wheelSavingsBreakdown = Object.entries(siteSavings)
+  .map(([site, saving]) => `${site}: ${saving.toFixed(2)}`)
+  .join(" + ");
 
-   await cacheWheelingTariff(wheelingCategory);
+let wheelEnergyLossBreakdown = Object.entries(siteEnergyLoss)
+  .map(([site, Eloss]) => `${site}: ${Eloss.toFixed(2)}`)
+  .join(" + ");
 
-  WheelResultBefore = WheelingEnergyCharge(wheelingCategory, wheeledConsumedUnits, wheelTodNL, wheelTodPK, wheelTodOP);
-  WheelEnergy = Number(WheelResultBefore.WheelEnergy) || 0;
-  WheelEString = WheelResultBefore.WheelEString;
-  billmethWheel = WheelResultBefore.billmethWheel;
-  slabRange = WheelResultBefore.slabRange;
+let wheelAdjustUnitsBreakdown = Object.entries(siteAdjustUnits)
+  .map(([site, adjust]) => `${site}: ${adjust.toFixed(2)}`)
+  .join(" + ");
 
-  WheelB4duty      = WheelEnergy * duty / 100;
-  WheelB4surcharge = surcharge * wheeledConsumedUnits;
+// Append totals
+wheelSavingsBreakdown += ` = ${WheelTotalSaving.toFixed(2)}`;
+wheelEnergyLossBreakdown += ` = ${WheelTotalEnergyLost.toFixed(2)}`;
+wheelAdjustUnitsBreakdown += ` = ${WheelTotalAdjUnit.toFixed(2)}`;
 
-  TotalB4Wheel = WheelB4surcharge + WheelB4duty + WheelEnergy;
+// Total Prosumer Bill
+WheelingCharge = round2((WheelTotalAdjUnit + WheelTotalEnergyLost) * wheelingRate);
+const total = energyCharge + fixedCharge + meterCharge + dutyAmount + surchargeAmount + WheelingCharge;
 
-
-  wheelTodNL, wheelTodPK, wheelTodOP
-
-console.log("▶ wwheeledConsumedUnits =", wheeledConsumedUnits);
-console.log("▶ wheelingCategory =", wheelingCategory);
-console.log("▶ wheelTodNL =", wheelTodNL);
-console.log("▶ wheelTodPK =", wheelTodPK);
-console.log("▶ wheelTodOP =", wheelTodOP);
-
-
-  
-  console.log("▶ WheelEnergy =", WheelEnergy);
-  console.log("▶ WheelEString =",WheelEString);
-  console.log("▶ billmethWheel =",billmethWheel);
-  console.log("▶ slabRange =",slabRange);
-
-  InfoWheelB4 = getSlabLabel(wheeledConsumedUnits,cachedWheeledRateTable);
-  ConsESlabWheelB4 = InfoWheelB4.slabObj;
-  slabEConsWheelB4 = InfoWheelB4.label;
-  console.log("▶ ConsESlabWheelB4 =", ConsESlabWheelB4);
-  console.log("▶ slabEConsWheelB4  =",slabEConsWheelB4);
-
-  WheelResultAfter = WheelingEnergyCharge(wheelingCategory, ConsumptionAfterWheeling, WheelAdjImport[0], WheelAdjImport[2], WheelAdjImport[1]);
-  WheelEnergy_After = Number(WheelResultAfter.WheelEnergy) || 0;
-  WheelEString_After = WheelResultAfter.WheelEString;
-  billmethWheel_After = WheelResultAfter.billmethWheel;
-  slabRange_After = WheelResultAfter.slabRange;
-
-  WheelAfterduty      = WheelEnergy_After * duty / 100;
-  WheelAftersurcharge = surcharge * ConsumptionAfterWheeling;
-
-  TotalAfterWheel = WheelAftersurcharge + WheelAfterduty + WheelEnergy_After;
-
-  console.log("▶ WheelEnergy_After =",WheelEnergy_After);
-  console.log("▶ WheelEString_After =",WheelEString_After);
-  console.log("▶ billmethWheel_After =",billmethWheel_After);
-  console.log("▶ slabRange =",slabRange);
-   
-  //let NETConsWheel = wheelTodNL + wheelTodPK + wheelTodOP;     // total TOD consumption at the wheeled site
-  InfoWheelAfter = getSlabLabel(ConsumptionAfterWheeling,cachedWheeledRateTable);
-  ConsESlabWheel = InfoWheelAfter.slabObj;
-  slabEConsWheel = InfoWheelAfter.label;
-  console.log("▶ ConsESlabWheel =", ConsESlabWheel);
-  console.log("▶ slabEConsWheelr =", slabEConsWheel);
-  }
-
-  const WheelSaving = TotalB4Wheel - TotalAfterWheel;
-     
-    // // // // // // // // // // // // // 
-    
-  // Total Prosumer Bill
-  const total = energyCharge + fixedCharge + meterCharge + dutyAmount + surchargeAmount + WheelingCharge;
 
   // ---------------------------
   // 6. Load Tariff Data (Consumer Mode)
@@ -2743,7 +3358,7 @@ const consumerTotal = consumerEnergy
                      + consumersurchargeAmount;
 
 const SavedSolar = consumerTotal - total;
-const TotalSaved = SavedSolar + WheelSaving;
+const TotalSaved = SavedSolar + WheelTotalSaving;
 
 
   // =============================
@@ -2782,15 +3397,15 @@ resultDiv.innerHTML = `
 
    ${isWheeling.toLowerCase() === "yes" 
   ? `<span style=" color: green; font-weight: bold;">
-       From wheeling / വീലിംഗിൽ നിന്ന്: ₹ ${WheelSaving.toFixed(2)}
+       From wheeling / വീലിംഗിൽ നിന്ന്: ₹ ${WheelTotalSaving.toFixed(2)}
      </span><br>
      <span style="font-size: smaller; color: red;">
-        (B4W: ₹ ${TotalB4Wheel.toFixed(2)} - AFW: ₹ ${TotalAfterWheel.toFixed(2)})
+        (${wheelSavingsBreakdown})
      </span><br><br>
      
      <span style=" color: black; font-weight: bold;">
        TOTAL / ആകെ: ₹ ${TotalSaved.toFixed(2)} </span>
-       <span style="font-size: smaller; color: black;">(₹ ${SavedSolar.toFixed(2)} + ₹ ${WheelSaving.toFixed(2)})
+       <span style="font-size: smaller; color: black;">(₹ ${SavedSolar.toFixed(2)} + ₹ ${WheelTotalSaving.toFixed(2)})
      </span><br><br>
      `
   : ""
@@ -2798,7 +3413,7 @@ resultDiv.innerHTML = `
 
 ${isWheeling.toLowerCase() === "yes" 
   ? `<span style=" color: green; font-weight: bold;">
-       Units saved / ബാങ്ക് യൂണിറ്റുകൾ: ${Bank_after_Wheeling}
+       Units saved / ബാങ്ക് യൂണിറ്റുകൾ: ${finalBankAfterWheeling}
      </span> <br>
      <span style="font-size: smaller; color: red;">
         (Updated total banked units)
@@ -2815,10 +3430,10 @@ ${isWheeling.toLowerCase() === "yes"
 
 ${isWheeling.toLowerCase() === "yes" 
   ? `<br><span style=" color: blue; font-weight: bold;">
-       Units lost / നഷ്ടപ്പെട്ട യൂണിറ്റുകൾ : ${EnergyLostWheeling.toFixed(2)}
+       Units lost / നഷ്ടപ്പെട്ട യൂണിറ്റുകൾ : ${WheelTotalEnergyLost.toFixed(2)}
      </span> <br>
      <span style="font-size: smaller; color: red;">
-        (Distribution loss/ വിതരണ നഷ്ടം)
+        (${wheelEnergyLossBreakdown})
      </span><br>`  
 
   : "" 
@@ -2912,22 +3527,24 @@ ${isWheeling.toLowerCase() === "yes"
   Net Exported / നെറ്റ് എക്സ്പോർട്ട്  [NE] (NE = E - I): <strong>${netExpUnits} units</strong><br>
   Previous Banked Balance / മുൻ ബാങ്ക്  [B]: <strong>${Bank} units</strong><br>
 
-  ${isWheeling.toLowerCase() === "yes" 
-  ? `<br>
-      Wheeled Units / വീൽഡ്  യൂണിറ്റുകൾ [W]: <strong>${wheelingUnitsNew}</strong> <br>
-      Wheeled Location Category/ വീൽഡ് ലൊക്കേഷൻ തരം: <strong>${wheelingCategory}</strong> <br>
-      ${
-        TODAvailableWheel.toLowerCase() === "yes"
-          ? `Wheeled Location TOD / വീൽഡ് ടി.ഒ.ഡി; NL: <strong>${wheelTodNL}</strong>,
-             OP: <strong>${wheelTodOP}</strong>,
-             PK: <strong>${wheelTodPK}</strong><br>`
-          : `Wheeled Location Usage / വീൽഡ് ലൊക്കേഷൻ ഉപയോഗം: <strong>${wheeledConsumedUnits} Units</strong><br>`
-      }
-    `
-  : ``
-    }
+  ${isWheeling.toLowerCase() === "yes" && wheelingSites.length > 0 
+    ? wheelingSummaryHTML 
+    : ""}  
 
-  
+   ${isWheeling.toLowerCase() === "yes" && wheelingSites.length > 1 
+    ? `<br>
+    <h2 style="color: blue;">Wheeling Summary / വീലിംഗ് സംഗ്രഹം</h2><br>
+     Adjusted Bank Units [AU] / അഡ്ജസ്റ്റ് ചെയ്ത യൂണിറ്റുകൾ: <strong>${WheelTotalAdjUnit} units</strong><br>
+    <span style="font-size: smaller; color: red;">
+        (${wheelAdjustUnitsBreakdown})
+     </span><br><br>
+     Energy Lost [EL] / ഊർജ്ജനഷ്ടം: <strong>${WheelTotalEnergyLost.toFixed(2)} units</strong><br>
+     <span style="font-size: smaller; color: red;">
+        (${wheelEnergyLossBreakdown})
+     </span><br>
+
+     `:""}
+    
   <!-- ===== Prosumer Section ===== -->
   <div class="pdf-page-break"></div>
   <br>
@@ -2973,7 +3590,7 @@ ${ TODAvailability === "yes"
 
   ${(isWheeling.toLowerCase() === "yes" && Avail_After_Wheel >= 0) 
   ? `Wheeling Charges / വീലിംഗ് ചാർജ് (${wheelingRate}/unit): <strong>₹ ${WheelingCharge}</strong><br>
-     <span style="font-size: smaller; color: red;">(W: ${wheelingUnitsNew} × ${wheelingRate} = ${WheelingCharge})</span><br><br>` 
+     <span style="font-size: smaller; color: red;">[AU:${WheelTotalAdjUnit} + EL:${WheelTotalEnergyLost.toFixed(2)}] × ${wheelingRate} = ${WheelingCharge}</span><br><br>` 
   : ""}
   
    ${meterOwner.toLowerCase() === "prosumer" 
@@ -3016,7 +3633,7 @@ ${ TODAvailability === "yes"
     <span style=color: green;">
      ${ renderConsumerBillingBlock(billmethCons, consumerImport, ConsESlab, slabECons, todRates) }     
     </span>
-    <br><br>
+    <br>
 
     <!-- Fixed, Duty, Fuel and Meter Charges (Consumer) -->
     Fixed Charge / ഫിക്സഡ് ചാർജ്:: <strong>₹ ${consumerFixed.toFixed(2)}</strong><br>
@@ -3035,78 +3652,11 @@ ${ TODAvailability === "yes"
   
 
 <!-- ===== ==================== Wheeling Section =========================================== -->
+
+ ${isWheeling.toLowerCase() === "yes" && wheelingSites.length > 0 
+    ? wheelingDetailsHTML
+    : ""}  
   
-  ${isWheeling.toLowerCase() === "yes" 
-  ? `
-    <div class="pdf-page-break"></div>
-    <br>
-    <h2 style="color: blue;">WHEELING / വീലിങ് </h2> <br> 
-    <h2 style="color:#6A0DAD; font-size:larger; display:inline-block; border-bottom:2px solid #6A0DAD;">
-    Bank unit calculation / ബാങ്ക് യൂണിറ്റ്  </h2> <br>
-     Bank Opening / ബാങ്ക് ഓപ്പണിങ് [UB]: ${newBank} units <br>
-     Available for Wheeling / ലഭ്യമായത് [BW]: <strong>${Avail_4_Wheel}</strong> <br>
-     <span style="font-size: smaller; color: red;">${Avail_4_Wheel_String} units </span><br><br>
-
-     Wheeled Site Consumption / വീൽഡ് സൈറ്റ് ഉപഭോഗം [WC]: <strong>${wheeledConsumedUnits}</strong> units <br>
-     Wheeled/ വീൽഡ്  യൂണിറ്റുകൾ [W]: <strong>${wheelingUnitsNew}</strong> units <br>
-     Balance After Wheeling / ബാലൻസ് [AW]:<strong> ${Avail_After_Wheel}</strong> units<br>
-     <span style="font-size: smaller; color: red;">(${Avail_After_Wheel_String})</span><br><br>
- 
-     <strong>Updated Bank Closing / ബാങ്ക് ക്ലോസിങ് </strong>: <strong>${Bank_after_Wheeling}</strong> units<br>
-     <span style="font-size: smaller; color: red;">${Bank_after_Wheeling_String} </span><br>
-     <br>
-     Energy Lost During Wheeling / നഷ്ടപെട്ട യൂണിറ്റ് :  <strong>${EnergyLostWheeling.toFixed(2)}</strong> units<br>
-     <span style="font-size: smaller; color: red;">(UB:${newBank} - W:${wheelingUnitsNew} - AW:${Bank_after_Wheeling} = ${EnergyLostWheeling.toFixed(2)})  </span><br>
-     <br> 
-
-     <h2 style="color:#6A0DAD; font-size:larger; display:inline-block; border-bottom:2px solid #6A0DAD;">
-     Charges after adjusting wheeled units <br>
-     വീലിങ്:ശേഷമുള്ള ചാർജുകൾ </h2> <br> 
-    
-    Charged Units / ചാർജ് ചെയ്ത യൂണിറ്റുകൾ: ${ConsumptionAfterWheeling.toFixed(2)} units<br>
-    <span style="font-size: smaller; color: red;">(WC:${wheeledConsumedUnits} - W:${wheelingUnitsNew} = ${ConsumptionAfterWheeling.toFixed(2)})</span><br><br>
-
-    Energy Charge / എനർജി ചാർജ്: <strong> ₹ ${WheelEnergy_After.toFixed(2)} </strong><br>
-    <span style="font-size: smaller; color: red;">${WheelEString_After}</span> <br>
-    <span style=color: green;">
-     ${ renderWheeledBillingBlock(billmethWheel_After, ConsumptionAfterWheeling,  ConsESlabWheel, slabEConsWheel, todRates, wheelingCategory) }     
-    </span>
-    <br><br>
-    
-    Duty / ഡ്യൂട്ടി (${duty}% of Energy): <strong>₹ ${WheelAfterduty.toFixed(2)}</strong> 
-    <span style="font-size: smaller; color: red;">(${WheelEnergy_After.toFixed(2)} × ${duty}% = ${WheelAfterduty.toFixed(2)})</span><br><br>
-    
-
-    Fuel Surcharge / സർചാർജ് (${surcharge}/unit):
-    <strong>₹ ${WheelAftersurcharge.toFixed(2)}</strong>
-    <span style="font-size: smaller; color: red;">(${ConsumptionAfterWheeling.toFixed(2)} × ${surcharge} = ${WheelAftersurcharge.toFixed(2)})</span><br><br>
-    
-    <span style="font-size: larger; font-weight: bold;">TOTAL (after wheeling) [AFW] / ആകെ: ₹ ${TotalAfterWheel.toFixed(2)}</span><br><br>
-
-    <div class="pdf-page-break"></div>
-  <br>
-    <h2 style="color:#6A0DAD; font-size:larger; display:inline-block; border-bottom:2px solid #6A0DAD;">
-     Predicted charges without wheeled units </h2> <br> 
-    
-    Units Consumed / ഉപയോഗിച്ച യൂണിറ്റുകൾ: <strong>${wheeledConsumedUnits} units </strong><br><br>    
-
-     Energy Charge / എനർജി ചാർജ്:<strong> ₹ ${WheelEnergy.toFixed(2)}</strong><br> 
-     <span style="font-size: smaller; color: red;">${WheelEString}</span> <br>
-     <span style=color: green;">
-     ${ renderWheeledBillingBlock(billmethWheel, wheeledConsumedUnits,  ConsESlabWheelB4, slabEConsWheelB4, todRates, wheelingCategory) }  
-    </span>
-    <br><br>
-    
-    Duty / ഡ്യൂട്ടി (${duty}% of Energy): <strong>₹ ${WheelB4duty.toFixed(2)}</strong><br>
-    <span style="font-size: smaller; color: red;">(${WheelEnergy.toFixed(2)} × ${duty}% = ${WheelB4duty.toFixed(2)})</span><br><br>
-
-    Fuel Surcharge / സർചാർജ് (${surcharge}/unit):
-    <strong>₹ ${WheelB4surcharge.toFixed(2)}</strong><br>
-    <span style="font-size: smaller; color: red;">(${wheeledConsumedUnits} × ${surcharge} = ${WheelB4surcharge.toFixed(2)})</span><br>
-    <br>
-    <span style="font-size: larger; font-weight: bold;">TOTAL (without wheeling) [B4W] / ആകെ: ₹ ${TotalB4Wheel.toFixed(2)}</span>    
-    `
-  :``}
 </div>
 `
   resultDiv.scrollIntoView({behavior: 'smooth'}); 
@@ -3120,7 +3670,66 @@ document.getElementById("pdfHelperText").style.display = "block";  // <-- show h
 document.getElementById("downloadFullPDF").style.display = "inline-block";
 
 });
- 
+
+// === Register Service Worker + Update Banner ===
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js')
+    .then(reg => {
+      console.log("✅ Service Worker registered:", reg);
+    });
+
+  navigator.serviceWorker.addEventListener("message", event => {
+    if (event.data.type === "NEW_VERSION") {
+      showUpdateBanner();
+    }
+  });
+}
+
+// Show banner when new version available
+function showUpdateBanner() {
+  if (document.getElementById("updateBanner")) return; // avoid duplicates
+
+  let banner = document.createElement("div");
+  banner.id = "updateBanner";
+  banner.innerHTML = `
+    🔄 A new version of KSEB Bill Calculator is available. 
+    <button id="reloadBtn">Reload</button>
+    <button id="closeBtn">✖</button>
+  `;
+  banner.style.position = "fixed";
+  banner.style.bottom = "0";
+  banner.style.left = "0";
+  banner.style.width = "100%";
+  banner.style.background = "#ffcc00";
+  banner.style.color = "#000";
+  banner.style.textAlign = "center";
+  banner.style.padding = "10px";
+  banner.style.zIndex = "9999";
+
+  document.body.appendChild(banner);
+
+  // Reload with new version
+  document.getElementById("reloadBtn").onclick = () => {
+    localStorage.setItem("lastUpdate", Date.now());
+    location.reload(true);
+  };
+
+  // Allow dismiss without reload
+  document.getElementById("closeBtn").onclick = () => {
+    banner.remove();
+  };
+}
+
+// Hide banner after reload
+window.addEventListener("load", () => {
+  const lastUpdate = localStorage.getItem("lastUpdate");
+  if (lastUpdate) {
+    let banner = document.getElementById("updateBanner");
+    if (banner) banner.remove();
+    localStorage.removeItem("lastUpdate");
+  }
+});
+
 
 </script>
 </body>
