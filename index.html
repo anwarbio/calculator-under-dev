@@ -3077,11 +3077,11 @@ if (isWheeling === "Yes" && wheelingSites.length > 0) {
     // ---------------------------
     wheelingSummaryHTML += `
       <h3>Wheeling: Site ${i + 1}</h3>
-      Wheeled Location Category: <strong>${wheelingCategory}</strong> <br>
-      Same Transformer: <strong>${WheelingTransformer}</strong> <br>
+      Wheeled Location Category: <strong>${wheelingCategory}</strong>,&nbsp; 
+      Same Transformer: <strong>${WheelingTransformer}</strong>,&nbsp;
       ${
         TODAvailableWheel.toLowerCase() === "yes"
-          ? `TOD NL: <strong>${wheelTodNL}</strong>, OP: <strong>${wheelTodOP}</strong>, PK: <strong>${wheelTodPK}</strong><br>`
+          ? `<br>TOD NL: <strong>${wheelTodNL}</strong>, OP: <strong>${wheelTodOP}</strong>, PK: <strong>${wheelTodPK}</strong><br>`
           : `Usage: <strong>${wheeledConsumedUnits} Units</strong><br>`
       }
     `;
@@ -3099,8 +3099,8 @@ if (isWheeling === "Yes" && wheelingSites.length > 0) {
        Available for Wheeling / ലഭ്യമായത് [BW${i + 1}]: <strong>${Avail_4_Wheel}</strong> <br>
        <span style="font-size: smaller; color: red;">${Avail_4_Wheel_String} units </span><br><br>
 
-       Wheeled Site Consumption / വീൽഡ് സൈറ്റ് ഉപഭോഗം [WC${i + 1}]: <strong>${wheeledConsumedUnits}</strong> units <br>
-       Adjusted Units/ അഡ്ജസ്റ്റ് ചെയ്ത യൂണിറ്റുകൾ [AU${i + 1}]: <strong>${wheelingUnitsNew}</strong> units <br>
+       Wheeled Site Consumption / സൈറ്റ് ഉപഭോഗം [WC${i + 1}]: <strong>${wheeledConsumedUnits}</strong> units <br>
+       Adjusted Units/ അഡ്ജസ്റ്റ് ചെയ്തത് [AU${i + 1}]: <strong>${wheelingUnitsNew}</strong> units <br>
        Balance After Wheeling / ബാലൻസ് [AW${i + 1}]:<strong> ${Avail_After_Wheel}</strong> units<br>
        <span style="font-size: smaller; color: red;">(${Avail_After_Wheel_String})</span><br><br>
 
@@ -3156,9 +3156,9 @@ if (isWheeling === "Yes" && wheelingSites.length > 0) {
       <span style="font-size: smaller; color: red;">(${wheeledConsumedUnits} × ${surcharge} = ${WheelB4surcharge.toFixed(2)})</span><br>
       <br>
       <span style="font-size: larger; font-weight: bold;">TOTAL (without wheeling) [B4W] / ആകെ: ₹ ${TotalB4Wheel.toFixed(2)}</span><br>
-      <br><br>
+      <br>
       <span style="font-size: larger; font-weight: bold;">Savings from Site ${i + 1} [S${i + 1}] / സേവിങ്സ്: ₹ ${WheelSaving.toFixed(2)}</span><br>
-      <span style="font-size: smaller; color: red;">(${TotalB4Wheel.toFixed(2)} - ${TotalAfterWheel.toFixed(2)} = ${WheelSaving.toFixed(2)})</span><br>
+      <span style="font-size: smaller; color: red;">(${TotalB4Wheel.toFixed(2)} - ${TotalAfterWheel.toFixed(2)} = ${WheelSaving.toFixed(2)})</span>
     `;
 
     // expose site-1globals for old template where needed (keeps compatibility)
@@ -3534,7 +3534,7 @@ ${isWheeling.toLowerCase() === "yes"
    ${isWheeling.toLowerCase() === "yes" && wheelingSites.length > 1 
     ? `<br>
     <h2 style="color: blue;">Wheeling Summary / വീലിംഗ് സംഗ്രഹം</h2><br>
-     Adjusted Bank Units [AU] / അഡ്ജസ്റ്റ് ചെയ്ത യൂണിറ്റുകൾ: <strong>${WheelTotalAdjUnit} units</strong><br>
+     Adjusted Bank Units [AU] / അഡ്ജസ്റ്റ് ചെയ്തത്: <strong>${WheelTotalAdjUnit} units</strong><br>
     <span style="font-size: smaller; color: red;">
         (${wheelAdjustUnitsBreakdown})
      </span><br><br>
@@ -3734,7 +3734,6 @@ window.addEventListener("load", () => {
 </script>
 </body>
 </html>
-
 
 
 
