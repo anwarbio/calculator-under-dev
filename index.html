@@ -1676,8 +1676,8 @@ async function savePdfToDB(filename, pdfBlob, billMeta) {
     reader.onloadend = function () {
       const base64Data = reader.result; // Base64 Data URL
 
-      // Open IndexedDB (version 1)
-      const request = indexedDB.open("ksebDB", 1);
+      // Open IndexedDB (version 2 – bumped to ensure onupgradeneeded runs)
+      const request = indexedDB.open("ksebDB", 2);
 
       // Create object store if it doesn't exist
       request.onupgradeneeded = function(event) {
@@ -1690,6 +1690,13 @@ async function savePdfToDB(filename, pdfBlob, billMeta) {
 
       request.onsuccess = function(event) {
         const db = event.target.result;
+
+        // Extra safety: make sure object store exists
+        if (!db.objectStoreNames.contains("pdfs")) {
+          console.error("❌ Object store 'pdfs' not found even after upgrade!");
+          reject("DB store missing");
+          return;
+        }
 
         // Start transaction
         const tx = db.transaction("pdfs", "readwrite");
@@ -1738,7 +1745,6 @@ async function savePdfToDB(filename, pdfBlob, billMeta) {
     reader.readAsDataURL(pdfBlob); // Convert Blob → Base64
   });
 }
-
 
 /* ------------------------------------------------------
    3. Load History from IndexedDB
