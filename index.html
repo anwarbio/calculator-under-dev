@@ -1628,6 +1628,7 @@ document.getElementById('downloadFullPDF').addEventListener('click', () => {
   const year = document.getElementById("billYear")?.value || new Date().getFullYear();
 
   const fileName = `${year}_${month}_Bill_${name}.pdf`;
+
   const element = document.getElementById('pdfContent');
   const opt = {
     margin: 0.3,
@@ -1638,9 +1639,11 @@ document.getElementById('downloadFullPDF').addEventListener('click', () => {
     pagebreak: { mode: ['css', 'legacy'], before: '.pdf-page-break', avoid: '.avoid-page-break' }
   };
 
+  // Generate PDF once
   html2pdf().set(opt).from(element).toPdf().get('pdf').then((pdf) => {
     const blob = pdf.output('blob');
 
+    // Save to IndexedDB
     savePdfToDB(fileName, blob, {
       date: `${month}-${year}`,
       consumerNo: name,
@@ -1648,7 +1651,7 @@ document.getElementById('downloadFullPDF').addEventListener('click', () => {
       totalCharge: document.getElementById("totalAmount")?.textContent || ""
     }).then(() => {
       console.log("✅ Bill stored in History DB");
-      loadHistory(); // refresh immediately
+      loadHistory(); // refresh history immediately
     }).catch(err => console.error("❌ Error saving to DB:", err));
   }).then(() => {
     // Trigger download
@@ -1660,7 +1663,7 @@ document.getElementById('downloadFullPDF').addEventListener('click', () => {
 });
 
 /* ------------------------------------------------------
-   2. Save PDF to IndexedDB (Blob + Base64 for iPhone)
+   2. Save PDF to IndexedDB (iOS-safe)
 ------------------------------------------------------ */
 async function savePdfToDB(filename, pdfBlob, billMeta) {
   return new Promise((resolve, reject) => {
@@ -1670,6 +1673,7 @@ async function savePdfToDB(filename, pdfBlob, billMeta) {
       const base64Data = reader.result;
 
       const request = indexedDB.open("ksebDB", 1);
+
       request.onupgradeneeded = function(event) {
         const db = event.target.result;
         if (!db.objectStoreNames.contains("pdfs")) {
@@ -1682,10 +1686,11 @@ async function savePdfToDB(filename, pdfBlob, billMeta) {
         const tx = db.transaction("pdfs", "readwrite");
         const store = tx.objectStore("pdfs");
 
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         const data = {
           filename: filename,
-          pdfBlob: pdfBlob,       // blob for desktop
-          pdfBase64: base64Data,  // Base64 for Safari/iPhone
+          pdfBlob: isIOS ? null : pdfBlob,   // Blob for desktop
+          pdfBase64: base64Data,              // Base64 for iOS/Safari
           date: billMeta.date || new Date().toLocaleDateString(),
           consumerNo: billMeta.consumerNo || "N/A",
           billType: billMeta.billType || "Prosumer",
@@ -1693,40 +1698,89 @@ async function savePdfToDB(filename, pdfBlob, billMeta) {
         };
 
         store.put(data);
-        tx.oncomplete = () => {
-          console.log("💾 Saved:", data);
-          resolve();
-        };
+
+        tx.oncomplete = () => resolve();
         tx.onerror = e => reject("DB save error: " + e.target.errorCode);
       };
 
       request.onerror = e => reject("DB open error: " + e.target.errorCode);
     };
 
+    reader.onerror = reject;
     reader.readAsDataURL(pdfBlob);
   });
 }
 
 /* ------------------------------------------------------
-   3. View PDF (Blob + Base64 safe)
+   3. Load History from IndexedDB
 ------------------------------------------------------ */
-function viewPDF(filename) {
+function loadHistory() {
   const request = indexedDB.open("ksebDB", 1);
+
   request.onsuccess = function(event) {
     const db = event.target.result;
     const tx = db.transaction("pdfs", "readonly");
     const store = tx.objectStore("pdfs");
 
-    store.get(filename).onsuccess = function(event) {
-      const data = event.target.result;
-      if (!data) return alert("⚠️ PDF not found in DB");
+    store.getAll().onsuccess = function(event) {
+      const results = event.target.result;
 
+      const table = document.getElementById("historyTable");
+      table.innerHTML = `
+        <tr>
+          <th style="padding:10px;">Date</th>
+          <th style="padding:10px;">Consumer</th>
+          <th style="padding:10px;">Bill Type</th>
+          <th style="padding:10px;">Amount</th>
+          <th style="padding:10px;">Action</th>
+        </tr>
+      `;
+
+      results.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      results.forEach(item => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td><a href="#" onclick="viewPDF('${item.filename}')">${item.date}</a></td>
+          <td>${item.consumerNo}</td>
+          <td>${item.billType}</td>
+          <td>${item.totalCharge}</td>
+          <td><button onclick="deletePDF('${item.filename}')" style="cursor:pointer;">🗑 Delete</button></td>
+        `;
+        table.appendChild(row);
+      });
+    };
+  };
+}
+
+/* ------------------------------------------------------
+   4. View PDF (iOS-safe)
+------------------------------------------------------ */
+function viewPDF(filename) {
+  const request = indexedDB.open("ksebDB", 1);
+
+  request.onsuccess = function(event) {
+    const db = event.target.result;
+    const tx = db.transaction("pdfs", "readonly");
+    const store = tx.objectStore("pdfs");
+
+    const getReq = store.get(filename);
+    getReq.onsuccess = function(event) {
+      const data = event.target.result;
+
+      if (!data) {
+        alert("⚠️ No entry found in DB");
+        return;
+      }
+
+      // Use Blob if available
       if (data.pdfBlob instanceof Blob) {
         const url = URL.createObjectURL(data.pdfBlob);
         window.open(url, "_blank");
         return;
       }
 
+      // Fallback to Base64
       if (data.pdfBase64) {
         const win = window.open();
         win.document.write(
@@ -1736,44 +1790,6 @@ function viewPDF(filename) {
       }
 
       alert("⚠️ PDF data missing.");
-    };
-  };
-}
-
-/* ------------------------------------------------------
-   4. Load History from IndexedDB
------------------------------------------------------- */
-function loadHistory() {
-  const request = indexedDB.open("ksebDB", 1);
-  request.onsuccess = function(event) {
-    const db = event.target.result;
-    const tx = db.transaction("pdfs", "readonly");
-    const store = tx.objectStore("pdfs");
-
-    store.getAll().onsuccess = function(event) {
-      const results = event.target.result;
-      const table = document.getElementById("historyTable");
-      table.innerHTML = `
-        <tr>
-          <th style="padding:10px;">Filename</th>
-          <th style="padding:10px;">Date</th>
-          <th style="padding:10px;">Action</th>
-        </tr>
-      `;
-
-      results.sort((a, b) => new Date(b.date) - new Date(a.date));
-      results.forEach(item => {
-        const row = document.createElement("tr");
-        row.style.wordWrap = "break-word";
-        row.innerHTML = `
-          <td><a href="#" onclick="viewPDF('${item.filename}')">${item.filename}</a></td>
-          <td>${item.date}</td>
-          <td>
-            <button onclick="deletePDF('${item.filename}')" style="cursor:pointer;">🗑 Delete</button>
-          </td>
-        `;
-        table.appendChild(row);
-      });
     };
   };
 }
@@ -1806,6 +1822,7 @@ function deletePDF(filename) {
 ------------------------------------------------------ */
 function exportHistoryAsCSV() {
   const request = indexedDB.open("ksebDB", 1);
+
   request.onsuccess = function(event) {
     const db = event.target.result;
     const tx = db.transaction("pdfs", "readonly");
