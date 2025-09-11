@@ -1676,17 +1676,22 @@ async function savePdfToDB(filename, pdfBlob, billMeta) {
     reader.onloadend = function () {
       const base64Data = reader.result; // Base64 Data URL
 
+      // Open IndexedDB (version 1)
       const request = indexedDB.open("ksebDB", 1);
 
+      // Create object store if it doesn't exist
       request.onupgradeneeded = function(event) {
         const db = event.target.result;
         if (!db.objectStoreNames.contains("pdfs")) {
           db.createObjectStore("pdfs", { keyPath: "filename" });
+          console.log("✅ Object store 'pdfs' created");
         }
       };
 
       request.onsuccess = function(event) {
         const db = event.target.result;
+
+        // Start transaction
         const tx = db.transaction("pdfs", "readwrite");
         const store = tx.objectStore("pdfs");
 
@@ -1699,19 +1704,41 @@ async function savePdfToDB(filename, pdfBlob, billMeta) {
           totalCharge: billMeta.totalCharge || 0
         };
 
-        store.put(data);
+        // Save data
+        const putRequest = store.put(data);
 
+        putRequest.onsuccess = () => {
+          console.log("✅ PDF saved to IndexedDB:", filename);
+        };
+
+        putRequest.onerror = e => {
+          console.error("❌ DB put error:", e.target.errorCode);
+          reject("DB put error: " + e.target.errorCode);
+        };
+
+        // Complete transaction
         tx.oncomplete = () => resolve();
-        tx.onerror = e => reject("DB save error: " + e.target.errorCode);
+        tx.onerror = e => {
+          console.error("❌ Transaction error:", e.target.errorCode);
+          reject("DB transaction error: " + e.target.errorCode);
+        };
       };
 
-      request.onerror = e => reject("DB open error: " + e.target.errorCode);
+      request.onerror = e => {
+        console.error("❌ DB open error:", e.target.errorCode);
+        reject("DB open error: " + e.target.errorCode);
+      };
     };
 
-    reader.onerror = reject;
+    reader.onerror = e => {
+      console.error("❌ FileReader error:", e);
+      reject(e);
+    };
+
     reader.readAsDataURL(pdfBlob); // Convert Blob → Base64
   });
 }
+
 
 /* ------------------------------------------------------
    3. Load History from IndexedDB
@@ -3746,9 +3773,13 @@ document.getElementById("downloadFullPDF").style.display = "inline-block";
 
 // === Register Service Worker + Update Banner ===
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/service-worker.js')
+  // Use relative path (./) so it works in subfolders
+  navigator.serviceWorker.register('./service-worker.js')
     .then(reg => {
       console.log("✅ Service Worker registered:", reg);
+    })
+    .catch(err => {
+      console.error("❌ Service Worker registration failed:", err);
     });
 
   navigator.serviceWorker.addEventListener("message", event => {
@@ -3757,6 +3788,7 @@ if ('serviceWorker' in navigator) {
     }
   });
 }
+
 
 // Show banner when new version available
 function showUpdateBanner() {
