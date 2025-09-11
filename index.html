@@ -1758,7 +1758,7 @@ async function savePdfToDB(filename, pdfBlob, billMeta) {
    3. Load History from IndexedDB
 ------------------------------------------------------ */
 function loadHistory() {
-  const request = indexedDB.open("ksebDB", 1);
+  const request = indexedDB.open("ksebDB", 2);
 
   request.onsuccess = function(event) {
     const db = event.target.result;
@@ -1800,7 +1800,7 @@ function loadHistory() {
    4. View PDF (always from Base64)
 ------------------------------------------------------ */
 function viewPDF(filename) {
-  const request = indexedDB.open("ksebDB", 1);
+  const request = indexedDB.open("ksebDB", 2);
 
   request.onsuccess = function(event) {
     const db = event.target.result;
@@ -1829,7 +1829,7 @@ function viewPDF(filename) {
    4b. Download PDF again from history (Base64 → file)
 ------------------------------------------------------ */
 function downloadBill(filename) {
-  const request = indexedDB.open("ksebDB", 1);
+  const request = indexedDB.open("ksebDB", 2);
 
   request.onsuccess = function(event) {
     const db = event.target.result;
@@ -1866,7 +1866,7 @@ function downloadBill(filename) {
 function deletePDF(filename) {
   if (!confirm(`Are you sure you want to delete "${filename}"?`)) return;
 
-  const request = indexedDB.open("ksebDB", 1);
+  const request = indexedDB.open("ksebDB", 2);
   request.onsuccess = function(event) {
     const db = event.target.result;
     const tx = db.transaction("pdfs", "readwrite");
@@ -1887,7 +1887,7 @@ function deletePDF(filename) {
    6. Export History as CSV
 ------------------------------------------------------ */
 function exportHistoryAsCSV() {
-  const request = indexedDB.open("ksebDB", 1);
+  const request = indexedDB.open("ksebDB", 2);
 
   request.onsuccess = function(event) {
     const db = event.target.result;
