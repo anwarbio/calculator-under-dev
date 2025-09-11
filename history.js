@@ -24,6 +24,9 @@ async function loadBills() {
     const bills = request.result;
     const tbody = document.querySelector("#historyTable tbody");
     tbody.innerHTML = "";
+
+    bills.sort((a, b) => new Date(b.date) - new Date(a.date));
+
     bills.forEach(bill => {
       const row = document.createElement("tr");
       row.innerHTML = `
@@ -47,14 +50,29 @@ async function downloadBill(filename) {
 
   request.onsuccess = function() {
     const bill = request.result;
-    if (bill) {
-      const url = URL.createObjectURL(bill.pdf);
+    if (!bill) return alert("⚠️ PDF not found");
+
+    // Desktop Blob
+    if (bill.pdfBlob instanceof Blob) {
+      const url = URL.createObjectURL(bill.pdfBlob);
       const a = document.createElement("a");
       a.href = url;
       a.download = filename;
       a.click();
       URL.revokeObjectURL(url);
+      return;
     }
+
+    // iOS Base64 fallback
+    if (bill.pdfBase64) {
+      const a = document.createElement("a");
+      a.href = bill.pdfBase64;
+      a.download = filename;
+      a.click();
+      return;
+    }
+
+    alert("⚠️ PDF data missing.");
   };
 }
 
