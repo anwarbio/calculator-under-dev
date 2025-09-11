@@ -1617,20 +1617,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 /* ------------------------------------------------------
-   1. PDF Download Handler (with IndexedDB save)
+   1. PDF Download Handler (with IndexedDB save) - FIXED
 ------------------------------------------------------ */
 document.getElementById('downloadFullPDF').addEventListener('click', () => {
   // Hide all .no-print elements temporarily
   document.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
 
-  // Get user inputs
   const name = document.getElementById("consumerName")?.value.trim() || "Prosumer";
   const month = document.getElementById("billMonth")?.options[
     document.getElementById("billMonth").selectedIndex
   ]?.text || "Month";
   const year = document.getElementById("billYear")?.value || new Date().getFullYear();
 
-  // Filename
   const fileName = `${year}_${month}_Bill_${name}.pdf`;
 
   const element = document.getElementById('pdfContent');
@@ -1643,25 +1641,29 @@ document.getElementById('downloadFullPDF').addEventListener('click', () => {
     pagebreak: { mode: ['css', 'legacy'], before: '.pdf-page-break', avoid: '.avoid-page-break' }
   };
 
-  // Generate PDF and save to DB + download
+  // Generate PDF once → get blob + trigger download + save to DB
   html2pdf().set(opt).from(element).outputPdf('blob').then((pdfBlob) => {
-    savePdfToDB(fileName, pdfBlob, {
+    // Save to DB
+    return savePdfToDB(fileName, pdfBlob, {
       date: `${month}-${year}`,
       consumerNo: name,
       billType: document.getElementById("prosumerMode")?.checked ? "Prosumer" : "Consumer",
       totalCharge: document.getElementById("totalAmount")?.textContent || ""
     }).then(() => {
       console.log("✅ Bill stored in History DB");
-    }).catch(err => console.error("❌ Error saving to DB:", err));
-
-    // Trigger download
-    html2pdf().set(opt).from(element).save().then(() => {
-      // Restore .no-print elements
-      document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
-      loadHistory(); // refresh history immediately
+      // Trigger user download
+      return html2pdf().set(opt).from(element).save();
     });
+  }).then(() => {
+    // Restore .no-print elements
+    document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
+    loadHistory(); // refresh history immediately
+  }).catch(err => {
+    console.error("❌ Error generating or saving PDF:", err);
+    document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
   });
 });
+
 
 /* ------------------------------------------------------
    2. Save PDF to IndexedDB
