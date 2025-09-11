@@ -1,7 +1,7 @@
 // === service-worker.js ===
 
-// bump cache name whenever structure changes
-const CACHE_NAME = "kseb-cache-v6";  
+// bump this when you want to reset cache
+const CACHE_NAME = "kseb-cache-v8";  
 
 const FILES_TO_CACHE = [
   "./",
@@ -34,36 +34,35 @@ self.addEventListener("activate", event => {
   });
 });
 
-// Fetch strategy: 
-// - JS & HTML → network first, fallback to cache
-// - Others → cache first, fallback to network
+// Fetch strategy with cache-busting for index.html
 self.addEventListener("fetch", event => {
   const req = event.request;
-  const url = new URL(req.url);
 
-  if (req.destination === "document" || req.destination === "script") {
-    // network first
+  // Force network-first for index.html with cache-busting
+  if (req.mode === "navigate" || req.destination === "document") {
     event.respondWith(
-      fetch(req).then(res => {
-        return caches.open(CACHE_NAME).then(cache => {
-          cache.put(req, res.clone());
-          return res;
-        });
-      }).catch(() => caches.match(req))
-    );
-  } else {
-    // cache first
-    event.respondWith(
-      caches.match(req).then(cached =>
-        cached ||
-        fetch(req).then(res => {
+      fetch(req.url + "?v=" + Date.now(), { cache: "no-store" })
+        .then(res => {
           return caches.open(CACHE_NAME).then(cache => {
-            cache.put(req, res.clone());
+            cache.put("./index.html", res.clone()); // always update cache
             return res;
           });
         })
-      )
+        .catch(() => caches.match("./index.html")) // fallback to cached
     );
+    return;
   }
-});
 
+  // For other files (icons, manifest) → cache first
+  event.respondWith(
+    caches.match(req).then(cached =>
+      cached ||
+      fetch(req).then(res =>
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(req, res.clone());
+          return res;
+        })
+      )
+    )
+  );
+});
