@@ -1643,7 +1643,7 @@ document.getElementById('downloadFullPDF').addEventListener('click', () => {
   html2pdf().set(opt).from(element).toPdf().get('pdf').then((pdf) => {
     const blob = pdf.output('blob');
 
-    // Save to IndexedDB
+    // Save to IndexedDB (as Base64 for cross-platform)
     savePdfToDB(fileName, blob, {
       date: `${month}-${year}`,
       consumerNo: name,
@@ -1653,24 +1653,28 @@ document.getElementById('downloadFullPDF').addEventListener('click', () => {
       console.log("✅ Bill stored in History DB");
       loadHistory(); // refresh history immediately
     }).catch(err => console.error("❌ Error saving to DB:", err));
-  }).then(() => {
-    // Trigger download
-    html2pdf().set(opt).from(element).save().then(() => {
-      // Restore UI
-      document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
-    });
+
+    // Trigger download for user
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = fileName;
+    a.click();
+    URL.revokeObjectURL(a.href);
+
+    // Restore UI
+    document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
   });
 });
 
 /* ------------------------------------------------------
-   2. Save PDF to IndexedDB (iOS-safe)
+   2. Save PDF to IndexedDB (Base64 only – iOS safe)
 ------------------------------------------------------ */
 async function savePdfToDB(filename, pdfBlob, billMeta) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
     reader.onloadend = function () {
-      const base64Data = reader.result;
+      const base64Data = reader.result; // Base64 Data URL
 
       const request = indexedDB.open("ksebDB", 1);
 
@@ -1686,11 +1690,9 @@ async function savePdfToDB(filename, pdfBlob, billMeta) {
         const tx = db.transaction("pdfs", "readwrite");
         const store = tx.objectStore("pdfs");
 
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         const data = {
           filename: filename,
-          pdfBlob: isIOS ? null : pdfBlob,   // Blob for desktop
-          pdfBase64: base64Data,              // Base64 for iOS/Safari
+          pdfBase64: base64Data,              // always base64
           date: billMeta.date || new Date().toLocaleDateString(),
           consumerNo: billMeta.consumerNo || "N/A",
           billType: billMeta.billType || "Prosumer",
@@ -1707,7 +1709,7 @@ async function savePdfToDB(filename, pdfBlob, billMeta) {
     };
 
     reader.onerror = reject;
-    reader.readAsDataURL(pdfBlob);
+    reader.readAsDataURL(pdfBlob); // Convert Blob → Base64
   });
 }
 
@@ -1754,7 +1756,7 @@ function loadHistory() {
 }
 
 /* ------------------------------------------------------
-   4. View PDF (iOS-safe)
+   4. View PDF (always from Base64)
 ------------------------------------------------------ */
 function viewPDF(filename) {
   const request = indexedDB.open("ksebDB", 1);
@@ -1768,31 +1770,54 @@ function viewPDF(filename) {
     getReq.onsuccess = function(event) {
       const data = event.target.result;
 
-      if (!data) {
-        alert("⚠️ No entry found in DB");
+      if (!data || !data.pdfBase64) {
+        alert("⚠️ PDF not found in DB");
         return;
       }
 
-      // Use Blob if available
-      if (data.pdfBlob instanceof Blob) {
-        const url = URL.createObjectURL(data.pdfBlob);
-        window.open(url, "_blank");
-        return;
-      }
-
-      // Fallback to Base64
-      if (data.pdfBase64) {
-        const win = window.open();
-        win.document.write(
-          `<iframe src="${data.pdfBase64}" frameborder="0" style="width:100%;height:100%;"></iframe>`
-        );
-        return;
-      }
-
-      alert("⚠️ PDF data missing.");
+      const win = window.open();
+      win.document.write(
+        `<iframe src="${data.pdfBase64}" frameborder="0" style="width:100%;height:100%;"></iframe>`
+      );
     };
   };
 }
+
+
+/* ------------------------------------------------------
+   4b. Download PDF again from history (Base64 → file)
+------------------------------------------------------ */
+function downloadBill(filename) {
+  const request = indexedDB.open("ksebDB", 1);
+
+  request.onsuccess = function(event) {
+    const db = event.target.result;
+    const tx = db.transaction("pdfs", "readonly");
+    const store = tx.objectStore("pdfs");
+
+    const getReq = store.get(filename);
+    getReq.onsuccess = function(event) {
+      const data = event.target.result;
+
+      if (!data || !data.pdfBase64) {
+        alert("⚠️ PDF not found in DB");
+        return;
+      }
+
+      // Convert Base64 → Blob → Download
+      fetch(data.pdfBase64)
+        .then(res => res.blob())
+        .then(blob => {
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = filename;
+          a.click();
+          URL.revokeObjectURL(a.href);
+        });
+    };
+  };
+}
+
 
 /* ------------------------------------------------------
    5. Delete PDF
