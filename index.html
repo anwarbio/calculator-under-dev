@@ -897,6 +897,18 @@ background-color:#ffe6cc;">
   </div>
 </details>
 
+ <!-- Install Direction for iPhone Users -->
+<div id="iosInstallHint" style="
+  display:none; 
+  position:fixed; bottom:10px; left:10px; right:10px; 
+  background:#f1f1f1; padding:10px; border-radius:8px;
+  text-align:center; font-size:14px; box-shadow:0 2px 6px rgba(0,0,0,0.2);
+">
+  📱 To install this app: tap <strong>Share</strong> → <strong>Add to Home Screen</strong>
+  <button onclick="document.getElementById('iosInstallHint').style.display='none'" 
+    style="margin-left:10px; padding:2px 6px;">✖</button>
+</div>
+
 
     <!-- Latest Tariff Circular -->
     <div class="form-group" style="width:100%; display:flex; justify-content:center; margin-top:0; margin-bottom:2;">
@@ -945,10 +957,19 @@ background-color:#ffe6cc;">
   
 
 
+  /* -----------To detect iOS and promp about saving as App--------------*/
+window.addEventListener("load", () => {
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isInStandalone = window.matchMedia('(display-mode: standalone)').matches;
+  if (isIOS && !isInStandalone) {
+    document.getElementById("iosInstallHint").style.display = "block";
+  }
+});
+
 
   /* ------------------------------
        Import/Export/Generation toggles
-     ------------------------------ */
+     ------------------------------ */     
 
 function toggleGenerationTables() {
   const todAvailability = document.getElementById("TODAvailability").value;
@@ -3159,7 +3180,7 @@ if (isWheeling === "Yes" && wheelingSites.length > 0) {
       <br>
       <span style="font-size: larger; font-weight: bold;">Savings from Site ${i + 1} [S${i + 1}] / സേവിങ്സ്: ₹ ${WheelSaving.toFixed(2)}</span><br>
       <span style="font-size: smaller; color: red;">(${TotalB4Wheel.toFixed(2)} - ${TotalAfterWheel.toFixed(2)} = ${WheelSaving.toFixed(2)})</span>
-    `;
+      `;
 
     // expose site-1globals for old template where needed (keeps compatibility)
     if (i === 0) {
@@ -3656,9 +3677,7 @@ ${ TODAvailability === "yes"
  ${isWheeling.toLowerCase() === "yes" && wheelingSites.length > 0 
     ? wheelingDetailsHTML
     : ""}  
-  
-</div>
-`
+ `
   resultDiv.scrollIntoView({behavior: 'smooth'}); 
     // Optional: Enable debug panel if needed
     // showDebugPanel();
