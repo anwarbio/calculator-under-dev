@@ -1,14 +1,14 @@
 // === service-worker.js ===
 
-const CACHE_NAME = "kseb-cache-v3";  
+const CACHE_NAME = "kseb-cache-v4";  
 const FILES_TO_CACHE = [
-  "/calculator-under-dev/",
-  "/calculator-under-dev/index.html",
-  "/calculator-under-dev/style.css",
-  "/calculator-under-dev/script.js",
-  "/calculator-under-dev/manifest.json",
-  "/calculator-under-dev/icons/icon-192.png",
-  "/calculator-under-dev/icons/icon-512.png"
+  "./",
+  "./index.html",
+  "./style.css",
+  "./script.js",
+  "./manifest.json",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png"
 ];
 
 // Install
