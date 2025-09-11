@@ -1,14 +1,16 @@
 // === service-worker.js ===
 
 // bump this when you want to reset cache
-const CACHE_NAME = "kseb-cache-v8";  
+const CACHE_NAME = "kseb-cache-v9";  
+
+const BASE_PATH = "/calculator-under-dev";
 
 const FILES_TO_CACHE = [
-  "./",
-  "./index.html",
-  "./manifest.json",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png"
+  `${BASE_PATH}/`,
+  `${BASE_PATH}/index.html`,
+  `${BASE_PATH}/manifest.json`,
+  `${BASE_PATH}/icons/icon-192.png`,
+  `${BASE_PATH}/icons/icon-512.png`
 ];
 
 // Install
@@ -25,7 +27,9 @@ self.addEventListener("activate", event => {
   console.log("[SW] Activate and cleanup old caches");
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.map(key => (key !== CACHE_NAME ? caches.delete(key) : null)))
+      Promise.all(
+        keys.map(key => (key !== CACHE_NAME ? caches.delete(key) : null))
+      )
     )
   );
   self.clients.claim();
@@ -38,17 +42,17 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   const req = event.request;
 
-  // Force network-first for index.html with cache-busting
+  // Force network-first for navigations (index.html)
   if (req.mode === "navigate" || req.destination === "document") {
     event.respondWith(
       fetch(req.url + "?v=" + Date.now(), { cache: "no-store" })
         .then(res => {
           return caches.open(CACHE_NAME).then(cache => {
-            cache.put("./index.html", res.clone()); // always update cache
+            cache.put(`${BASE_PATH}/index.html`, res.clone()); // always update cache
             return res;
           });
         })
-        .catch(() => caches.match("./index.html")) // fallback to cached
+        .catch(() => caches.match(`${BASE_PATH}/index.html`)) // fallback to cached
     );
     return;
   }
