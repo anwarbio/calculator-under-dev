@@ -1,8 +1,8 @@
 {
   "name": "KSEB Bill Calculator",
   "short_name": "KSEB Calculator",
-  "start_url": "./index.html",
-  "scope": "./",
+  "start_url": "/calculator-under-dev/index.html",
+  "scope": "/calculator-under-dev/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0d6efd",
