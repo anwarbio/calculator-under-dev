@@ -1667,51 +1667,61 @@ document.getElementById('downloadFullPDF').addEventListener('click', () => {
 });
 
 /* ------------------------------------------------------
-   2. Save PDF to IndexedDB (Base64 only – iOS safe)
+   Centralized IndexedDB Initialization
+------------------------------------------------------ */
+function openDB() {
+  return new Promise((resolve, reject) => {
+    // Version 2 ensures onupgradeneeded triggers if store doesn't exist
+    const request = indexedDB.open("ksebDB", 2);
+
+    request.onupgradeneeded = event => {
+      const db = event.target.result;
+      // Create the 'pdfs' store if it doesn't exist
+      if (!db.objectStoreNames.contains("pdfs")) {
+        db.createObjectStore("pdfs", { keyPath: "filename" });
+        console.log("✅ Object store 'pdfs' created");
+      }
+    };
+
+    request.onsuccess = event => resolve(event.target.result);
+    request.onerror = e => {
+      console.error("❌ DB open error:", e.target.errorCode);
+      reject("DB open error: " + e.target.errorCode);
+    };
+  });
+}
+
+/* ------------------------------------------------------
+   Save PDF to IndexedDB (Base64 only – iOS safe)
 ------------------------------------------------------ */
 async function savePdfToDB(filename, pdfBlob, billMeta) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
-    reader.onloadend = function () {
+    reader.onloadend = async function () {
       const base64Data = reader.result; // Base64 Data URL
 
-      // Open IndexedDB (version 2 – bumped to ensure onupgradeneeded runs)
-      const request = indexedDB.open("ksebDB", 2);
+      try {
+        const db = await openDB(); // Centralized DB open
 
-      // Create object store if it doesn't exist
-      request.onupgradeneeded = function(event) {
-        const db = event.target.result;
+        // Extra safety: ensure object store exists
         if (!db.objectStoreNames.contains("pdfs")) {
-          db.createObjectStore("pdfs", { keyPath: "filename" });
-          console.log("✅ Object store 'pdfs' created");
-        }
-      };
-
-      request.onsuccess = function(event) {
-        const db = event.target.result;
-
-        // Extra safety: make sure object store exists
-        if (!db.objectStoreNames.contains("pdfs")) {
-          console.error("❌ Object store 'pdfs' not found even after upgrade!");
-          reject("DB store missing");
+          reject("❌ Object store 'pdfs' not found!");
           return;
         }
 
-        // Start transaction
         const tx = db.transaction("pdfs", "readwrite");
         const store = tx.objectStore("pdfs");
 
         const data = {
           filename: filename,
-          pdfBase64: base64Data,              // always base64
+          pdfBase64: base64Data,
           date: billMeta.date || new Date().toLocaleDateString(),
           consumerNo: billMeta.consumerNo || "N/A",
           billType: billMeta.billType || "Prosumer",
           totalCharge: billMeta.totalCharge || 0
         };
 
-        // Save data
         const putRequest = store.put(data);
 
         putRequest.onsuccess = () => {
@@ -1723,18 +1733,15 @@ async function savePdfToDB(filename, pdfBlob, billMeta) {
           reject("DB put error: " + e.target.errorCode);
         };
 
-        // Complete transaction
         tx.oncomplete = () => resolve();
         tx.onerror = e => {
           console.error("❌ Transaction error:", e.target.errorCode);
           reject("DB transaction error: " + e.target.errorCode);
         };
-      };
-
-      request.onerror = e => {
-        console.error("❌ DB open error:", e.target.errorCode);
-        reject("DB open error: " + e.target.errorCode);
-      };
+      } catch (err) {
+        console.error("❌ Error saving PDF:", err);
+        reject(err);
+      }
     };
 
     reader.onerror = e => {
@@ -1745,6 +1752,7 @@ async function savePdfToDB(filename, pdfBlob, billMeta) {
     reader.readAsDataURL(pdfBlob); // Convert Blob → Base64
   });
 }
+
 
 /* ------------------------------------------------------
    3. Load History from IndexedDB
