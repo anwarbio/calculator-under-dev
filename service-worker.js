@@ -6,8 +6,6 @@ const CACHE_NAME = "kseb-cache-v6";
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
-  "./style.css",
-  "./script.js",
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png"
@@ -68,3 +66,4 @@ self.addEventListener("fetch", event => {
     );
   }
 });
+
