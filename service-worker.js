@@ -1,6 +1,8 @@
 // === service-worker.js ===
 
-const CACHE_NAME = "kseb-cache-v4";  
+// bump cache name whenever structure changes
+const CACHE_NAME = "kseb-cache-v6";  
+
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
@@ -29,25 +31,40 @@ self.addEventListener("activate", event => {
     )
   );
   self.clients.claim();
-  // Notify clients about update
   self.clients.matchAll().then(clients => {
-    clients.forEach(client =>
-      client.postMessage({ type: "NEW_VERSION" })
-    );
+    clients.forEach(client => client.postMessage({ type: "NEW_VERSION" }));
   });
 });
 
-// Fetch
+// Fetch strategy: 
+// - JS & HTML → network first, fallback to cache
+// - Others → cache first, fallback to network
 self.addEventListener("fetch", event => {
-  event.respondWith(
-    caches.match(event.request).then(response =>
-      response ||
-      fetch(event.request).then(networkResponse => {
+  const req = event.request;
+  const url = new URL(req.url);
+
+  if (req.destination === "document" || req.destination === "script") {
+    // network first
+    event.respondWith(
+      fetch(req).then(res => {
         return caches.open(CACHE_NAME).then(cache => {
-          cache.put(event.request, networkResponse.clone());
-          return networkResponse;
+          cache.put(req, res.clone());
+          return res;
         });
-      })
-    )
-  );
+      }).catch(() => caches.match(req))
+    );
+  } else {
+    // cache first
+    event.respondWith(
+      caches.match(req).then(cached =>
+        cached ||
+        fetch(req).then(res => {
+          return caches.open(CACHE_NAME).then(cache => {
+            cache.put(req, res.clone());
+            return res;
+          });
+        })
+      )
+    );
+  }
 });
